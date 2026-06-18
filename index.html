@@ -322,6 +322,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",s
 .news-refresh{background:none;border:none;cursor:pointer;font-size:14px;padding:2px 6px;border-radius:4px;transition:background .2s}
 .news-refresh:hover{background:#f1f3f4}
 
+/* ===== 同义替换选择 ===== */
+.synq-title{font-size:14px;font-weight:600;color:var(--primary);margin:0 0 12px 0;padding-top:14px;border-top:2px solid var(--primary)}
+.synq-item{margin-bottom:14px;padding:10px 14px;background:#f8f9fa;border-radius:8px;border:1px solid var(--border);transition:all .2s}
+.synq-item.answered-correct{border-color:var(--success);background:var(--success-light)}
+.synq-item.answered-wrong{border-color:var(--danger);background:#fce8e6}
+.synq-prompt{font-size:13px;font-weight:500;margin-bottom:8px;color:var(--text);line-height:1.5}
+.synq-prompt b{color:#1a237e;background:#e8eaf6;padding:1px 4px;border-radius:3px}
+.synq-opts{display:flex;flex-wrap:wrap;gap:6px}
+.synq-opt{flex:1;min-width:100px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;cursor:pointer;text-align:center;transition:all .15s;background:var(--card)}
+.synq-opt:hover{border-color:var(--primary);background:var(--primary-light)}
+.synq-opt.chosen-correct{border-color:var(--success);background:var(--success-light);color:var(--success);font-weight:600}
+.synq-opt.chosen-wrong{border-color:var(--danger);background:#fce8e6;color:var(--danger);font-weight:600}
+.synq-opt.show-correct{border-color:var(--success);background:var(--success-light);color:var(--success)}
+.synq-feedback{font-size:12px;margin-top:6px;padding:4px 8px;border-radius:4px;display:none}
+.synq-feedback.show{display:block}
+.synq-feedback.correct{color:var(--success);background:var(--success-light)}
+.synq-feedback.wrong{color:var(--danger);background:#fce8e6}
+@media(prefers-color-scheme:dark){
+  .synq-item{background:#1a2744;border-color:#2d3748}
+  .synq-opt{background:#1a1a2e;border-color:#2d3748}
+}
+@media(max-width:768px){
+  .synq-opt{padding:10px 12px;font-size:13px;min-height:40px}
+}
+
 /* ===== 暗色模式 ===== */
 @media(prefers-color-scheme:dark){
   :root{--bg:#1a1a2e;--card:#16213e;--text:#e8eaed;--text2:#9aa0a6;--border:#2d3748;--shadow:0 1px 3px rgba(0,0,0,.4);--primary-light:#1a2a4a}
@@ -501,6 +526,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",s
           <span id="sentenceDate" style="font-size:12px;color:var(--text2)"></span>
         </div>
         <div class="daily-sentence" id="dailySentence"></div>
+        <div id="synQuestions" style="padding:0 16px 16px"></div>
       </div>
       <div class="card">
         <div class="card-header">
@@ -854,8 +880,113 @@ const SENTENCES=[
 {s:"The principle of Occam's razor, often paraphrased as 'the simplest explanation is usually the best,' serves as a methodological guideline in scientific inquiry, encouraging researchers to minimize the number of assumptions in their theories.",t:"奥卡姆剃刀原理——常被解释为「最简单的解释通常是最好的」——作为科学探究中的方法论指导原则，鼓励研究人员尽量减少理论中的假设数量。",g:"同位语+现在分词",v:[{w:"paraphrase",p:"v.",m:"解释"},{w:"methodological",p:"adj.",m:"方法论的"},{w:"guideline",p:"n.",m:"指导原则"},{w:"inquiry",p:"n.",m:"探究"},{w:"minimize",p:"v.",m:"最小化"},{w:"assumption",p:"n.",m:"假设"}],c:"[主语] The principle of Occam's razor\n[插入语] often paraphrased as 'the simplest explanation is usually the best'\n[谓语] serves as\n[表语] a methodological guideline in scientific inquiry\n[结果状语] encouraging researchers to minimize the number of assumptions in their theories"},
 ];
 
+// ===== 同义替换题库（考纲词汇 → 近义词选择） =====
+const SYN_Q={
+  "unprecedented":{opts:["unparalleled","predictable","unimportant","frequent"],ans:0},
+  "outstrip":{opts:["surpass","undermine","follow","support"],ans:0},
+  "regulatory":{opts:["supervisory","voluntary","educational","military"],ans:0},
+  "framework":{opts:["structure","limitation","opportunity","fragment"],ans:0},
+  "governance":{opts:["administration","opposition","negotiation","celebration"],ans:0},
+  "vacuum":{opts:["void","fullness","container","barrier"],ans:0},
+  "confine":{opts:["restrict","expand","explore","promote"],ans:0},
+  "realm":{opts:["domain","boundary","method","theory"],ans:0},
+  "permeate":{opts:["penetrate","withdraw","protect","isolate"],ans:0},
+  "diagnostics":{opts:["analysis","treatment","prevention","surgery"],ans:0},
+  "proliferation":{opts:["rapid increase","steady decline","sudden collapse","gradual improvement"],ans:0},
+  "dynamics":{opts:["forces of change","static states","fixed patterns","random events"],ans:0},
+  "discourse":{opts:["discussion","silence","monologue","gesture"],ans:0},
+  "dissemination":{opts:["spreading","collection","concealment","destruction"],ans:0},
+  "amplify":{opts:["magnify","reduce","ignore","reverse"],ans:0},
+  "perpetrate":{opts:["commit","prevent","witness","condemn"],ans:0},
+  "sophisticated":{opts:["complex","simple","primitive","crude"],ans:0},
+  "orchestrate":{opts:["coordinate","disrupt","improvise","abandon"],ans:0},
+  "necessitate":{opts:["require","eliminate","suggest","postpone"],ans:0},
+  "paradigm":{opts:["model","anomaly","exception","paradox"],ans:0},
+  "convergence":{opts:["merging","separation","expansion","division"],ans:0},
+  "optimize":{opts:["improve","neglect","complicate","weaken"],ans:0},
+  "profound":{opts:["deep","shallow","obvious","trivial"],ans:0},
+  "autonomy":{opts:["independence","dependence","restriction","submission"],ans:0},
+  "attainment":{opts:["achievement","failure","attempt","neglect"],ans:0},
+  "affluent":{opts:["wealthy","impoverished","modest","frugal"],ans:0},
+  "entrench":{opts:["establish firmly","uproot","challenge","overlook"],ans:0},
+  "proponent":{opts:["advocate","opponent","observer","critic"],ans:0},
+  "metric":{opts:["measure","opinion","estimate","guess"],ans:0},
+  "contend":{opts:["argue","agree","concede","doubt"],ans:0},
+  "stifle":{opts:["suppress","encourage","release","expose"],ans:0},
+  "substantial":{opts:["considerable","negligible","superficial","trivial"],ans:0},
+  "inexorable":{opts:["unstoppable","avoidable","reversible","intermittent"],ans:0},
+  "exacerbate":{opts:["worsen","alleviate","resolve","ignore"],ans:0},
+  "delicate":{opts:["sensitive","robust","rough","coarse"],ans:0},
+  "acute":{opts:["severe","mild","chronic","dull"],ans:0},
+  "implication":{opts:["consequence","cause","solution","premise"],ans:0},
+  "reskilling":{opts:["retraining","retiring","resigning","relaxing"],ans:0},
+  "detrimental":{opts:["harmful","beneficial","neutral","essential"],ans:0},
+  "disproportionately":{opts:["unequally","evenly","slightly","fairly"],ans:0},
+  "vulnerable":{opts:["at risk","protected","resilient","immune"],ans:0},
+  "consensus":{opts:["agreement","dispute","confusion","silence"],ans:0},
+  "anthropogenic":{opts:["human-caused","natural","animal-related","cosmic"],ans:0},
+  "galvanize":{opts:["motivate","discourage","calm","distract"],ans:0},
+  "depletion":{opts:["exhaustion","replenishment","preservation","creation"],ans:0},
+  "burgeoning":{opts:["rapidly growing","shrinking","stable","declining"],ans:0},
+  "overshadow":{opts:["outshine","illuminate","reveal","highlight"],ans:0},
+  "devastating":{opts:["destructive","constructive","minor","gentle"],ans:0},
+  "compelling":{opts:["convincing","doubtful","weak","optional"],ans:0},
+  "pervasive":{opts:["widespread","rare","isolated","hidden"],ans:0},
+  "cognitive":{opts:["mental","physical","emotional","social"],ans:0},
+  "deviation":{opts:["departure","arrival","conformity","agreement"],ans:0},
+  "suboptimal":{opts:["less than ideal","perfect","excellent","optimal"],ans:0},
+  "neuroplasticity":{opts:["brain adaptability","nerve damage","mental illness","cognitive decline"],ans:0},
+  "intractable":{opts:["difficult to manage","easy to solve","pleasant","temporary"],ans:0},
+  "underscore":{opts:["emphasize","weaken","overlook","deny"],ans:0},
+  "inert":{opts:["inactive","reactive","volatile","dynamic"],ans:0},
+  "sedentary":{opts:["inactive","active","mobile","energetic"],ans:0},
+  "commodification":{opts:["turning into goods","free distribution","public service","charity"],ans:0},
+  "surveillance":{opts:["monitoring","privacy","freedom","ignorance"],ans:0},
+  "enshrine":{opts:["protect by law","erase","challenge","ignore"],ans:0},
+  "incentivize":{opts:["motivate","discourage","penalize","prevent"],ans:0},
+  "deterrence":{opts:["discouragement","encouragement","assistance","permission"],ans:0},
+  "whistleblower":{opts:["informant","criminal","judge","politician"],ans:0},
+  "retaliation":{opts:["revenge","forgiveness","cooperation","promotion"],ans:0},
+  "safeguard":{opts:["protect","endanger","ignore","expose"],ans:0},
+  "conduit":{opts:["channel","barrier","source","obstacle"],ans:0},
+  "abolition":{opts:["elimination","establishment","extension","reform"],ans:0},
+  "eradicate":{opts:["eliminate","create","preserve","cultivate"],ans:0},
+  "oral":{opts:["spoken","written","silent","visual"],ans:0},
+  "demographic":{opts:["population-related","geographic","economic","political"],ans:0},
+  "trajectory":{opts:["path","destination","origin","obstacle"],ans:0},
+  "epistemic":{opts:["knowledge-related","emotional","physical","spiritual"],ans:0},
+  "dogmatic":{opts:["rigidly opinionated","open-minded","flexible","uncertain"],ans:0},
+  "polarization":{opts:["division","unification","neutrality","moderation"],ans:0},
+  "dislocation":{opts:["disruption","stability","order","harmony"],ans:0},
+  "interplay":{opts:["interaction","isolation","separation","independence"],ans:0},
+  "allocate":{opts:["distribute","withhold","waste","collect"],ans:0},
+  "coalition":{opts:["alliance","rivalry","conflict","individual"],ans:0},
+  "populist":{opts:["appealing to ordinary people","elitist","aristocratic","bureaucratic"],ans:0},
+  "momentum":{opts:["driving force","standstill","setback","decline"],ans:0},
+  "supply and demand":{opts:["market forces","government control","random chance","fixed pricing"],ans:0},
+  "exhibit":{opts:["display","conceal","suppress","withdraw"],ans:0},
+  "inequality":{opts:["disparity","equality","fairness","balance"],ans:0},
+};
+
 // ===== DAILY RENDERING =====
 function dayOfYear(d){const start=new Date(d.getFullYear(),0,0);return Math.floor((d-start)/864e5)}
+
+function pickSynonymQuestions(todaySentences){
+  const candidates=[];
+  const seen=new Set();
+  todaySentences.forEach(s=>{
+    s.v.forEach(v=>{
+      const q=SYN_Q[v.w];
+      if(q && !seen.has(v.w)){
+        seen.add(v.w);
+        candidates.push({word:v.w,meaning:v.m,opts:q.opts,ans:q.ans});
+      }
+    });
+  });
+  // Shuffle and pick up to 4
+  for(let i=candidates.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[candidates[i],candidates[j]]=[candidates[j],candidates[i]]}
+  return candidates.slice(0,4);
+}
 
 function renderDailySentence(){
   const now=new Date();const dayIdx=dayOfYear(now);
@@ -881,6 +1012,38 @@ function renderDailySentence(){
       </div>
     </div>
   `).join('');
+  renderSynQuestions(today5);
+}
+
+function renderSynQuestions(todaySentences){
+  const container=document.getElementById('synQuestions');
+  if(!container)return;
+  const qs=pickSynonymQuestions(todaySentences);
+  if(!qs.length){container.innerHTML='';return}
+  container.innerHTML='<div class="synq-title">同义替换 · 选择近义词（点击选项作答）</div>'
+    +qs.map((q,qi)=>'<div class="synq-item" id="synq-'+qi+'"><div class="synq-prompt">第'+(qi+1)+'题：句子中 <b>'+q.word+'</b>（'+q.meaning+'）的最接近同义词是？</div><div class="synq-opts">'+q.opts.map((o,oi)=>'<span class="synq-opt" onclick="checkSynAnswer('+qi+','+oi+')">'+o+'</span>').join('')+'</div><div class="synq-feedback" id="synq-fb-'+qi+'"></div></div>').join('');
+  window._synAnswers=qs.map(q=>q.ans);
+}
+
+function checkSynAnswer(qi,oi){
+  const item=document.getElementById('synq-'+qi);if(!item)return;
+  const correct=window._synAnswers[qi];
+  const isCorrect=oi===correct;
+  const opts=item.querySelectorAll('.synq-opt');
+  const fb=document.getElementById('synq-fb-'+qi);
+  opts.forEach(o=>o.style.pointerEvents='none');
+  if(isCorrect){
+    opts[oi].classList.add('chosen-correct');
+    item.classList.add('answered-correct');
+    fb.className='synq-feedback correct show';
+    fb.textContent='正确！';
+  }else{
+    opts[oi].classList.add('chosen-wrong');
+    opts[correct].classList.add('show-correct');
+    item.classList.add('answered-wrong');
+    fb.className='synq-feedback wrong show';
+    fb.textContent='错误。正确答案是：'+opts[correct].textContent;
+  }
 }
 
 function highlightVocab(sentence,vocab){
