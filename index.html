@@ -1,0 +1,1871 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>考研备考助手</title>
+<meta name="theme-color" content="#1a73e8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="考研助手">
+<link rel="manifest" href="./manifest.json">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#1a73e8;--primary-light:#e8f0fe;--success:#34a853;--success-light:#e6f4ea;--warning:#fbbc04;--danger:#ea4335;--bg:#f8f9fa;--card:#fff;--text:#202124;--text2:#5f6368;--border:#dadce0;--shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.08);--shadow-lg:0 4px 12px rgba(0,0,0,.15);--radius:12px;--bottom-nav-h:64px;--safe-b:env(safe-area-inset-bottom,0px);--safe-t:env(safe-area-inset-top,0px)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+/* ===== SETUP ===== */
+.setup-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#667eea,#764ba2);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px}
+.setup-overlay.hidden{display:none}
+.setup-card{background:#fff;border-radius:20px;padding:40px 36px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.setup-title{font-size:24px;font-weight:700;text-align:center;margin-bottom:4px}
+.setup-sub{font-size:14px;color:var(--text2);text-align:center;margin-bottom:28px}
+.setup-group{margin-bottom:20px}
+.setup-label{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:8px;display:block}
+.setup-options{display:flex;flex-wrap:wrap;gap:8px}
+.setup-opt{padding:10px 16px;border:2px solid var(--border);border-radius:10px;cursor:pointer;font-size:14px;font-weight:500;background:#fff;user-select:none;-webkit-tap-highlight-color:transparent;position:relative;z-index:1}
+.setup-opt:hover{border-color:var(--primary);background:var(--primary-light)}
+.setup-opt.selected{border-color:var(--primary);background:var(--primary);color:#fff;box-shadow:0 2px 8px rgba(26,115,232,.3)}
+.setup-input{width:100%;padding:10px 14px;border:2px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit}
+.setup-input:focus{outline:none;border-color:var(--primary)}
+.setup-input::placeholder{color:#bbb}
+.setup-btn{width:100%;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;margin-top:8px;transition:transform .2s}
+.setup-btn:hover{transform:scale(1.02)}
+.setup-btn:disabled{opacity:.5;cursor:not-allowed}
+.setup-school{margin-bottom:20px}
+/* ===== HEADER ===== */
+.header{background:linear-gradient(135deg,#1a73e8,#4285f4);color:#fff;padding:16px 24px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
+.header-inner{max-width:900px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+.header h1{font-size:18px;font-weight:600}
+.header .subtitle{font-size:12px;opacity:.85;margin-top:2px}
+.header-right{display:flex;align-items:center;gap:10px}
+.streak{background:rgba(255,255,255,.2);padding:4px 12px;border-radius:20px;font-size:13px}
+.settings-btn{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);border:none;color:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.settings-btn:hover{background:rgba(255,255,255,.35)}
+/* ===== NAV ===== */
+.nav-tabs{display:flex;max-width:900px;margin:0 auto;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:56px;z-index:99}
+.nav-tab{flex:1;padding:14px 8px;text-align:center;font-size:14px;font-weight:500;color:var(--text2);cursor:pointer;border:none;border-bottom:3px solid transparent;background:none;transition:all .2s}
+.nav-tab:hover{color:var(--primary);background:var(--primary-light)}
+.nav-tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+/* ===== CONTAINER ===== */
+.container{max-width:900px;margin:0 auto;padding:16px}
+.section{display:none}.section.active{display:block}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden}
+.card-header{padding:14px 16px;font-weight:600;font-size:15px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.card-body{padding:16px}
+/* ===== SCHEDULE ===== */
+.schedule-item{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid #f1f3f4;transition:background .2s}
+.schedule-item:last-child{border-bottom:none}
+.schedule-item:hover{background:#f8f9fa}
+.schedule-item.completed{opacity:.6}
+.schedule-item.completed .schedule-title{text-decoration:line-through}
+.schedule-time{min-width:100px;font-size:13px;color:var(--primary);font-weight:600}
+.schedule-info{flex:1}
+.schedule-title{font-size:14px;font-weight:500}
+.schedule-desc{font-size:12px;color:var(--text2);margin-top:2px}
+.schedule-subject{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:500;margin-left:8px}
+.sub-math{background:#fce8e6;color:#c5221f}
+.sub-eng{background:#e8f0fe;color:#1967d2}
+.sub-pol{background:#fef7e0;color:#b06000}
+.sub-major{background:#e6f4ea;color:#137333}
+.sub-flex{background:#f3e8fd;color:#7b1fa2}
+.sub-break{background:#f1f3f4;color:#5f6368}
+.check-btn{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;background:#fff;flex-shrink:0;margin-left:12px;font-size:16px;color:transparent}
+.check-btn:hover{border-color:var(--success)}
+.check-btn.checked{background:var(--success);border-color:var(--success);color:#fff}
+/* ===== DAILY CARDS ===== */
+.daily-sentence{padding:16px}
+.sentence-en{font-size:16px;line-height:1.7;font-style:italic;color:#1a237e;margin-bottom:12px;padding:12px;background:#e8eaf6;border-radius:8px;border-left:4px solid #3f51b5}
+.sentence-zh{font-size:14px;color:var(--text);margin-bottom:12px;line-height:1.6}
+.analysis-title{font-size:13px;font-weight:600;color:var(--primary);margin-bottom:8px;cursor:pointer;user-select:none}
+.analysis-title::before{content:'▶ ';font-size:10px}
+.analysis-title.open::before{content:'▼ '}
+.analysis-body{font-size:13px;line-height:1.8;color:var(--text2);display:none;padding:8px 12px;background:#f8f9fa;border-radius:8px;margin-bottom:8px}
+.analysis-body.show{display:block}
+.sentence-tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;background:#e8eaf6;color:#3f51b5;margin-bottom:8px}
+.daily-q-card{padding:12px 16px;border-bottom:1px solid #f1f3f4}
+.daily-q-card:last-child{border-bottom:none}
+.daily-q-num{display:inline-block;width:22px;height:22px;border-radius:50%;background:var(--primary);color:#fff;font-size:11px;text-align:center;line-height:22px;margin-right:8px;flex-shrink:0}
+.daily-q-subject{font-size:11px;color:var(--text2);margin-left:4px}
+.daily-q-content{font-size:14px;line-height:1.6;margin:6px 0}
+.daily-q-options{display:flex;flex-direction:column;gap:4px;margin:8px 0}
+.daily-q-opt{padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;cursor:pointer;transition:all .15s}
+.daily-q-opt:hover{border-color:var(--primary);background:var(--primary-light)}
+.daily-q-opt.selected{border-color:var(--primary);background:var(--primary-light)}
+.daily-q-opt.correct{border-color:var(--success);background:var(--success-light)}
+.daily-q-opt.wrong{border-color:var(--danger);background:#fce8e6}
+.daily-q-reveal{font-size:13px;line-height:1.6;padding:8px 12px;background:var(--success-light);border-radius:6px;margin-top:6px;display:none}
+.daily-q-reveal.show{display:block}
+.daily-q-hint{font-size:13px;padding:8px 12px;background:#fff8e1;border-radius:6px;margin-top:6px;display:none}
+.daily-q-hint.show{display:block}
+.daily-q-actions{display:flex;gap:6px;margin-top:8px}
+.daily-q-btn{padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:#fff;font-size:12px;cursor:pointer;transition:all .15s}
+.daily-q-btn:hover{background:#f8f9fa}
+.daily-q-btn.hint-btn{color:#f57f17;border-color:#ffecb3}
+.daily-q-btn.ai-btn{color:#1a56db;border-color:#c5d9f7}
+.progress-bar-container{background:#e8eaed;border-radius:8px;height:8px;overflow:hidden;margin:12px 16px}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--success),#4caf50);border-radius:8px;transition:width .5s}
+.progress-text{text-align:center;font-size:13px;color:var(--text2);padding:4px 16px 12px}
+/* ===== MATERIALS ===== */
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:32px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:16px}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--primary);background:var(--primary-light)}
+.upload-icon{font-size:36px;margin-bottom:8px}
+.upload-text{font-size:14px;color:var(--text2)}
+.material-item{display:flex;align-items:center;padding:10px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;transition:background .2s}
+.material-item:hover{background:#f8f9fa}
+.material-icon{font-size:24px;margin-right:12px}
+.material-info{flex:1}
+.material-name{font-size:14px;font-weight:500}
+.material-meta{font-size:12px;color:var(--text2)}
+.material-actions{display:flex;gap:4px}
+.btn-icon{width:32px;height:32px;border-radius:8px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:background .2s}
+.btn-icon:hover{background:#f1f3f4}
+.btn-icon.danger:hover{background:#fce8e6}
+/* ===== QUIZ ===== */
+.quiz-question{font-size:16px;line-height:1.6;margin-bottom:20px;padding:16px;background:#f8f9fa;border-radius:8px;text-align:left}
+.quiz-options{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.quiz-option{padding:12px 16px;border:2px solid var(--border);border-radius:8px;cursor:pointer;font-size:14px;text-align:left;transition:all .2s;background:#fff}
+.quiz-option:hover{border-color:var(--primary);background:var(--primary-light)}
+.quiz-option.selected{border-color:var(--primary);background:var(--primary-light)}
+.quiz-option.correct{border-color:var(--success);background:var(--success-light)}
+.quiz-option.wrong{border-color:var(--danger);background:#fce8e6}
+.quiz-answer-input{width:100%;padding:12px;border:2px solid var(--border);border-radius:8px;font-size:14px;resize:vertical;min-height:80px;font-family:inherit}
+.quiz-answer-input:focus{outline:none;border-color:var(--primary)}
+.btn{padding:10px 20px;border-radius:8px;border:none;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:#1557b0}
+.btn-outline{background:#fff;color:var(--text);border:1px solid var(--border)}.btn-outline:hover{background:#f8f9fa}
+.btn-warning{background:var(--warning);color:#202124}.btn-warning:hover{background:#e5a800}
+.btn-group{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.hint-box{background:#fff8e1;border:1px solid #ffecb3;border-radius:8px;padding:12px 16px;margin-top:12px;font-size:13px;line-height:1.6;display:none}
+.hint-box.show{display:block}
+.hint-title{font-weight:600;color:#f57f17;margin-bottom:4px}
+.answer-reveal{background:var(--success-light);border:1px solid #a8dab5;border-radius:8px;padding:12px 16px;margin-top:12px;text-align:left;display:none}
+.answer-reveal.show{display:block}
+.answer-reveal-title{font-weight:600;color:var(--success);margin-bottom:4px}
+.ai-links{background:#f0f4ff;border:1px solid #c5d9f7;border-radius:8px;padding:12px 16px;margin-top:12px;display:none}
+.ai-links.show{display:block}
+.ai-links-title{font-weight:600;color:#1a56db;margin-bottom:8px;font-size:13px}
+.ai-link-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;margin-right:8px;margin-bottom:4px;transition:all .2s;border:1px solid transparent}
+.ai-link-btn:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.ai-doubao{background:#fff0e6;color:#d4380d;border-color:#ffd6bf}.ai-doubao:hover{background:#ffe0cc}
+.ai-deepseek{background:#e6f7ff;color:#0070c0;border-color:#b3e0ff}.ai-deepseek:hover{background:#cceeff}
+/* ===== STATS ===== */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:16px}
+.stat-card{background:var(--card);border-radius:var(--radius);padding:16px;text-align:center;box-shadow:var(--shadow)}
+.stat-value{font-size:28px;font-weight:700;color:var(--primary)}
+.stat-label{font-size:12px;color:var(--text2);margin-top:4px}
+/* ===== MODAL ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:200;padding:16px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--card);border-radius:var(--radius);width:100%;max-width:500px;max-height:80vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
+.modal-header{padding:16px 20px;font-weight:600;font-size:16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-close{width:32px;height:32px;border-radius:50%;border:none;background:transparent;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{background:#f1f3f4}
+.modal-body{padding:20px}
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:var(--text2)}
+.form-select,.form-textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit}
+.form-select:focus,.form-textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 2px rgba(26,115,232,.2)}
+.form-textarea{min-height:100px;resize:vertical}
+.modal-footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+/* ===== HISTORY / WRONG ===== */
+.history-item{padding:10px 0;border-bottom:1px solid #f1f3f4;font-size:13px}
+.history-item:last-child{border-bottom:none}
+.history-q{font-weight:500;margin-bottom:4px}
+.history-a{color:var(--text2)}
+.history-result{display:inline-block;padding:1px 6px;border-radius:4px;font-size:11px;margin-left:4px}
+.result-correct{background:var(--success-light);color:var(--success)}
+.result-wrong{background:#fce8e6;color:var(--danger)}
+.wrong-item{padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px}
+.wrong-q{font-weight:500;font-size:14px;margin-bottom:4px}
+.wrong-a{font-size:13px;color:var(--success)}
+.wrong-count{font-size:12px;color:var(--danger);margin-top:4px}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text2)}
+.empty-icon{font-size:48px;margin-bottom:12px}
+.empty-text{font-size:14px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:#323232;color:#fff;padding:12px 24px;border-radius:8px;font-size:14px;z-index:600;transition:transform .3s;box-shadow:var(--shadow-lg)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+/* ===== 桌面端：顶部导航始终可见，底部导航隐藏 ===== */
+.bottom-nav{display:none}
+.install-banner{display:none;position:fixed;top:0;left:0;right:0;z-index:600;background:#1a237e;color:#fff;padding:12px 16px;display:none;align-items:center;justify-content:space-between;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.install-banner.show{display:flex}
+.install-banner button{background:#fff;color:#1a237e;border:none;padding:8px 16px;border-radius:6px;font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap;margin-left:12px}
+.install-banner .close-banner{background:transparent;color:#fff;border:none;font-size:20px;cursor:pointer;padding:0 4px}
+
+@media(max-width:768px){
+  /* ----- 底部导航 ----- */
+  .bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:150;background:var(--card);border-top:1px solid var(--border);height:var(--bottom-nav-h);padding-bottom:var(--safe-b);box-shadow:0 -2px 8px rgba(0,0,0,.08)}
+  .bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:none;color:var(--text2);font-size:10px;cursor:pointer;transition:color .2s;-webkit-tap-highlight-color:transparent;padding:4px;min-height:44px}
+  .bottom-nav-item.active{color:var(--primary)}
+  .bottom-nav-icon{font-size:22px;line-height:1}
+  /* 桌面端顶部 nav 在移动端隐藏 */
+  .nav-tabs{display:none}
+  /* 底部留空给导航 */
+  body{padding-bottom:calc(var(--bottom-nav-h) + var(--safe-b))}
+  .toast{bottom:calc(24px + var(--bottom-nav-h) + var(--safe-b))}
+  /* 容器左右边距调整 */
+  .container{padding:12px}
+
+  /* ----- 头部紧凑化 ----- */
+  .header{padding:12px 16px;padding-top:calc(12px + var(--safe-t))}
+  .header h1{font-size:16px}
+  .header .subtitle{font-size:11px}
+
+  /* ----- 设置页全屏 ----- */
+  .setup-card{max-width:100%;border-radius:0;padding:32px 20px;min-height:100vh;display:flex;flex-direction:column;justify-content:center}
+  .setup-overlay{padding:0;align-items:stretch}
+
+  /* ----- 日程项优化 ----- */
+  .schedule-item{padding:12px;flex-wrap:wrap}
+  .schedule-time{min-width:70px;font-size:12px}
+  .schedule-title{font-size:13px}
+  .schedule-desc{font-size:11px}
+  .check-btn{width:36px;height:36px;min-width:36px;margin-left:8px}
+
+  /* ----- 统计网格 2列 ----- */
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .stat-card{padding:12px 8px}
+  .stat-value{font-size:24px}
+  .stat-label{font-size:11px}
+
+  /* ----- 日历缩放 ----- */
+  #checkinCalendar{font-size:11px}
+  #checkinCalendar>div:last-child>div{padding:4px 2px;font-size:11px}
+
+  /* ----- 弹窗改底部抽屉 ----- */
+  .modal-overlay{align-items:flex-end}
+  .modal{max-width:100%;max-height:85vh;border-radius:16px 16px 0 0;width:100%}
+  .modal-header{border-radius:16px 16px 0 0}
+  .modal-body{padding:16px}
+
+  /* ----- 长难句卡片 ----- */
+  .daily-sentence{padding:12px}
+  .sentence-en{font-size:14px}
+  .sentence-zh{font-size:13px}
+  .analysis-body{font-size:12px}
+
+  /* ----- 每日刷题 ----- */
+  .daily-q-content{font-size:13px}
+  .daily-q-opt{padding:10px 12px;font-size:13px;min-height:44px;display:flex;align-items:center}
+  .daily-q-actions{gap:8px}
+  .daily-q-btn{padding:8px 16px;font-size:13px;min-height:40px}
+  .quiz-answer-input{font-size:16px} /* 防iOS缩放 */
+
+  /* ----- 新闻卡片 ----- */
+  .news-content{font-size:13px}
+  .news-summary{font-size:12px}
+  .news-item{padding:10px 0}
+
+  /* ----- 抽题区 ----- */
+  .quiz-question{font-size:15px;padding:12px}
+  .quiz-option{padding:14px 16px;font-size:14px;min-height:48px}
+  .quiz-options{gap:6px}
+  #quizArea .btn{padding:12px 24px;font-size:14px;min-height:44px}
+
+  /* ----- 资料上传区 ----- */
+  .upload-zone{padding:24px 16px}
+  .upload-icon{font-size:32px}
+  .upload-text{font-size:13px}
+  .material-item{padding:12px}
+  .btn-icon{width:40px;height:40px}
+
+  /* ----- 表单优化 (防iOS自动缩放) ----- */
+  .setup-input,.form-select,.form-textarea{font-size:16px;padding:12px}
+  .setup-opt{padding:12px 18px;font-size:14px;min-height:44px}
+  .setup-btn{padding:16px;font-size:17px}
+  .setup-title{font-size:22px}
+
+  /* ----- 设置弹窗 ----- */
+  #settingsModal .modal{max-width:100%}
+  .form-group{margin-bottom:14px}
+
+  /* ----- 按钮通用放大 ----- */
+  .btn{padding:12px 22px;font-size:14px;min-height:44px}
+  .btn-primary{font-size:14px}
+}
+
+/* ===== 小平手机 (≤400px) ===== */
+@media(max-width:400px){
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:6px}
+  .stat-value{font-size:20px}
+  .schedule-time{min-width:60px;font-size:11px}
+  .schedule-subject{font-size:10px;padding:1px 6px;margin-left:4px}
+  .bottom-nav-icon{font-size:20px}
+  .bottom-nav-item{font-size:9px;padding:2px}
+  .container{padding:8px}
+  .card-header{padding:12px;font-size:14px}
+  .card-body{padding:12px}
+  .daily-q-num{width:20px;height:20px;line-height:20px;font-size:10px}
+}
+
+/* ===== 平板横屏 (769-1024px) 中间断点 ===== */
+@media(min-width:769px) and (max-width:1024px){
+  .container{max-width:720px;padding:16px}
+  .stats-grid{grid-template-columns:repeat(3,1fr)}
+  .schedule-time{min-width:90px}
+}
+
+/* ===== 每日新闻 ===== */
+.news-item{padding:10px 0;border-bottom:1px solid #f1f3f4;display:flex;gap:10px;align-items:flex-start}
+.news-item:last-child{border-bottom:none}
+.news-index{flex-shrink:0;width:22px;height:22px;border-radius:6px;background:var(--primary);color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.news-content{flex:1;font-size:13px;line-height:1.6;color:var(--text)}
+.news-title{font-weight:500;margin-bottom:2px}
+.news-summary{font-size:12px;color:var(--text2);line-height:1.5}
+.news-tag{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:500;margin-right:4px;vertical-align:middle}
+.news-tag-edu{background:#e8f0fe;color:#1967d2}
+.news-tag-policy{background:#fef7e0;color:#b06000}
+.news-tag-tech{background:#e6f4ea;color:#137333}
+.news-tag-world{background:#f3e8fd;color:#7b1fa2}
+.news-tag-econ{background:#fce8e6;color:#c5221f}
+.news-loading{text-align:center;padding:16px;color:var(--text2);font-size:13px}
+.news-source{font-size:11px;color:var(--text2);text-align:right;margin-top:8px}
+.news-refresh{background:none;border:none;cursor:pointer;font-size:14px;padding:2px 6px;border-radius:4px;transition:background .2s}
+.news-refresh:hover{background:#f1f3f4}
+
+/* ===== 暗色模式 ===== */
+@media(prefers-color-scheme:dark){
+  :root{--bg:#1a1a2e;--card:#16213e;--text:#e8eaed;--text2:#9aa0a6;--border:#2d3748;--shadow:0 1px 3px rgba(0,0,0,.4);--primary-light:#1a2a4a}
+  body{color-scheme:dark}
+  .setup-card{background:#16213e}
+  .setup-opt{background:#1a1a2e;border-color:#2d3748}
+  .setup-opt:hover{background:#1a2a4a}
+  .modal{background:#16213e}
+  .schedule-item:hover{background:#1a2744}
+  .material-item:hover{background:#1a2744}
+  .btn-outline{background:#1a1a2e;color:var(--text);border-color:var(--border)}
+  .btn-outline:hover{background:#1a2744}
+  .daily-q-opt{background:#1a1a2e}
+  .daily-q-reveal{background:#0d3b1e}
+  .daily-q-hint{background:#3d2e00}
+  .hint-box{background:#3d2e00;border-color:#5c4200}
+  .answer-reveal{background:#0d3b1e;border-color:#1a6b30}
+  .sentence-en{background:#1a237e;color:#c5cae9}
+  .upload-zone{background:#1a1a2e}
+  .upload-zone:hover,.upload-zone.dragover{background:#1a2a4a}
+  .quiz-question{background:#1a2744}
+  .input,.setup-input,.form-select,.form-textarea{background:#1a1a2e;color:var(--text);border-color:var(--border)}
+  .progress-bar-container{background:#2d3748}
+  .wrong-item{background:#1a1a2e}
+  .analysis-body{background:#1a2744}
+  .daily-q-card{border-color:#2d3748}
+  .schedule-item{border-color:#2d3748}
+  .history-item{border-color:#2d3748}
+  .btn-icon:hover{background:#1a2744}
+  .btn-icon.danger:hover{background:#3d1a1a}
+  .modal-close:hover{background:#1a2744}
+  .bottom-nav{background:#16213e;border-color:#2d3748}
+  .toast{background:#e8eaed;color:#202124}
+  .news-item{border-color:#2d3748}
+  .news-refresh:hover{background:#1a2744}
+}
+/* ===== 错题本图片 ===== */
+.wrong-photos{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.wrong-photo{width:60px;height:60px;border-radius:6px;object-fit:cover;border:1px solid var(--border);cursor:pointer;transition:transform .15s}
+.wrong-photo:hover{transform:scale(1.1)}
+.wrong-photo-add{width:60px;height:60px;border-radius:6px;border:2px dashed var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--text2);transition:all .15s}
+.wrong-photo-add:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+.wrong-item-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+/* ===== 练习记录 ===== */
+.log-form{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin-bottom:12px}
+.log-form-row{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+.log-input{padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;width:110px}
+.log-input:focus{outline:none;border-color:var(--primary)}
+.log-select{padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit}
+.log-select:focus{outline:none;border-color:var(--primary)}
+.log-btn{padding:8px 14px;border-radius:8px;border:none;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;min-height:36px}
+.log-btn-add{background:var(--primary);color:#fff}
+.log-btn-add:hover{background:#1557b0}
+.log-btn-del{background:transparent;color:var(--danger);border:1px solid var(--danger)}
+.log-btn-del:hover{background:#fce8e6}
+.log-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+.log-table th{text-align:left;padding:6px 8px;color:var(--text2);font-weight:500;border-bottom:1px solid var(--border);font-size:11px}
+.log-table td{padding:6px 8px;border-bottom:1px solid #f1f3f4}
+.log-table tr:hover td{background:#f8f9fa}
+.chart-container{position:relative;width:100%;height:200px;margin-top:12px}
+.chart-container canvas{width:100%;height:100%}
+.chart-tabs{display:flex;gap:4px;margin-bottom:12px}
+.chart-tab{padding:6px 14px;border:1px solid var(--border);border-radius:20px;font-size:12px;cursor:pointer;background:var(--card);transition:all .15s}
+.chart-tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+/* ===== 模拟卷 ===== */
+.mock-banner{background:linear-gradient(135deg,#ea4335,#ff6d00);color:#fff;padding:12px 16px;border-radius:8px;margin-bottom:8px;font-size:13px;cursor:pointer;transition:transform .15s}
+.mock-banner:hover{transform:scale(1.02)}
+.mock-banner-title{font-weight:600;font-size:15px;margin-bottom:4px}
+.mock-exam-card{padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px}
+.mock-exam-result{text-align:center;padding:20px}
+.mock-score{font-size:48px;font-weight:700;color:var(--primary)}
+.mock-score-label{font-size:14px;color:var(--text2);margin-top:4px}
+.mock-wrong-list{margin-top:12px}
+@media(max-width:768px){
+  .log-form{flex-direction:column}
+  .log-input{width:100%}
+  .chart-container{height:160px}
+  .wrong-photo,.wrong-photo-add{width:52px;height:52px}
+}
+@media(prefers-color-scheme:dark){
+  .log-table tr:hover td{background:#1a2744}
+  .log-table td{border-color:#2d3748}
+  .chart-tab{background:#1a1a2e;border-color:#2d3748}
+  .wrong-photo-add{background:#1a1a2e}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== PWA 安装横幅 ===== -->
+<div class="install-banner" id="installBanner">
+  <span>📱 添加到主屏幕，随时随地学习</span>
+  <button class="close-banner" onclick="document.getElementById('installBanner').classList.remove('show')">✕</button>
+</div>
+
+<!-- ===== 首次设置 ===== -->
+<div class="setup-overlay" id="setupPage">
+  <div class="setup-card">
+    <div class="setup-title">考研备考助手</div>
+    <div class="setup-sub">选择你的考试科目，自动生成专属日程</div>
+
+    <div class="setup-school">
+      <label class="setup-label">目标院校/专业（选填）</label>
+      <input class="setup-input" id="setupSchool" placeholder="如：中南财经政法大学 · 应用统计">
+    </div>
+
+    <div class="setup-group">
+      <label class="setup-label">数学科目</label>
+      <div class="setup-options" data-key="math">
+        <div class="setup-opt" data-val="数学一">数学一</div>
+        <div class="setup-opt" data-val="数学二">数学二</div>
+        <div class="setup-opt" data-val="数学三">数学三</div>
+      </div>
+    </div>
+
+    <div class="setup-group">
+      <label class="setup-label">英语科目</label>
+      <div class="setup-options" data-key="eng">
+        <div class="setup-opt" data-val="英语一">英语一</div>
+        <div class="setup-opt" data-val="英语二">英语二</div>
+      </div>
+    </div>
+
+    <div class="setup-group">
+      <label class="setup-label">专业课</label>
+      <input class="setup-input" id="setupMajor" placeholder="如：831应用统计学、408计算机综合">
+    </div>
+
+    <div class="setup-group">
+      <label class="setup-label">是否考政治</label>
+      <div class="setup-options" data-key="pol">
+        <div class="setup-opt selected" data-val="yes">考</div>
+        <div class="setup-opt" data-val="no">不考</div>
+      </div>
+    </div>
+
+    <button class="setup-btn" id="setupBtn" onclick="finishSetup()">开始学习</button>
+  </div>
+</div>
+
+<!-- ===== 主界面 ===== -->
+<div id="mainApp" style="display:none">
+  <div class="header">
+    <div class="header-inner">
+      <div>
+        <h1 id="appTitle">考研备考助手</h1>
+        <div class="subtitle" id="appSubtitle"></div>
+      </div>
+      <div class="header-right">
+        <div class="streak" id="streakBadge">连续打卡 0 天</div>
+        <button class="settings-btn" onclick="openSettings()" title="设置">⚙</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-tab="schedule">日程</button>
+    <button class="nav-tab" data-tab="materials">资料</button>
+    <button class="nav-tab" data-tab="quiz">抽题</button>
+    <button class="nav-tab" data-tab="stats">统计</button>
+  </div>
+
+  <div class="container">
+    <div class="section active" id="schedule">
+      <div class="card">
+        <div class="card-header">今日进度 <span id="progressPercent">0%</span></div>
+        <div class="progress-bar-container"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+        <div class="progress-text" id="progressText">完成 0 / 0 个任务</div>
+      </div>
+      <div class="card">
+        <div class="card-header">日程安排</div>
+        <div id="scheduleList"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          每日一句 · 长难句分析
+          <span id="sentenceDate" style="font-size:12px;color:var(--text2)"></span>
+        </div>
+        <div class="daily-sentence" id="dailySentence"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          每日新闻速览
+          <span style="font-size:12px;color:var(--text2)" id="newsDate"></span>
+        </div>
+        <div class="card-body" id="dailyNews" style="padding:12px"></div>
+      </div>
+    </div>
+
+    <div class="section" id="materials">
+      <div class="card">
+        <div class="card-header">上传学习资料</div>
+        <div class="card-body">
+          <div class="upload-zone" id="uploadZone">
+            <div class="upload-icon">📁</div>
+            <div class="upload-text">点击或拖拽上传文件（支持 txt, md, pdf, 图片）</div>
+            <input type="file" id="fileInput" multiple accept=".txt,.md,.pdf,.png,.jpg,.jpeg" style="display:none">
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">我的资料库 <span id="materialCount" style="font-size:12px;color:var(--text2)">0 份</span></div>
+        <div id="materialList" style="padding:12px"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">题库管理 <button class="btn btn-primary" style="font-size:12px;padding:6px 12px" onclick="openAddQuestionModal()">+ 添加题目</button></div>
+        <div id="questionBankList" style="padding:12px"></div>
+      </div>
+    </div>
+
+    <div class="section" id="quiz">
+      <div class="card">
+        <div class="card-header">
+          随机抽题
+          <div style="display:flex;gap:8px;align-items:center">
+            <select id="quizSubjectFilter" class="form-select" style="width:auto;padding:4px 8px;font-size:12px"></select>
+            <button class="btn btn-primary" style="font-size:12px;padding:6px 12px" onclick="startQuiz()">开始抽题</button>
+          </div>
+        </div>
+        <div class="card-body" id="quizArea">
+          <div class="empty-state"><div class="empty-icon">📝</div><div class="empty-text">点击"开始抽题"开始练习<br>请先在题库中添加题目</div></div>
+        </div>
+      </div>
+      <div class="card"><div class="card-header">错题本</div><div id="wrongBook" style="padding:12px"></div></div>
+      <div class="card"><div class="card-header">答题记录</div><div id="quizHistory" style="padding:12px"></div></div>
+    </div>
+
+    <div class="section" id="stats">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-value" id="statTotalDays">0</div><div class="stat-label">使用天数</div></div>
+        <div class="stat-card"><div class="stat-value" id="statStreak">0</div><div class="stat-label">连续打卡</div></div>
+        <div class="stat-card"><div class="stat-value" id="statTasks">0</div><div class="stat-label">完成任务</div></div>
+        <div class="stat-card"><div class="stat-value" id="statQuizzes">0</div><div class="stat-label">答题总数</div></div>
+        <div class="stat-card"><div class="stat-value" id="statAccuracy">0%</div><div class="stat-label">正确率</div></div>
+        <div class="stat-card"><div class="stat-value" id="statWrong">0</div><div class="stat-label">错题数</div></div>
+      </div>
+      <div class="card"><div class="card-header">每日打卡记录</div><div id="checkinCalendar" style="padding:16px"></div></div>
+      <div class="card"><div class="card-header">科目学习时间分布</div><div id="subjectDistribution" style="padding:16px"></div></div>
+      <div class="card"><div class="card-header">练习记录</div><div class="card-body"><div class="log-form"><div class="log-form-row"><select class="log-select" id="logSubject"><option>数学</option><option>英语</option><option>政治</option><option>专业课</option></select><input class="log-input" id="logTotal" type="number" min="1" placeholder="做题总数"><input class="log-input" id="logCorrect" type="number" min="0" placeholder="正确数"><input class="log-input" id="logDate" type="date"><button class="log-btn log-btn-add" onclick="addLogEntry()">+ 添加记录</button></div></div><table class="log-table" id="logTable"><thead><tr><th>日期</th><th>科目</th><th>做题数</th><th>正确数</th><th>正确率</th><th></th></tr></thead><tbody id="logTbody"></tbody></table></div></div>
+      <div class="card"><div class="card-header">练习趋势</div><div class="card-body"><div class="chart-tabs"><button class="chart-tab active" onclick="renderChart('line')">正确率趋势</button><button class="chart-tab" onclick="renderChart('bar')">科目对比</button></div><div class="chart-container"><canvas id="chartCanvas"></canvas></div></div></div>
+    </div>
+  </div>
+
+  <!-- ===== 底部导航（移动端） ===== -->
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="bottom-nav-item active" data-tab="schedule">
+      <span class="bottom-nav-icon">📅</span>
+      <span>日程</span>
+    </button>
+    <button class="bottom-nav-item" data-tab="materials">
+      <span class="bottom-nav-icon">📁</span>
+      <span>资料</span>
+    </button>
+    <button class="bottom-nav-item" data-tab="quiz">
+      <span class="bottom-nav-icon">📝</span>
+      <span>抽题</span>
+    </button>
+    <button class="bottom-nav-item" data-tab="stats">
+      <span class="bottom-nav-icon">📊</span>
+      <span>统计</span>
+    </button>
+  </nav>
+</div>
+
+<!-- 添加题目 Modal -->
+<div class="modal-overlay" id="addQuestionModal">
+  <div class="modal">
+    <div class="modal-header">添加题目 <button class="modal-close" onclick="closeModal('addQuestionModal')">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">科目</label>
+        <select class="form-select" id="qSubject"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">题目类型</label>
+        <select class="form-select" id="qType"><option value="choice">选择题</option><option value="fill">填空题</option><option value="essay">简答题/论述题</option></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">题目内容</label>
+        <textarea class="form-textarea" id="qContent" placeholder="请输入题目内容..."></textarea>
+      </div>
+      <div class="form-group" id="optionsGroup">
+        <label class="form-label">选项（每行一个）</label>
+        <textarea class="form-textarea" id="qOptions" placeholder="A. 选项1&#10;B. 选项2&#10;C. 选项3&#10;D. 选项4" style="min-height:80px"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">正确答案</label>
+        <textarea class="form-textarea" id="qAnswer" placeholder="请输入正确答案..." style="min-height:60px"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">提示/解题思路（可选）</label>
+        <textarea class="form-textarea" id="qHint" placeholder="当学生表示不会时，显示的提示..." style="min-height:60px"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('addQuestionModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveQuestion()">保存题目</button>
+    </div>
+  </div>
+</div>
+
+<!-- 设置 Modal -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <div class="modal-header">考试设置 <button class="modal-close" onclick="closeModal('settingsModal')">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">目标院校/专业</label><input class="setup-input" id="setSchool"></div>
+      <div class="form-group"><label class="form-label">数学科目</label><select class="form-select" id="setMath"><option>数学一</option><option>数学二</option><option>数学三</option></select></div>
+      <div class="form-group"><label class="form-label">英语科目</label><select class="form-select" id="setEng"><option>英语一</option><option>英语二</option></select></div>
+      <div class="form-group"><label class="form-label">专业课名称</label><input class="setup-input" id="setMajor"></div>
+      <div class="form-group"><label class="form-label">是否考政治</label><select class="form-select" id="setPol"><option value="yes">考</option><option value="no">不考</option></select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('settingsModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveSettings()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 模拟考试 Modal -->
+<div class="modal-overlay" id="mockExamModal">
+  <div class="modal">
+    <div class="modal-header">错题模拟卷 <button class="modal-close" onclick="closeModal('mockExamModal')">&times;</button></div>
+    <div class="modal-body" id="mockExamBody"></div>
+    <div class="modal-footer" id="mockExamFooter"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== STATE =====
+function getState(){
+  const def={completed:{},streak:0,totalTasksCompleted:0,materials:[],questions:[],quizHistory:[],wrongQuestions:{},wrongImages:{},practiceLog:[],firstUse:null,config:null,scheduleVersion:3};
+  try{const s=JSON.parse(localStorage.getItem('studyPlannerState')||'{}');return{...def,...s}}catch{return def}
+}
+function save(s){localStorage.setItem('studyPlannerState',JSON.stringify(s))}
+function todayStr(){return new Date().toISOString().slice(0,10)}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+
+// ===== CONFIG =====
+const DEFAULT_CONFIG={math:'数学三',eng:'英语一',major:'专业课',pol:'yes',school:''};
+
+function getConfig(){
+  const s=getState();
+  return s.config||DEFAULT_CONFIG;
+}
+
+// ===== DEFAULT QUESTIONS =====
+function loadDefaultQuestions(c){
+  const q=[];
+
+  // ===== 数学三 =====
+  q.push(
+    {id:'dq1',subject:c.math,type:'choice',content:'函数f(x)在点x₀处可导是f(x)在点x₀处连续的（）条件。',options:['A. 充分非必要','B. 必要非充分','C. 充要','D. 既非充分也非必要'],answer:'A. 充分非必要',hint:'可导一定连续，但连续不一定可导。'},
+    {id:'dq2',subject:c.math,type:'choice',content:'设f(x)在[a,b]上连续，在(a,b)内可导，且f(a)=f(b)，则至少存在一点ξ∈(a,b)，使得（）。',options:['A. f\'(ξ)=0','B. f\'(ξ)=1','C. f(ξ)=0','D. f(ξ)=f(a)'],answer:'A. f\'(ξ)=0',hint:'这是罗尔定理的结论。'},
+    {id:'dq3',subject:c.math,type:'choice',content:'不定积分∫eˣsinx dx的结果是（）。',options:['A. eˣ(sinx-cosx)/2+C','B. eˣ(sinx+cosx)/2+C','C. eˣcosx+C','D. eˣsinx+C'],answer:'A. eˣ(sinx-cosx)/2+C',hint:'用分部积分法，设I=∫eˣsinx dx，两次分部积分后解方程。'},
+    {id:'dq4',subject:c.math,type:'choice',content:'级数∑(n=1,∞) 1/nᵖ 收敛的条件是（）。',options:['A. p>1','B. p≥1','C. p<1','D. p≤1'],answer:'A. p>1',hint:'这是p-级数，p>1收敛，p≤1发散。'},
+    {id:'dq5',subject:c.math,type:'fill',content:'设y=xˣ(x>0)，则dy/dx = ______',options:[],answer:'xˣ(lnx+1)',hint:'取对数求导法：lny=xlnx，两边对x求导。'},
+    {id:'dq6',subject:c.math,type:'fill',content:'曲线y=e⁻ˣ² 的拐点坐标为______',options:[],answer:'(±√(1/2), e^(-1/2))',hint:'求二阶导数y\'\'=0，解出x值。y\'\'=e⁻ˣ²(4x²-2)=0。'},
+    {id:'dq7',subject:c.math,type:'choice',content:'矩阵A为n阶方阵，|A|=0是A不可逆的（）条件。',options:['A. 充分','B. 必要','C. 充要','D. 既非充分也非必要'],answer:'C. 充要',hint:'方阵可逆⟺行列式不为零。'},
+    {id:'dq8',subject:c.math,type:'choice',content:'设A是m×n矩阵，齐次方程组Ax=0有非零解的充要条件是（）。',options:['A. r(A)<m','B. r(A)<n','C. m<n','D. A的列向量线性相关'],answer:'B. r(A)<n',hint:'Ax=0有非零解⟺r(A)<n（未知数个数）。'},
+    {id:'dq9',subject:c.math,type:'essay',content:'简述拉格朗日中值定理的内容及其几何意义。',options:[],answer:'定理内容：设f(x)在[a,b]上连续，在(a,b)内可导，则至少存在一点ξ∈(a,b)，使得f\'(ξ)=[f(b)-f(a)]/(b-a)。\n几何意义：在光滑曲线弧上至少有一点的切线平行于连接两端点的割线。',hint:'想想罗尔定理的推广形式。'},
+    {id:'dq10',subject:c.math,type:'choice',content:'二重积分∬_D f(x,y)dσ中，D为x²+y²≤1，则∬_D (x²+y²)dσ=（）。',options:['A. π/2','B. π','C. 2π','D. π/4'],answer:'A. π/2',hint:'用极坐标变换：x=rcosθ, y=rsinθ, dσ=rdrdθ，积分变为∫₀²πdθ∫₀¹r³dr。'},
+  );
+
+  // ===== 英语一 =====
+  q.push(
+    {id:'de1',subject:c.eng,type:'choice',content:'The professor\'s lecture was so _____ that many students fell asleep.',options:['A. monotonous','B. ambitious','C. generous','D. harmonious'],answer:'A. monotonous',hint:'monotonous意为"单调乏味的"，与学生睡着的语境一致。'},
+    {id:'de2',subject:c.eng,type:'choice',content:'The word "elaborate" in "She declined to elaborate on her plan" most likely means _____.',options:['A. simplify','B. explain in detail','C. abandon','D. criticize'],answer:'B. explain in detail',hint:'elaborate作动词意为"详细阐述"。'},
+    {id:'de3',subject:c.eng,type:'fill',content:'He was accused of _____ (neglect) his duty as a manager.',options:[],answer:'neglecting',hint:'accuse sb of doing sth，介词of后接动名词。'},
+    {id:'de4',subject:c.eng,type:'choice',content:'_____ the storm, the football match continued.',options:['A. In spite of','B. Despite of','C. Although','D. Even'],answer:'A. In spite of',hint:'in spite of=despite，后接名词。注意despite后不加of。B选项"despite of"是错误搭配。'},
+    {id:'de5',subject:c.eng,type:'choice',content:'It is essential that every student _____ a foreign language.',options:['A. learns','B. learn','C. learned','D. will learn'],answer:'B. learn',hint:'It is essential that...后用虚拟语气，谓语动词用原形(should)+动词原形。'},
+    {id:'de6',subject:c.eng,type:'essay',content:'翻译：The Internet has revolutionized the way people communicate, breaking down geographical barriers and enabling instant information sharing across the globe.',options:[],answer:'互联网彻底改变了人们的交流方式，打破了地理障碍，使得全球范围内的即时信息共享成为可能。',hint:'注意revolutionize译为"彻底改变"，breaking down译为"打破"，enabling译为"使得...成为可能"。'},
+    {id:'de7',subject:c.eng,type:'choice',content:'The committee has made a decision, but I doubt _____ it will be accepted by all parties.',options:['A. that','B. whether','C. what','D. which'],answer:'B. whether',hint:'doubt在肯定句中接whether，表示"是否"的怀疑。'},
+    {id:'de8',subject:c.eng,type:'choice',content:'"Under the weather" is an idiom that means _____.',options:['A. experiencing bad weather','B. feeling ill','C. being outdoors','D. climate change'],answer:'B. feeling ill',hint:'under the weather是固定习语，意为"身体不适"。'},
+  );
+
+  // ===== 政治 =====
+  if(c.pol==='yes'){
+    q.push(
+      {id:'dp1',subject:'政治',type:'choice',content:'马克思主义哲学的直接理论来源是（）。',options:['A. 古希腊哲学','B. 德国古典哲学','C. 英国经验主义','D. 法国启蒙思想'],answer:'B. 德国古典哲学',hint:'马克思主义三大来源：德国古典哲学、英国古典政治经济学、英法空想社会主义。'},
+      {id:'dp2',subject:'政治',type:'choice',content:'唯物辩证法的实质和核心是（）。',options:['A. 质量互变规律','B. 否定之否定规律','C. 对立统一规律','D. 因果规律'],answer:'C. 对立统一规律',hint:'对立统一规律是唯物辩证法的实质和核心，揭示了事物发展的根本动力。'},
+      {id:'dp3',subject:'政治',type:'choice',content:'实践是检验真理的唯一标准，这主要是因为（）。',options:['A. 实践具有普遍性','B. 实践具有社会历史性','C. 实践具有直接现实性','D. 实践具有主观能动性'],answer:'C. 实践具有直接现实性',hint:'实践能把主观认识变为客观现实，因此是检验真理的唯一标准。'},
+      {id:'dp4',subject:'政治',type:'choice',content:'毛泽东思想活的灵魂的三个基本方面是（）。',options:['A. 实事求是、群众路线、独立自主','B. 实事求是、解放思想、与时俱进','C. 理论联系实际、密切联系群众、批评与自我批评','D. 统一战线、武装斗争、党的建设'],answer:'A. 实事求是、群众路线、独立自主',hint:'C是三大优良作风，D是三大法宝。'},
+      {id:'dp5',subject:'政治',type:'fill',content:'社会主义初级阶段的主要矛盾是人民日益增长的物质文化需要同落后的______之间的矛盾。（十九大前表述）',options:[],answer:'社会生产',hint:'注意区分十九大后的新表述：人民日益增长的美好生活需要和不平衡不充分的发展之间的矛盾。'},
+      {id:'dp6',subject:'政治',type:'choice',content:'新民主主义革命的三大经济纲领是（）。',options:['A. 没收封建地主阶级的土地归农民所有','B. 没收四大家族官僚资本归新民主主义国家所有','C. 保护民族工商业','D. 以上都是'],answer:'D. 以上都是',hint:'三大经济纲领：没收封建地主阶级的土地归农民所有、没收四大家族官僚资本归新民主主义国家所有、保护民族工商业。'},
+      {id:'dp7',subject:'政治',type:'choice',content:'中国特色社会主义最本质的特征是（）。',options:['A. 人民当家作主','B. 中国共产党领导','C. 公有制为主体','D. 依法治国'],answer:'B. 中国共产党领导',hint:'习近平总书记明确指出：中国特色社会主义最本质的特征是中国共产党领导。'},
+      {id:'dp8',subject:'政治',type:'essay',content:'简述量变和质变的辩证关系。',options:[],answer:'1)量变是质变的必要准备：没有量的积累就不会有质的飞跃。\n2)质变是量变的必然结果：量变达到一定程度必然引起质变。\n3)质变又引起新的量变：事物在新质的基础上开始新的量变。\n4)量变和质变相互渗透：在总的量变过程中有阶段性和局部性的部分质变。',hint:'从"准备→结果→新的开始→相互渗透"四个层次展开。'},
+    );
+  }
+
+  // ===== 专业课（应用统计） =====
+  q.push(
+    {id:'dm1',subject:c.major,type:'choice',content:'下列哪个统计量不受极端值影响？',options:['A. 均值','B. 中位数','C. 标准差','D. 极差'],answer:'B. 中位数',hint:'中位数是位置平均数，只与中间位置有关，不受极端值影响。均值、标准差、极差都受极端值影响。'},
+    {id:'dm2',subject:c.major,type:'choice',content:'在假设检验中，犯第一类错误是指（）。',options:['A. H₀为真时拒绝H₀','B. H₀为假时接受H₀','C. H₁为真时拒绝H₁','D. H₁为假时接受H₁'],answer:'A. H₀为真时拒绝H₀',hint:'第一类错误（α错误）：弃真错误，即原假设为真却拒绝了。第二类错误（β错误）：取伪错误。'},
+    {id:'dm3',subject:c.major,type:'choice',content:'简单线性回归模型中，判定系数R²的取值范围是（）。',options:['A. [0,1]','B. [-1,1]','C. (-∞,+∞)','D. [0,+∞)'],answer:'A. [0,1]',hint:'R²=SSR/SST，表示回归平方和占总平方和的比例，取值在0到1之间。'},
+    {id:'dm4',subject:c.major,type:'fill',content:'设总体X~N(μ,σ²)，X̄为样本均值，则X̄的期望E(X̄)=______',options:[],answer:'μ',hint:'样本均值的期望等于总体均值，即E(X̄)=μ，这是无偏性的体现。'},
+    {id:'dm5',subject:c.major,type:'choice',content:'下列关于p值的说法，正确的是（）。',options:['A. p值越小，拒绝H₀的理由越充分','B. p值就是犯第一类错误的概率','C. p值大于显著性水平α时拒绝H₀','D. p值与样本量无关'],answer:'A. p值越小，拒绝H₀的证据越强',hint:'p值是在H₀为真的条件下，观察到当前或更极端结果的概率。p值<α时拒绝H₀。'},
+    {id:'dm6',subject:c.major,type:'choice',content:'样本方差S²=Σ(Xᵢ-X̄)²/(n-1)中分母用n-1而不是n的原因是（）。',options:['A. 计算方便','B. 无偏性','C. 一致性','D. 有效性'],answer:'B. 无偏性',hint:'用n-1是为了使S²成为σ²的无偏估计量，即E(S²)=σ²。'},
+    {id:'dm7',subject:c.major,type:'essay',content:'简述中心极限定理的内容及其实际意义。',options:[],answer:'内容：设X₁,X₂,...,Xₙ是独立同分布的随机变量序列，E(Xᵢ)=μ, D(Xᵢ)=σ²，则当n充分大时，样本均值X̄近似服从正态分布N(μ,σ²/n)。\n\n实际意义：\n1)无论总体服从什么分布，只要样本量足够大，样本均值就近似正态分布\n2)为大样本统计推断提供了理论基础\n3)解释了为什么正态分布在统计学中如此重要',hint:'核心思想是"大量独立随机变量之和近似正态分布"。'},
+    {id:'dm8',subject:c.major,type:'choice',content:'在方差分析(ANOVA)中，F统计量等于（）。',options:['A. 组间方差/组内方差','B. 组内方差/组间方差','C. 总方差/组间方差','D. 组间方差/总方差'],answer:'A. 组间方差/组内方差',hint:'F=MSA/MSE=组间均方/组内均方，用于检验各组均值是否相等。'},
+    {id:'dm9',subject:c.major,type:'choice',content:'最大似然估计(MLE)的基本思想是（）。',options:['A. 使样本出现概率最大的参数值','B. 使误差平方和最小的参数值','C. 使先验概率最大的参数值','D. 使后验概率最大的参数值'],answer:'A. 使样本出现概率最大的参数值',hint:'MLE选择使似然函数L(θ)最大的参数值作为估计值。B是最小二乘法，D是MAP估计。'},
+    {id:'dm10',subject:c.major,type:'fill',content:'设X~P(λ)（泊松分布），则E(X)=______，D(X)=______',options:[],answer:'λ, λ',hint:'泊松分布的期望和方差都等于参数λ。'},
+    {id:'dm11',subject:c.major,type:'choice',content:'在卡方检验中，列联表的自由度计算公式为（）。',options:['A. (行数-1)×(列数-1)','B. 行数×列数','C. 行数+列数-2','D. 样本量-1'],answer:'A. (行数-1)×(列数-1)',hint:'r×c列联表的自由度df=(r-1)(c-1)。'},
+    {id:'dm12',subject:c.major,type:'essay',content:'简述置信区间的含义，并解释95%置信水平的含义。',options:[],answer:'置信区间是由样本数据构造的一个区间估计，用于估计总体参数的可能范围。\n\n95%置信水平的含义：如果反复抽样并构造置信区间，在所有这些区间中，约有95%的区间会包含真实的参数值。\n\n注意：不是"参数有95%的概率落在这个区间内"，参数是固定的，区间是随机的。',hint:'常见误区是说"参数有95%概率在区间内"，这是错误的频率学派解释。'},
+  );
+
+  return q;
+}
+
+// ===== DAILY SENTENCE POOL (100 sentences, 20 days × 5/day) =====
+const SENTENCES=[
+// --- Day 1: 科技与社会 ---
+{s:"The unprecedented pace of technological innovation has outstripped the ability of regulatory frameworks to keep pace, creating a governance vacuum that poses risks to consumers and markets alike.",t:"技术创新的空前速度已经超越了监管框架跟上步伐的能力，造成了一个对消费者和市场都构成风险的治理真空。",g:"主句+现在分词短语+定语从句",v:[{w:"unprecedented",p:"adj.",m:"空前的"},{w:"outstrip",p:"v.",m:"超越，超过"},{w:"regulatory",p:"adj.",m:"监管的"},{w:"framework",p:"n.",m:"框架"},{w:"governance",p:"n.",m:"治理"},{w:"vacuum",p:"n.",m:"真空"}],c:"[主语] The unprecedented pace of technological innovation\n  └ unprecedented为前置定语\n  └ of technological innovation为后置定语\n[谓语] has outstripped\n[宾语] the ability of regulatory frameworks to keep pace\n  └ of regulatory frameworks作后置定语\n  └ to keep pace为不定式作后置定语\n[状语] creating a governance vacuum（现在分词短语作结果状语）\n  └ that poses risks...为定语从句修饰vacuum"},
+{s:"Artificial intelligence, once confined to the realm of science fiction, has permeated virtually every sector of the economy, from healthcare diagnostics to financial risk assessment.",t:"人工智能，曾经局限于科幻小说领域，已经渗透到经济的几乎每个部门，从医疗诊断到金融风险评估。",g:"非限制性定语+介词短语",v:[{w:"confine",p:"v.",m:"限制"},{w:"realm",p:"n.",m:"领域"},{w:"permeate",p:"v.",m:"渗透"},{w:"virtually",p:"adv.",m:"几乎"},{w:"diagnostics",p:"n.",m:"诊断学"},{w:"assessment",p:"n.",m:"评估"}],c:"[主语] Artificial intelligence\n[插入语] once confined to the realm of science fiction（过去分词短语作非限制性定语）\n[谓语] has permeated\n[宾语] virtually every sector of the economy\n[状语] from healthcare diagnostics to financial risk assessment（介词短语作范围状语）"},
+{s:"The proliferation of social media platforms has fundamentally altered the dynamics of public discourse, enabling the rapid dissemination of information while simultaneously amplifying misinformation.",t:"社交媒体平台的激增从根本上改变了公共话语的动态，实现了信息的快速传播，同时也放大了错误信息。",g:"主句+并列现在分词短语",v:[{w:"proliferation",p:"n.",m:"激增，扩散"},{w:"dynamics",p:"n.",m:"动态"},{w:"discourse",p:"n.",m:"话语，论述"},{w:"dissemination",p:"n.",m:"传播"},{w:"simultaneously",p:"adv.",m:"同时"},{w:"amplify",p:"v.",m:"放大"}],c:"[主语] The proliferation of social media platforms\n[谓语] has altered\n[宾语] the dynamics of public discourse\n[状语1] enabling the rapid dissemination of information（现在分词短语）\n[状语2] while simultaneously amplifying misinformation（让步/对比状语）"},
+{s:"Cybersecurity threats have evolved from isolated incidents perpetrated by individual hackers to sophisticated campaigns orchestrated by state-sponsored entities, necessitating a paradigm shift in defensive strategies.",t:"网络安全威胁已经从个人黑客实施的孤立事件演变为由国家支持的实体策划的复杂攻击，这要求防御策略发生范式转变。",g:"主句+过去分词短语+现在分词短语",v:[{w:"perpetrate",p:"v.",m:"实施（犯罪）"},{w:"sophisticated",p:"adj.",m:"复杂的，精密的"},{w:"orchestrate",p:"v.",m:"策划"},{w:"entity",p:"n.",m:"实体"},{w:"necessitate",p:"v.",m:"使成为必要"},{w:"paradigm",p:"n.",m:"范式"}],c:"[主语] Cybersecurity threats\n[谓语] have evolved\n[状语] from isolated incidents ... to sophisticated campaigns\n  └ perpetrated by individual hackers为过去分词短语修饰incidents\n  └ orchestrated by state-sponsored entities修饰campaigns\n[结果状语] necessitating a paradigm shift（现在分词短语）"},
+{s:"The convergence of big data analytics, cloud computing, and the Internet of Things has created unprecedented opportunities for businesses to optimize operations, yet it has simultaneously raised profound questions about data privacy and individual autonomy.",t:"大数据分析、云计算和物联网的融合为企业优化运营创造了前所未有的机遇，但同时也引发了关于数据隐私和个人自主权的深刻问题。",g:"并列主句+转折",v:[{w:"convergence",p:"n.",m:"融合"},{w:"analytics",p:"n.",m:"分析学"},{w:"optimize",p:"v.",m:"优化"},{w:"simultaneously",p:"adv.",m:"同时"},{w:"profound",p:"adj.",m:"深刻的"},{w:"autonomy",p:"n.",m:"自主权"}],c:"[主语] The convergence of big data analytics, cloud computing, and the Internet of Things\n[谓语1] has created\n[宾语1] unprecedented opportunities for businesses to optimize operations\n[连词] yet\n[谓语2] has raised\n[宾语2] profound questions about data privacy and individual autonomy"},
+
+// --- Day 2: 教育与社会流动性 ---
+{s:"The widening gap in educational attainment between affluent and disadvantaged students threatens to entrench social inequality, as access to quality schooling increasingly correlates with socioeconomic status.",t:"富裕和弱势学生之间教育成就差距的扩大威胁着社会不平等的固化，因为获得优质教育的机会日益与社会经济地位相关。",g:"主句+原因状语从句",v:[{w:"attainment",p:"n.",m:"成就"},{w:"affluent",p:"adj.",m:"富裕的"},{w:"entrench",p:"v.",m:"使根深蒂固"},{w:"correlate",p:"v.",m:"相关"},{w:"socioeconomic",p:"adj.",m:"社会经济的"}],c:"[主语] The widening gap in educational attainment between affluent and disadvantaged students\n  └ between...and...为介词短语作后置定语\n[谓语] threatens\n[宾语] to entrench social inequality\n[原因状语] as access to quality schooling increasingly correlates with socioeconomic status"},
+{s:"Proponents of standardized testing argue that it provides an objective metric for evaluating student performance, while critics contend that it narrows the curriculum and disadvantages students from diverse cultural backgrounds.",t:"标准化测试的支持者认为它提供了评估学生表现的客观指标，而批评者则认为它缩窄了课程范围并使来自不同文化背景的学生处于不利地位。",g:"并列句+宾语从句",v:[{w:"proponent",p:"n.",m:"支持者"},{w:"metric",p:"n.",m:"指标"},{w:"contend",p:"v.",m:"主张，认为"},{w:"narrow",p:"v.",m:"使变窄"},{w:"curriculum",p:"n.",m:"课程"},{w:"disadvantage",p:"v.",m:"使处于不利地位"}],c:"[主语1] Proponents of standardized testing\n[谓语1] argue\n[宾语从句1] that it provides an objective metric for evaluating student performance\n[连词] while\n[主语2] critics\n[谓语2] contend\n[宾语从句2] that it narrows the curriculum and disadvantages students"},
+{s:"The rise of online learning platforms, accelerated by the pandemic, has democratized access to education on an unprecedented scale, yet concerns persist regarding the quality of instruction and the digital divide.",t:"在线学习平台的兴起，因疫情而加速，以前所未有的规模普及了教育机会，但关于教学质量和数字鸿沟的担忧仍然存在。",g:"主句+过去分词插入语+转折",v:[{w:"democratize",p:"v.",m:"使民主化，普及"},{w:"unprecedented",p:"adj.",m:"空前的"},{w:"persist",p:"v.",m:"持续存在"},{w:"regarding",p:"prep.",m:"关于"},{w:"digital divide",p:"n.",m:"数字鸿沟"}],c:"[主语] The rise of online learning platforms\n[插入语] accelerated by the pandemic（过去分词短语）\n[谓语] has democratized\n[宾语] access to education\n[状语] on an unprecedented scale\n[转折句] yet concerns persist regarding the quality of instruction and the digital divide"},
+{s:"Critics of the current education system argue that an overemphasis on rote memorization stifles creativity and fails to equip students with the critical thinking skills demanded by the modern workforce.",t:"当前教育体系的批评者认为，过度强调死记硬背扼杀了创造力，未能赋予学生现代劳动力所要求的批判性思维技能。",g:"主句+宾语从句+过去分词后置定语",v:[{w:"overemphasis",p:"n.",m:"过度强调"},{w:"rote",p:"adj./n.",m:"死记硬背的"},{w:"stifle",p:"v.",m:"扼杀"},{w:"equip",p:"v.",m:"装备，赋予"},{w:"critical thinking",p:"n.",m:"批判性思维"},{w:"workforce",p:"n.",m:"劳动力"}],c:"[主语] Critics of the current education system\n[谓语] argue\n[宾语从句] that an overemphasis on rote memorization stifles creativity and fails to equip students\n  └ with the critical thinking skills为介词短语\n  └ demanded by the modern workforce为过去分词短语作后置定语"},
+{s:"Research suggests that early childhood education yields substantial long-term benefits, not only in terms of academic achievement but also in improved health outcomes and reduced involvement in criminal activity.",t:"研究表明，幼儿教育产生了巨大的长期收益，不仅体现在学业成就方面，还体现在健康结果的改善和犯罪活动参与的减少。",g:"宾语从句+并列状语",v:[{w:"yield",p:"v.",m:"产生"},{w:"substantial",p:"adj.",m:"大量的"},{w:"in terms of",p:"prep.",m:"在...方面"},{w:"outcome",p:"n.",m:"结果"},{w:"involvement",p:"n.",m:"参与"},{w:"criminal",p:"adj.",m:"犯罪的"}],c:"[主语] Research\n[谓语] suggests\n[宾语从句] that early childhood education yields substantial long-term benefits\n[状语1] not only in terms of academic achievement\n[状语2] but also in improved health outcomes and reduced involvement in criminal activity"},
+
+// --- Day 3: 经济与全球化 ---
+{s:"The inexorable march of globalization has lifted hundreds of millions out of poverty, yet its benefits have been unevenly distributed, exacerbating inequality both within and between nations.",t:"全球化不可阻挡的进程使数亿人摆脱了贫困，但其利益分配不均，加剧了国家内部和国家之间的不平等。",g:"主句+转折+现在分词",v:[{w:"inexorable",p:"adj.",m:"不可阻挡的"},{w:"march",p:"n.",m:"进程"},{w:"unevenly",p:"adv.",m:"不均匀地"},{w:"distribute",p:"v.",m:"分配"},{w:"exacerbate",p:"v.",m:"加剧"},{w:"inequality",p:"n.",m:"不平等"}],c:"[主语] The inexorable march of globalization\n[谓语1] has lifted\n[宾语1] hundreds of millions out of poverty\n[转折] yet its benefits have been unevenly distributed\n[结果状语] exacerbating inequality both within and between nations"},
+{s:"Central banks face the delicate task of balancing inflation control with economic growth, a challenge that becomes particularly acute during periods of global financial uncertainty.",t:"央行面临着平衡通胀控制与经济增长的微妙任务，这一挑战在全球金融不确定时期变得尤为严峻。",g:"主句+同位语+定语从句",v:[{w:"delicate",p:"adj.",m:"微妙的"},{w:"inflation",p:"n.",m:"通货膨胀"},{w:"acute",p:"adj.",m:"严峻的"},{w:"uncertainty",p:"n.",m:"不确定性"}],c:"[主语] Central banks\n[谓语] face\n[宾语] the delicate task of balancing inflation control with economic growth\n  └ of balancing...为介词短语作后置定语\n[同位语] a challenge\n[定语从句] that becomes particularly acute during periods of global financial uncertainty"},
+{s:"The transition from a manufacturing-based economy to a service-oriented one has profound implications for labor markets, necessitating widespread reskilling and upskilling of the existing workforce.",t:"从以制造业为基础的经济向服务导向型经济的转型对劳动力市场有深远影响，需要对现有劳动力进行大规模的再培训和技能提升。",g:"主句+现在分词短语",v:[{w:"manufacturing",p:"n.",m:"制造业"},{w:"service-oriented",p:"adj.",m:"服务导向的"},{w:"profound",p:"adj.",m:"深远的"},{w:"implication",p:"n.",m:"影响"},{w:"reskilling",p:"n.",m:"再培训"},{w:"upskilling",p:"n.",m:"技能提升"}],c:"[主语] The transition from a manufacturing-based economy to a service-oriented one\n  └ from...to...介词短语作后置定语\n[谓语] has\n[宾语] profound implications for labor markets\n[结果状语] necessitating widespread reskilling and upskilling of the existing workforce"},
+{s:"The gig economy, characterized by short-term contracts and freelance work as opposed to permanent jobs, has expanded rapidly, raising concerns about worker protections and income stability.",t:"零工经济以短期合同和自由职业而非固定工作为特征，已经迅速扩张，引发了对劳动者保护和收入稳定性的担忧。",g:"主句+过去分词插入语+现在分词",v:[{w:"gig economy",p:"n.",m:"零工经济"},{w:"freelance",p:"adj.",m:"自由职业的"},{w:"as opposed to",p:"prep.",m:"而非"},{w:"permanent",p:"adj.",m:"永久的"},{w:"stability",p:"n.",m:"稳定性"}],c:"[主语] The gig economy\n[插入语] characterized by short-term contracts and freelance work as opposed to permanent jobs\n[谓语] has expanded\n[状语] rapidly\n[结果状语] raising concerns about worker protections and income stability"},
+{s:"Fiscal austerity measures, while often necessary to address mounting public debt, can have detrimental effects on social welfare programs, disproportionately affecting the most vulnerable segments of society.",t:"财政紧缩措施虽然通常是解决不断增加的公共债务所必需的，但可能对社会福利项目产生有害影响，不成比例地影响社会中最脆弱的群体。",g:"主句+让步插入语",v:[{w:"fiscal",p:"adj.",m:"财政的"},{w:"austerity",p:"n.",m:"紧缩"},{w:"mounting",p:"adj.",m:"不断增加的"},{w:"detrimental",p:"adj.",m:"有害的"},{w:"disproportionately",p:"adv.",m:"不成比例地"},{w:"vulnerable",p:"adj.",m:"脆弱的"}],c:"[主语] Fiscal austerity measures\n[让步插入语] while often necessary to address mounting public debt\n[谓语] can have\n[宾语] detrimental effects on social welfare programs\n[状语] disproportionately affecting the most vulnerable segments of society"},
+
+// --- Day 4: 环境与可持续发展 ---
+{s:"The scientific consensus that anthropogenic climate change poses an existential threat to human civilization has galvanized international efforts to reduce greenhouse gas emissions, though progress remains frustratingly slow.",t:"人为气候变化对人类文明构成生存威胁的科学共识已经激发了国际社会减少温室气体排放的努力，尽管进展仍然令人沮丧地缓慢。",g:"同位语从句+让步状语从句",v:[{w:"consensus",p:"n.",m:"共识"},{w:"anthropogenic",p:"adj.",m:"人为的"},{w:"existential",p:"adj.",m:"生存的"},{w:"galvanize",p:"v.",m:"激励"},{w:"emission",p:"n.",m:"排放"},{w:"frustratingly",p:"adv.",m:"令人沮丧地"}],c:"[主语] The scientific consensus\n[同位语从句] that anthropogenic climate change poses an existential threat to human civilization\n[谓语] has galvanized\n[宾语] international efforts to reduce greenhouse gas emissions\n[让步状语从句] though progress remains frustratingly slow"},
+{s:"The depletion of natural resources, coupled with a burgeoning global population, has intensified the urgency of developing sustainable alternatives to fossil fuels and non-renewable materials.",t:"自然资源的枯竭，加上不断增长的全球人口，加剧了开发化石燃料和不可再生材料的可持续替代品的紧迫性。",g:"主语+过去分词插入语",v:[{w:"depletion",p:"n.",m:"枯竭"},{w:"coupled with",p:"prep.",m:"加上"},{w:"burgeoning",p:"adj.",m:"迅速增长的"},{w:"intensify",p:"v.",m:"加剧"},{w:"urgency",p:"n.",m:"紧迫性"},{w:"sustainable",p:"adj.",m:"可持续的"}],c:"[主语] The depletion of natural resources\n[插入语] coupled with a burgeoning global population\n[谓语] has intensified\n[宾语] the urgency of developing sustainable alternatives to fossil fuels and non-renewable materials"},
+{s:"Biodiversity loss, often overshadowed by climate change in public discourse, may ultimately prove to be an equally devastating consequence of human activity on the planet.",t:"生物多样性的丧失，虽然在公共话语中常常被气候变化所掩盖，最终可能被证明是人类活动对地球同样毁灭性的后果。",g:"主句+过去分词插入语",v:[{w:"biodiversity",p:"n.",m:"生物多样性"},{w:"overshadow",p:"v.",m:"使相形见绌"},{w:"ultimately",p:"adv.",m:"最终"},{w:"devastating",p:"adj.",m:"毁灭性的"},{w:"consequence",p:"n.",m:"后果"}],c:"[主语] Biodiversity loss\n[插入语] often overshadowed by climate change in public discourse\n[谓语] may prove\n[表语] to be an equally devastating consequence of human activity on the planet"},
+{s:"The concept of a circular economy, in which waste is minimized through the continual reuse and recycling of materials, offers a compelling alternative to the traditional linear model of production and consumption.",t:"循环经济的概念——通过材料的持续再利用和回收来最小化废物——为传统的线性生产和消费模式提供了一个有说服力的替代方案。",g:"主句+非限制性定语从句",v:[{w:"circular",p:"adj.",m:"循环的"},{w:"minimize",p:"v.",m:"最小化"},{w:"continual",p:"adj.",m:"持续的"},{w:"recycling",p:"n.",m:"回收"},{w:"compelling",p:"adj.",m:"有说服力的"},{w:"linear",p:"adj.",m:"线性的"}],c:"[主语] The concept of a circular economy\n[非限制性定语从句] in which waste is minimized through the continual reuse and recycling of materials\n[谓语] offers\n[宾语] a compelling alternative to the traditional linear model of production and consumption"},
+{s:"Despite mounting evidence of the health risks associated with air pollution, many developing nations continue to prioritize industrial growth over environmental regulation, perpetuating a cycle of ecological degradation.",t:"尽管越来越多的证据表明空气污染带来的健康风险，许多发展中国家仍然优先考虑工业增长而非环境监管，使生态退化的循环持续下去。",g:"让步状语+主句+现在分词",v:[{w:"mounting",p:"adj.",m:"越来越多的"},{w:"associated with",p:"adj.",m:"与...相关的"},{w:"prioritize",p:"v.",m:"优先考虑"},{w:"perpetuate",p:"v.",m:"使持续"},{w:"ecological",p:"adj.",m:"生态的"},{w:"degradation",p:"n.",m:"退化"}],c:"[让步状语] Despite mounting evidence of the health risks associated with air pollution\n  └ associated with...为过去分词短语修饰risks\n[主语] many developing nations\n[谓语] continue to prioritize\n[宾语] industrial growth over environmental regulation\n[结果状语] perpetuating a cycle of ecological degradation"},
+
+// --- Day 5: 心理学与认知 ---
+{s:"Cognitive biases, which are systematic patterns of deviation from rationality in judgment, can significantly distort our perception of reality and lead to suboptimal decision-making in both personal and professional contexts.",t:"认知偏差——判断中系统性偏离理性的模式——可以显著扭曲我们对现实的感知，并导致在个人和职业情境中做出次优决策。",g:"非限制性定语从句+并列谓语",v:[{w:"cognitive",p:"adj.",m:"认知的"},{w:"bias",p:"n.",m:"偏差"},{w:"systematic",p:"adj.",m:"系统性的"},{w:"deviation",p:"n.",m:"偏离"},{w:"rationality",p:"n.",m:"理性"},{w:"suboptimal",p:"adj.",m:"次优的"}],c:"[主语] Cognitive biases\n[非限制性定语从句] which are systematic patterns of deviation from rationality in judgment\n[谓语1] can distort\n[宾语1] our perception of reality\n[连词] and\n[谓语2] lead to\n[宾语2] suboptimal decision-making in both personal and professional contexts"},
+{s:"The marshmallow experiment, conducted by psychologist Walter Mischel in the late 1960s, demonstrated that children who exhibited greater self-control tended to achieve better outcomes in later life.",t:"棉花糖实验——由心理学家沃尔特·米歇尔在1960年代末进行——表明表现出更强自制力的儿童往往在以后的生活中取得更好的结果。",g:"主句+过去分词插入语+宾语从句+定语从句",v:[{w:"marshmallow",p:"n.",m:"棉花糖"},{w:"exhibit",p:"v.",m:"表现"},{w:"self-control",p:"n.",m:"自制力"},{w:"tend to",p:"v.",m:"倾向于"},{w:"outcome",p:"n.",m:"结果"}],c:"[主语] The marshmallow experiment\n[插入语] conducted by psychologist Walter Mischel in the late 1960s\n[谓语] demonstrated\n[宾语从句] that children ... tended to achieve better outcomes\n  └ who exhibited greater self-control为定语从句修饰children\n  └ in later life为时间状语"},
+{s:"Neuroplasticity, the brain's remarkable ability to reorganize itself by forming new neural connections throughout life, challenges the long-held assumption that the adult brain is essentially fixed in its structure and capabilities.",t:"神经可塑性——大脑在一生中通过形成新的神经连接来自我重组的卓越能力——挑战了成年大脑在结构和能力上基本固定这一长期持有的假设。",g:"同位语+宾语从句",v:[{w:"neuroplasticity",p:"n.",m:"神经可塑性"},{w:"reorganize",p:"v.",m:"重组"},{w:"neural",p:"adj.",m:"神经的"},{w:"connection",p:"n.",m:"连接"},{w:"essentially",p:"adv.",m:"基本地"},{w:"capability",p:"n.",m:"能力"}],c:"[主语] Neuroplasticity\n[同位语] the brain's remarkable ability to reorganize itself by forming new neural connections throughout life\n[谓语] challenges\n[宾语] the long-held assumption\n[同位语从句] that the adult brain is essentially fixed in its structure and capabilities"},
+{s:"Confirmation bias, the tendency to search for and interpret information in a way that confirms one's preexisting beliefs, is one of the most pervasive and difficult-to-overcome cognitive errors identified by behavioral psychologists.",t:"确认偏差——以确认自己先入为主的信念的方式搜索和解释信息的倾向——是行为心理学家发现的最普遍且最难克服的认知错误之一。",g:"同位语+被动语态",v:[{w:"confirmation bias",p:"n.",m:"确认偏差"},{w:"preexisting",p:"adj.",m:"先存在的"},{w:"pervasive",p:"adj.",m:"普遍的"},{w:"overcome",p:"v.",m:"克服"},{w:"behavioral",p:"adj.",m:"行为的"}],c:"[主语] Confirmation bias\n[同位语] the tendency to search for and interpret information in a way that confirms one's preexisting beliefs\n  └ that confirms...为定语从句修饰way\n[谓语] is\n[表语] one of the most pervasive and difficult-to-overcome cognitive errors\n  └ identified by behavioral psychologists为过去分词短语作后置定语"},
+{s:"The availability heuristic, whereby people assess the probability of events based on how easily examples come to mind, can lead to systematic overestimation of risks associated with dramatic but statistically rare occurrences.",t:"可得性启发——人们根据事例进入脑海的容易程度来评估事件概率的方式——可能导致系统性高估与戏剧性但统计上罕见的事件相关的风险。",g:"主句+非限制性定语从句",v:[{w:"heuristic",p:"n.",m:"启发法"},{w:"whereby",p:"adv.",m:"借此"},{w:"assess",p:"v.",m:"评估"},{w:"probability",p:"n.",m:"概率"},{w:"overestimation",p:"n.",m:"高估"},{w:"occurrence",p:"n.",m:"事件"}],c:"[主语] The availability heuristic\n[非限制性定语从句] whereby people assess the probability of events based on how easily examples come to mind\n  └ based on...为介词短语作方式状语\n  └ how easily...为宾语从句\n[谓语] can lead to\n[宾语] systematic overestimation of risks associated with dramatic but statistically rare occurrences"},
+
+// --- Day 6: 医学与公共卫生 ---
+{s:"The emergence of antibiotic-resistant bacteria, often referred to as superbugs, represents one of the most pressing public health challenges of the twenty-first century, threatening to render many common infections untreatable.",t:"抗生素耐药菌——通常被称为超级细菌——的出现是二十一世纪最紧迫的公共卫生挑战之一，威胁着使许多常见感染变得无法治疗。",g:"主句+过去分词插入语+现在分词",v:[{w:"emergence",p:"n.",m:"出现"},{w:"antibiotic-resistant",p:"adj.",m:"抗生素耐药的"},{w:"superbug",p:"n.",m:"超级细菌"},{w:"pressing",p:"adj.",m:"紧迫的"},{w:"render",p:"v.",m:"使变得"},{w:"untreatable",p:"adj.",m:"无法治疗的"}],c:"[主语] The emergence of antibiotic-resistant bacteria\n[插入语] often referred to as superbugs\n[谓语] represents\n[宾语] one of the most pressing public health challenges of the twenty-first century\n[结果状语] threatening to render many common infections untreatable"},
+{s:"The development of mRNA vaccine technology, which was accelerated dramatically during the COVID-19 pandemic, has opened new avenues for the treatment of diseases previously considered intractable, including certain forms of cancer.",t:"mRNA疫苗技术的发展——在COVID-19大流行期间被大幅加速——为治疗先前被认为难以治愈的疾病开辟了新途径，包括某些形式的癌症。",g:"非限制性定语从句+过去分词后置定语",v:[{w:"mRNA",p:"n.",m:"信使核糖核酸"},{w:"dramatically",p:"adv.",m:"大幅地"},{w:"avenue",p:"n.",m:"途径"},{w:"intractable",p:"adj.",m:"难治的"}],c:"[主语] The development of mRNA vaccine technology\n[非限制性定语从句] which was accelerated dramatically during the COVID-19 pandemic\n[谓语] has opened\n[宾语] new avenues for the treatment of diseases previously considered intractable\n  └ previously considered intractable为过去分词短语修饰diseases\n[同位语] including certain forms of cancer"},
+{s:"Telemedicine, while unable to fully replace in-person consultations, has proven invaluable in extending healthcare access to rural and underserved communities where specialist medical services are scarce.",t:"远程医疗虽然无法完全取代面对面诊疗，但在将医疗保健扩展到专科医疗服务稀缺的农村和欠发达社区方面已被证明是无价的。",g:"主句+让步插入语+定语从句",v:[{w:"telemedicine",p:"n.",m:"远程医疗"},{w:"consultation",p:"n.",m:"诊疗"},{w:"invaluable",p:"adj.",m:"无价的"},{w:"underserved",p:"adj.",m:"服务不足的"},{w:"scarce",p:"adj.",m:"稀缺的"}],c:"[主语] Telemedicine\n[让步插入语] while unable to fully replace in-person consultations\n[谓语] has proven\n[表语] invaluable in extending healthcare access to rural and underserved communities\n[定语从句] where specialist medical services are scarce"},
+{s:"The placebo effect, whereby patients experience genuine physiological improvements despite receiving an inert treatment, underscores the profound connection between psychological states and physical well-being.",t:"安慰剂效应——患者尽管接受了惰性治疗却经历了真正的生理改善——凸显了心理状态与身体健康之间的深刻联系。",g:"同位语+非限制性定语从句",v:[{w:"placebo",p:"n.",m:"安慰剂"},{w:"physiological",p:"adj.",m:"生理的"},{w:"inert",p:"adj.",m:"惰性的"},{w:"underscore",p:"v.",m:"凸显"},{w:"profound",p:"adj.",m:"深刻的"}],c:"[主语] The placebo effect\n[非限制性定语从句] whereby patients experience genuine physiological improvements despite receiving an inert treatment\n[谓语] underscores\n[宾语] the profound connection between psychological states and physical well-being"},
+{s:"The global rise in obesity rates, which the World Health Organization has characterized as an epidemic, has been linked not only to increased consumption of processed foods but also to increasingly sedentary lifestyles.",t:"全球肥胖率的上升——世界卫生组织将其定性为一种流行病——不仅与加工食品消费的增加有关，还与日益久坐的生活方式有关。",g:"非限制性定语从句+并列结构",v:[{w:"obesity",p:"n.",m:"肥胖"},{w:"epidemic",p:"n.",m:"流行病"},{w:"processed",p:"adj.",m:"加工的"},{w:"sedentary",p:"adj.",m:"久坐的"},{w:"lifestyle",p:"n.",m:"生活方式"}],c:"[主语] The global rise in obesity rates\n[非限制性定语从句] which the World Health Organization has characterized as an epidemic\n[谓语] has been linked\n[状语1] not only to increased consumption of processed foods\n[状语2] but also to increasingly sedentary lifestyles"},
+
+// --- Day 7: 法律与伦理 ---
+{s:"The rapid advancement of gene-editing technologies such as CRISPR has outpaced the development of regulatory frameworks, leaving ethical questions about the permissible boundaries of human genetic modification largely unresolved.",t:"基因编辑技术（如CRISPR）的快速发展已经超越了监管框架的发展，留下了关于人类基因改造可允许界限的伦理问题在很大程度上未得到解决。",g:"主句+现在分词短语",v:[{w:"gene-editing",p:"adj.",m:"基因编辑的"},{w:"outpace",p:"v.",m:"超越"},{w:"permissible",p:"adj.",m:"可允许的"},{w:"boundary",p:"n.",m:"界限"},{w:"modification",p:"n.",m:"改造"},{w:"unresolved",p:"adj.",m:"未解决的"}],c:"[主语] The rapid advancement of gene-editing technologies such as CRISPR\n[谓语] has outpaced\n[宾语] the development of regulatory frameworks\n[结果状语] leaving ethical questions about the permissible boundaries of human genetic modification largely unresolved\n  └ about...为介词短语作后置定语"},
+{s:"The right to privacy, enshrined in numerous international human rights instruments, faces unprecedented challenges in the age of mass surveillance and the commodification of personal data.",t:"隐私权——被载入众多国际人权文书——在大规模监控和个人数据商品化的时代面临着前所未有的挑战。",g:"主句+过去分词插入语+介词短语",v:[{w:"enshrine",p:"v.",m:"载入"},{w:"instrument",p:"n.",m:"文书"},{w:"surveillance",p:"n.",m:"监控"},{w:"commodification",p:"n.",m:"商品化"},{w:"unprecedented",p:"adj.",m:"空前的"}],c:"[主语] The right to privacy\n[插入语] enshrined in numerous international human rights instruments\n[谓语] faces\n[宾语] unprecedented challenges\n[状语] in the age of mass surveillance and the commodification of personal data"},
+{s:"Intellectual property law must strike a balance between incentivizing innovation through patent protections and ensuring that the fruits of research remain accessible to the broader public.",t:"知识产权法必须在通过专利保护激励创新和确保研究成果保持对更广泛公众的可及性之间取得平衡。",g:"主句+介词短语+并列结构",v:[{w:"intellectual property",p:"n.",m:"知识产权"},{w:"incentivize",p:"v.",m:"激励"},{w:"patent",p:"n.",m:"专利"},{w:"accessible",p:"adj.",m:"可获得的"},{w:"broader",p:"adj.",m:"更广泛的"}],c:"[主语] Intellectual property law\n[谓语] must strike\n[宾语] a balance\n[状语] between incentivizing innovation through patent protections and ensuring that the fruits of research remain accessible to the broader public\n  └ between A and B 结构\n  └ that引导宾语从句"},
+{s:"The debate over capital punishment hinges not only on pragmatic considerations of deterrence and cost but also on fundamental questions about the moral authority of the state to take human life.",t:"关于死刑的争论不仅取决于威慑和成本等务实考虑，还取决于国家夺取人生命的道德权威这一根本问题。",g:"主句+并列结构",v:[{w:"capital punishment",p:"n.",m:"死刑"},{w:"hinge on",p:"v.",m:"取决于"},{w:"pragmatic",p:"adj.",m:"务实的"},{w:"deterrence",p:"n.",m:"威慑"},{w:"moral",p:"adj.",m:"道德的"},{w:"authority",p:"n.",m:"权威"}],c:"[主语] The debate over capital punishment\n[谓语] hinges\n[状语1] not only on pragmatic considerations of deterrence and cost\n[状语2] but also on fundamental questions about the moral authority of the state to take human life"},
+{s:"Whistleblower protection laws, designed to shield employees who report organizational wrongdoing from retaliation, play a crucial role in maintaining corporate accountability and safeguarding the public interest.",t:"旨在保护举报组织不当行为的员工免受报复的举报人保护法，在维护企业问责制和保障公共利益方面发挥着关键作用。",g:"主句+过去分词短语+定语从句",v:[{w:"whistleblower",p:"n.",m:"举报人"},{w:"shield",p:"v.",m:"保护"},{w:"wrongdoing",p:"n.",m:"不当行为"},{w:"retaliation",p:"n.",m:"报复"},{w:"accountability",p:"n.",m:"问责制"},{w:"safeguard",p:"v.",m:"保障"}],c:"[主语] Whistleblower protection laws\n[插入语] designed to shield employees who report organizational wrongdoing from retaliation\n  └ who引导定语从句修饰employees\n[谓语] play\n[宾语] a crucial role in maintaining corporate accountability and safeguarding the public interest"},
+
+// --- Day 8: 历史与文化 ---
+{s:"The Renaissance, which originated in Italy in the fourteenth century before spreading throughout Europe, represented a profound cultural transformation that reshaped art, science, and philosophy in ways that continue to influence Western thought today.",t:"文艺复兴起源于14世纪的意大利，随后传播到整个欧洲，代表了一场深刻的文化变革，以至今仍影响西方思想的方式重塑了艺术、科学和哲学。",g:"非限制性定语从句+定语从句嵌套",v:[{w:"Renaissance",p:"n.",m:"文艺复兴"},{w:"originate",p:"v.",m:"起源"},{w:"profound",p:"adj.",m:"深刻的"},{w:"transformation",p:"n.",m:"变革"},{w:"reshape",p:"v.",m:"重塑"}],c:"[主语] The Renaissance\n[非限制性定语从句] which originated in Italy in the fourteenth century before spreading throughout Europe\n[谓语] represented\n[宾语] a profound cultural transformation\n[定语从句1] that reshaped art, science, and philosophy\n[定语从句2] in ways that continue to influence Western thought today"},
+{s:"The Silk Road, far from being merely a trade route, served as a conduit for the exchange of ideas, religions, and technologies between civilizations that might otherwise have remained isolated from one another.",t:"丝绸之路远非仅仅是一条贸易路线，它充当了可能 otherwise 彼此隔绝的文明之间思想、宗教和技术交流的渠道。",g:"主句+定语从句",v:[{w:"conduit",p:"n.",m:"渠道"},{w:"exchange",p:"n.",m:"交换"},{w:"civilization",p:"n.",m:"文明"},{w:"isolated",p:"adj.",m:"隔绝的"},{w:"merely",p:"adv.",m:"仅仅"}],c:"[主语] The Silk Road\n[插入语] far from being merely a trade route\n[谓语] served as\n[宾语] a conduit for the exchange of ideas, religions, and technologies between civilizations\n[定语从句] that might otherwise have remained isolated from one another"},
+{s:"The abolition of slavery in the nineteenth century, while a monumental achievement in the history of human rights, did not immediately eradicate the racial prejudice and systemic discrimination that had been embedded in legal and social institutions for centuries.",t:"19世纪奴隶制的废除虽然是人权史上的巨大成就，但并未立即根除几个世纪以来根植于法律和社会制度中的种族偏见和系统性歧视。",g:"主句+让步插入语+定语从句",v:[{w:"abolition",p:"n.",m:"废除"},{w:"monumental",p:"adj.",m:"巨大的"},{w:"eradicate",p:"v.",m:"根除"},{w:"prejudice",p:"n.",m:"偏见"},{w:"discrimination",p:"n.",m:"歧视"},{w:"embed",p:"v.",m:"嵌入"}],c:"[主语] The abolition of slavery in the nineteenth century\n[让步插入语] while a monumental achievement in the history of human rights\n[谓语] did not eradicate\n[宾语] the racial prejudice and systemic discrimination\n[定语从句] that had been embedded in legal and social institutions for centuries"},
+{s:"Oral traditions, which predate written language by millennia, have served as the primary means of preserving cultural knowledge and historical narratives in societies across the globe.",t:"口头传统比文字语言早数千年，一直是全球各社会保存文化知识和历史叙事的主要手段。",g:"非限制性定语从句",v:[{w:"oral",p:"adj.",m:"口头的"},{w:"tradition",p:"n.",m:"传统"},{w:"predate",p:"v.",m:"早于"},{w:"millennia",p:"n.",m:"数千年"},{w:"preserve",p:"v.",m:"保存"},{w:"narrative",p:"n.",m:"叙事"}],c:"[主语] Oral traditions\n[非限制性定语从句] which predate written language by millennia\n[谓语] have served as\n[宾语] the primary means of preserving cultural knowledge and historical narratives in societies across the globe"},
+{s:"The Columbian Exchange, the widespread transfer of plants, animals, and diseases between the Americas and the Old World following Columbus's voyages, had ecological and demographic consequences that fundamentally altered the trajectory of human history.",t:"哥伦布大交换——哥伦布航行后美洲与旧世界之间植物、动物和疾病的大规模转移——产生了生态和人口后果，从根本上改变了人类历史的轨迹。",g:"同位语+定语从句",v:[{w:"Columbian",p:"adj.",m:"哥伦布的"},{w:"transfer",p:"n.",m:"转移"},{w:"demographic",p:"adj.",m:"人口的"},{w:"consequence",p:"n.",m:"后果"},{w:"trajectory",p:"n.",m:"轨迹"}],c:"[主语] The Columbian Exchange\n[同位语] the widespread transfer of plants, animals, and diseases between the Americas and the Old World following Columbus's voyages\n[谓语] had\n[宾语] ecological and demographic consequences\n[定语从句] that fundamentally altered the trajectory of human history"},
+
+// --- Day 9: 哲学与思维方式 ---
+{s:"The philosophical concept of epistemic humility, which encourages individuals to acknowledge the limitations of their knowledge, stands in stark contrast to the dogmatic certainty that characterizes much of contemporary public discourse.",t:"认识论谦逊的哲学概念——鼓励个人承认其知识的局限性——与当代公共话语中教条式的确定性形成了鲜明对比。",g:"非限制性定语从句+定语从句",v:[{w:"epistemic",p:"adj.",m:"认识论的"},{w:"humility",p:"n.",m:"谦逊"},{w:"acknowledge",p:"v.",m:"承认"},{w:"stark",p:"adj.",m:"鲜明的"},{w:"dogmatic",p:"adj.",m:"教条的"},{w:"certainty",p:"n.",m:"确定性"}],c:"[主语] The philosophical concept of epistemic humility\n[非限制性定语从句] which encourages individuals to acknowledge the limitations of their knowledge\n[谓语] stands\n[状语] in stark contrast to the dogmatic certainty\n[定语从句] that characterizes much of contemporary public discourse"},
+{s:"Existentialist philosophers, most notably Jean-Paul Sartre, argued that human beings are condemned to be free, meaning that we are entirely responsible for our choices and cannot attribute them to external forces.",t:"存在主义哲学家，最著名的是让-保罗·萨特，认为人类被判处自由，这意味着我们要为自己的选择负全部责任，不能将其归因于外部力量。",g:"主句+插入语+宾语从句",v:[{w:"existentialist",p:"adj.",m:"存在主义的"},{w:"condemn",p:"v.",m:"判处"},{w:"attribute",p:"v.",m:"归因于"},{w:"external",p:"adj.",m:"外部的"},{w:"entirely",p:"adv.",m:"完全地"}],c:"[主语] Existentialist philosophers\n[插入语] most notably Jean-Paul Sartre\n[谓语] argued\n[宾语从句] that human beings are condemned to be free\n[解释状语] meaning that we are entirely responsible for our choices and cannot attribute them to external forces"},
+{s:"The trolley problem, a thought experiment in ethics, illustrates the profound moral dilemma that arises when inaction itself leads to harmful consequences, forcing us to confront the inadequacy of simple ethical frameworks.",t:"电车问题——伦理学中的一个思想实验——说明了当不作为本身导致有害后果时产生的深刻道德困境，迫使我们面对简单伦理框架的不足。",g:"同位语+定语从句+现在分词",v:[{w:"trolley",p:"n.",m:"电车"},{w:"thought experiment",p:"n.",m:"思想实验"},{w:"dilemma",p:"n.",m:"困境"},{w:"inaction",p:"n.",m:"不作为"},{w:"inadequacy",p:"n.",m:"不足"},{w:"framework",p:"n.",m:"框架"}],c:"[主语] The trolley problem\n[同位语] a thought experiment in ethics\n[谓语] illustrates\n[宾语] the profound moral dilemma\n[定语从句] that arises when inaction itself leads to harmful consequences\n[结果状语] forcing us to confront the inadequacy of simple ethical frameworks"},
+{s:"Karl Popper's principle of falsifiability, which holds that scientific theories must be capable of being proven false, has become a cornerstone of the philosophy of science and a criterion for distinguishing genuine science from pseudoscience.",t:"卡尔·波普尔的可证伪性原则——认为科学理论必须能够被证明为假——已成为科学哲学的基石和区分真科学与伪科学的标准。",g:"非限制性定语从句+并列谓语",v:[{w:"falsifiability",p:"n.",m:"可证伪性"},{w:"capable of",p:"adj.",m:"能够的"},{w:"cornerstone",p:"n.",m:"基石"},{w:"criterion",p:"n.",m:"标准"},{w:"pseudoscience",p:"n.",m:"伪科学"}],c:"[主语] Karl Popper's principle of falsifiability\n[非限制性定语从句] which holds that scientific theories must be capable of being proven false\n[谓语1] has become\n[表语1] a cornerstone of the philosophy of science\n[连词] and\n[表语2] a criterion for distinguishing genuine science from pseudoscience"},
+{s:"The paradox of choice, articulated by psychologist Barry Schwartz, suggests that an abundance of options, far from enhancing satisfaction, can actually lead to anxiety, indecision, and regret over foregone alternatives.",t:"选择悖论——由心理学家巴里·施瓦茨阐述——表明过多的选择远非增强满意度，实际上可能导致焦虑、犹豫不决和对放弃的替代方案的后悔。",g:"同位语+宾语从句",v:[{w:"paradox",p:"n.",m:"悖论"},{w:"articulate",p:"v.",m:"阐述"},{w:"abundance",p:"n.",m:"大量"},{w:"satisfaction",p:"n.",m:"满意度"},{w:"indecision",p:"n.",m:"犹豫不决"},{w:"foregone",p:"adj.",m:"放弃的"}],c:"[主语] The paradox of choice\n[插入语] articulated by psychologist Barry Schwartz\n[谓语] suggests\n[宾语从句] that an abundance of options ... can actually lead to anxiety, indecision, and regret\n  └ far from enhancing satisfaction为插入的对比状语\n  └ over foregone alternatives为介词短语修饰regret"},
+
+// --- Day 10: 政治与治理 ---
+{s:"The erosion of trust in democratic institutions, a phenomenon observable across much of the developed world, has been attributed to a complex interplay of factors including political polarization, economic dislocation, and the spread of misinformation.",t:"民主机构信任的侵蚀——在发达世界大部分地区可观察到的现象——被归因于包括政治极化、经济混乱和错误信息传播在内的复杂因素相互作用。",g:"主句+同位语+过去分词",v:[{w:"erosion",p:"n.",m:"侵蚀"},{w:"institution",p:"n.",m:"机构"},{w:"observable",p:"adj.",m:"可观察的"},{w:"polarization",p:"n.",m:"极化"},{w:"dislocation",p:"n.",m:"混乱"},{w:"interplay",p:"n.",m:"相互作用"}],c:"[主语] The erosion of trust in democratic institutions\n[同位语] a phenomenon observable across much of the developed world\n[谓语] has been attributed to\n[宾语] a complex interplay of factors\n  └ including political polarization, economic dislocation, and the spread of misinformation为现在分词短语作后置定语"},
+{s:"Proportional representation electoral systems, which allocate legislative seats in accordance with each party's share of the popular vote, tend to produce multiparty governments that may struggle to form stable coalitions.",t:"比例代表制选举制度——根据每个政党的普选票份额分配立法席位——往往产生可能难以组建稳定联盟的多党政府。",g:"非限制性定语从句+定语从句",v:[{w:"proportional",p:"adj.",m:"成比例的"},{w:"representation",p:"n.",m:"代表制"},{w:"allocate",p:"v.",m:"分配"},{w:"legislative",p:"adj.",m:"立法的"},{w:"coalition",p:"n.",m:"联盟"},{w:"multiparty",p:"adj.",m:"多党的"}],c:"[主语] Proportional representation electoral systems\n[非限制性定语从句] which allocate legislative seats in accordance with each party's share of the popular vote\n[谓语] tend to produce\n[宾语] multiparty governments\n[定语从句] that may struggle to form stable coalitions"},
+{s:"The principle of separation of powers, enshrined in the United States Constitution, was designed to prevent the concentration of authority in any single branch of government by establishing a system of checks and balances.",t:"三权分立原则——载入美国宪法——旨在通过建立制衡制度来防止权力集中在政府的任何单一部门。",g:"主句+过去分词插入语",v:[{w:"separation of powers",p:"n.",m:"三权分立"},{w:"enshrine",p:"v.",m:"载入"},{w:"concentration",p:"n.",m:"集中"},{w:"branch",p:"n.",m:"部门"},{w:"checks and balances",p:"n.",m:"制衡"}],c:"[主语] The principle of separation of powers\n[插入语] enshrined in the United States Constitution\n[谓语] was designed to prevent\n[宾语] the concentration of authority in any single branch of government\n[方式状语] by establishing a system of checks and balances"},
+{s:"Populist movements, which typically claim to represent the interests of ordinary people against a perceived corrupt elite, have gained momentum in recent years, challenging established political parties and liberal democratic norms.",t:"民粹主义运动——通常声称代表普通人民对抗被认为腐败的精英——近年来势头增强，挑战了既定政党和自由民主规范。",g:"非限制性定语从句+现在分词",v:[{w:"populist",p:"adj.",m:"民粹主义的"},{w:"perceived",p:"adj.",m:"被感知的"},{w:"elite",p:"n.",m:"精英"},{w:"momentum",p:"n.",m:"势头"},{w:"liberal",p:"adj.",m:"自由的"},{w:"norm",p:"n.",m:"规范"}],c:"[主语] Populist movements\n[非限制性定语从句] which typically claim to represent the interests of ordinary people against a perceived corrupt elite\n[谓语] have gained\n[宾语] momentum\n[时间状语] in recent years\n[结果状语] challenging established political parties and liberal democratic norms"},
+{s:"The concept of subsidiarity, whereby decisions are made at the most local level of government capable of addressing them effectively, is a fundamental principle of federalist political theory.",t:"辅助性原则——决策由能够有效处理问题的最基层政府做出——是联邦主义政治理论的基本原则。",g:"同位语+非限制性定语从句",v:[{w:"subsidiarity",p:"n.",m:"辅助性"},{w:"whereby",p:"adv.",m:"借此"},{w:"capable of",p:"adj.",m:"能够的"},{w:"effectively",p:"adv.",m:"有效地"},{w:"federalist",p:"adj.",m:"联邦主义的"}],c:"[主语] The concept of subsidiarity\n[非限制性定语从句] whereby decisions are made at the most local level of government capable of addressing them effectively\n  └ capable of addressing them为形容词短语作后置定语\n[谓语] is\n[表语] a fundamental principle of federalist political theory"},
+
+// --- Day 11-20: 更多主题（精选核心长难句）---
+{s:"The hypothesis that language shapes thought, known as the Sapir-Whorf hypothesis, remains one of the most debated propositions in linguistics, with compelling evidence supporting both strong and weak versions of the claim.",t:"语言塑造思维的假设——即萨丕尔-沃尔夫假说——仍然是语言学中最具争议的命题之一，有令人信服的证据支持该主张的强版本和弱版本。",g:"同位语+独立主格",v:[{w:"hypothesis",p:"n.",m:"假说"},{w:"proposition",p:"n.",m:"命题"},{w:"linguistics",p:"n.",m:"语言学"},{w:"compelling",p:"adj.",m:"令人信服的"},{w:"version",p:"n.",m:"版本"}],c:"[主语] The hypothesis that language shapes thought\n  └ that引导同位语从句\n[插入语] known as the Sapir-Whorf hypothesis\n[谓语] remains\n[表语] one of the most debated propositions in linguistics\n[独立主格] with compelling evidence supporting both strong and weak versions of the claim"},
+{s:"Quantum computing, which exploits the principles of quantum mechanics to process information in fundamentally different ways from classical computers, promises to revolutionize fields ranging from cryptography to drug discovery.",t:"量子计算利用量子力学原理以与经典计算机根本不同的方式处理信息，有望彻底改变从密码学到药物发现等领域。",g:"非限制性定语从句+现在分词",v:[{w:"quantum",p:"adj.",m:"量子的"},{w:"exploit",p:"v.",m:"利用"},{w:"mechanics",p:"n.",m:"力学"},{w:"fundamentally",p:"adv.",m:"根本地"},{w:"revolutionize",p:"v.",m:"彻底改变"},{w:"cryptography",p:"n.",m:"密码学"}],c:"[主语] Quantum computing\n[非限制性定语从句] which exploits the principles of quantum mechanics to process information in fundamentally different ways from classical computers\n[谓语] promises to revolutionize\n[宾语] fields ranging from cryptography to drug discovery\n  └ ranging from...to...为现在分词短语作后置定语"},
+{s:"The paradox of tolerance, first articulated by philosopher Karl Popper, asserts that unlimited tolerance must lead to the disappearance of tolerance, as tolerance of the intolerant ultimately enables the destruction of tolerant societies.",t:"宽容悖论——由哲学家卡尔·波普尔首先阐述——断言无限的宽容必然导致宽容的消失，因为对不宽容者的宽容最终会破坏宽容社会。",g:"同位语+宾语从句+原因状语从句",v:[{w:"paradox",p:"n.",m:"悖论"},{w:"tolerance",p:"n.",m:"宽容"},{w:"articulate",p:"v.",m:"阐述"},{w:"assert",p:"v.",m:"断言"},{w:"disappearance",p:"n.",m:"消失"},{w:"intolerant",p:"adj.",m:"不宽容的"}],c:"[主语] The paradox of tolerance\n[插入语] first articulated by philosopher Karl Popper\n[谓语] asserts\n[宾语从句] that unlimited tolerance must lead to the disappearance of tolerance\n[原因状语从句] as tolerance of the intolerant ultimately enables the destruction of tolerant societies"},
+{s:"The observer effect in quantum physics, whereby the act of measurement fundamentally alters the state of the system being observed, has profound implications that extend far beyond physics into the philosophy of science.",t:"量子物理学中的观察者效应——测量行为从根本上改变被观察系统的状态——具有远远超出物理学进入科学哲学领域的深远影响。",g:"非限制性定语从句+定语从句",v:[{w:"observer",p:"n.",m:"观察者"},{w:"measurement",p:"n.",m:"测量"},{w:"fundamentally",p:"adv.",m:"根本地"},{w:"alter",p:"v.",m:"改变"},{w:"profound",p:"adj.",m:"深远的"},{w:"implication",p:"n.",m:"影响"}],c:"[主语] The observer effect in quantum physics\n[非限制性定语从句] whereby the act of measurement fundamentally alters the state of the system being observed\n  └ being observed为现在分词短语作后置定语\n[谓语] has\n[宾语] profound implications\n[定语从句] that extend far beyond physics into the philosophy of science"},
+{s:"The tragedy of the commons, a concept popularized by ecologist Garrett Hardin, describes how shared resources tend to be overexploited when individuals act in their own self-interest without regard for the collective good.",t:"公地悲剧——由生态学家加勒特·哈丁普及的概念——描述了当个体出于自身利益行事而不顾集体利益时，共享资源如何被过度开发。",g:"同位语+宾语从句",v:[{w:"tragedy",p:"n.",m:"悲剧"},{w:"commons",p:"n.",m:"公地"},{w:"popularize",p:"v.",m:"普及"},{w:"overexploit",p:"v.",m:"过度开发"},{w:"self-interest",p:"n.",m:"自身利益"},{w:"collective",p:"adj.",m:"集体的"}],c:"[主语] The tragedy of the commons\n[同位语] a concept popularized by ecologist Garrett Hardin\n[谓语] describes\n[宾语从句] how shared resources tend to be overexploited\n[时间状语从句] when individuals act in their own self-interest without regard for the collective good"},
+{s:"Behavioral economics, which integrates insights from psychology into economic models, has demonstrated that people frequently make irrational decisions that deviate from the predictions of classical rational choice theory.",t:"行为经济学——将心理学见解整合到经济模型中——已经证明人们经常做出偏离经典理性选择理论预测的非理性决策。",g:"非限制性定语从句+宾语从句+定语从句",v:[{w:"integrate",p:"v.",m:"整合"},{w:"insight",p:"n.",m:"见解"},{w:"demonstrate",p:"v.",m:"证明"},{w:"irrational",p:"adj.",m:"非理性的"},{w:"deviate",p:"v.",m:"偏离"}],c:"[主语] Behavioral economics\n[非限制性定语从句] which integrates insights from psychology into economic models\n[谓语] has demonstrated\n[宾语从句] that people frequently make irrational decisions\n[定语从句] that deviate from the predictions of classical rational choice theory"},
+{s:"The theory of plate tectonics, which revolutionized our understanding of Earth's geological processes, explains how the movement of lithospheric plates causes earthquakes, volcanic eruptions, and the formation of mountain ranges.",t:"板块构造理论——彻底改变了我们对地球地质过程的理解——解释了岩石圈板块的运动如何引发地震、火山喷发和山脉的形成。",g:"非限制性定语从句+宾语从句",v:[{w:"tectonics",p:"n.",m:"构造学"},{w:"revolutionize",p:"v.",m:"彻底改变"},{w:"geological",p:"adj.",m:"地质的"},{w:"lithospheric",p:"adj.",m:"岩石圈的"},{w:"eruption",p:"n.",m:"喷发"}],c:"[主语] The theory of plate tectonics\n[非限制性定语从句] which revolutionized our understanding of Earth's geological processes\n[谓语] explains\n[宾语从句] how the movement of lithospheric plates causes earthquakes, volcanic eruptions, and the formation of mountain ranges"},
+{s:"The bystander effect, a social psychological phenomenon whereby individuals are less likely to offer help in emergencies when other people are present, has been extensively studied since the infamous Kitty Genovese case of 1964.",t:"旁观者效应——一种社会心理现象，当有其他人在场时个人在紧急情况下提供帮助的可能性更小——自1964年臭名昭著的基蒂·吉诺维斯案件以来已被广泛研究。",g:"同位语+非限制性定语从句",v:[{w:"bystander",p:"n.",m:"旁观者"},{w:"phenomenon",p:"n.",m:"现象"},{w:"whereby",p:"adv.",m:"借此"},{w:"infamous",p:"adj.",m:"臭名昭著的"},{w:"extensively",p:"adv.",m:"广泛地"}],c:"[主语] The bystander effect\n[同位语] a social psychological phenomenon\n[非限制性定语从句] whereby individuals are less likely to offer help in emergencies when other people are present\n[谓语] has been studied\n[状语] extensively since the infamous Kitty Genovese case of 1964"},
+{s:"The Doppler effect, which explains the change in frequency of a wave in relation to an observer moving relative to the source of the wave, has applications ranging from medical ultrasound to astronomical observation.",t:"多普勒效应——解释了波的频率相对于相对于波源运动的观察者的变化——的应用范围从医学超声到天文观测。",g:"非限制性定语从句+现在分词",v:[{w:"Doppler",p:"n.",m:"多普勒"},{w:"frequency",p:"n.",m:"频率"},{w:"relative to",p:"prep.",m:"相对于"},{w:"ultrasound",p:"n.",m:"超声波"},{w:"astronomical",p:"adj.",m:"天文的"}],c:"[主语] The Doppler effect\n[非限制性定语从句] which explains the change in frequency of a wave in relation to an observer moving relative to the source of the wave\n  └ moving relative to...为现在分词短语修饰observer\n[谓语] has\n[宾语] applications ranging from medical ultrasound to astronomical observation"},
+{s:"The prisoner's dilemma, a fundamental concept in game theory, illustrates why two rational individuals might not cooperate even when cooperation would yield the best collective outcome.",t:"囚徒困境——博弈论中的一个基本概念——说明了为什么两个理性个体即使在合作能产生最佳集体结果时也可能不会合作。",g:"同位语+宾语从句",v:[{w:"prisoner",p:"n.",m:"囚犯"},{w:"dilemma",p:"n.",m:"困境"},{w:"game theory",p:"n.",m:"博弈论"},{w:"cooperate",p:"v.",m:"合作"},{w:"yield",p:"v.",m:"产生"},{w:"outcome",p:"n.",m:"结果"}],c:"[主语] The prisoner's dilemma\n[同位语] a fundamental concept in game theory\n[谓语] illustrates\n[宾语从句] why two rational individuals might not cooperate\n[让步状语从句] even when cooperation would yield the best collective outcome"},
+{s:"The greenhouse effect, a natural process by which certain gases in the atmosphere trap heat from the sun, becomes problematic when human activities significantly increase the concentration of these gases, leading to global warming.",t:"温室效应——大气中某些气体捕获太阳热量的自然过程——当人类活动显著增加这些气体的浓度导致全球变暖时就变得有问题了。",g:"同位语+时间状语从句+现在分词",v:[{w:"greenhouse",p:"n.",m:"温室"},{w:"atmosphere",p:"n.",m:"大气"},{w:"trap",p:"v.",m:"捕获"},{w:"problematic",p:"adj.",m:"有问题的"},{w:"concentration",p:"n.",m:"浓度"}],c:"[主语] The greenhouse effect\n[同位语] a natural process by which certain gases in the atmosphere trap heat from the sun\n  └ by which引导定语从句\n[谓语] becomes\n[表语] problematic\n[时间状语从句] when human activities significantly increase the concentration of these gases\n[结果状语] leading to global warming"},
+{s:"The Heisenberg uncertainty principle, which states that it is impossible to simultaneously determine both the exact position and momentum of a particle, challenged the deterministic worldview that had dominated physics since Newton.",t:"海森堡不确定性原理——指出不可能同时确定粒子的精确位置和动量——挑战了自牛顿以来主导物理学的决定论世界观。",g:"非限制性定语从句+定语从句",v:[{w:"uncertainty",p:"n.",m:"不确定性"},{w:"simultaneously",p:"adv.",m:"同时"},{w:"momentum",p:"n.",m:"动量"},{w:"particle",p:"n.",m:"粒子"},{w:"deterministic",p:"adj.",m:"决定论的"},{w:"dominate",p:"v.",m:"主导"}],c:"[主语] The Heisenberg uncertainty principle\n[非限制性定语从句] which states that it is impossible to simultaneously determine both the exact position and momentum of a particle\n[谓语] challenged\n[宾语] the deterministic worldview\n[定语从句] that had dominated physics since Newton"},
+{s:"The bystander effect research initiated by psychologists John Darley and Bibb Latané revealed that the probability of an individual offering help in an emergency decreases as the number of bystanders increases.",t:"由心理学家约翰·达利和比布·拉塔内发起的旁观者效应研究表明，在紧急情况下个人提供帮助的概率随着旁观者人数的增加而降低。",g:"主句+宾语从句",v:[{w:"initiate",p:"v.",m:"发起"},{w:"reveal",p:"v.",m:"揭示"},{w:"probability",p:"n.",m:"概率"},{w:"emergency",p:"n.",m:"紧急情况"},{w:"decrease",p:"v.",m:"降低"}],c:"[主语] The bystander effect research initiated by psychologists John Darley and Bibb Latané\n  └ initiated by...为过去分词短语作后置定语\n[谓语] revealed\n[宾语从句] that the probability of an individual offering help in an emergency decreases\n[时间状语从句] as the number of bystanders increases"},
+{s:"The concept of diminishing marginal utility, a cornerstone of microeconomic theory, posits that as a person consumes more of a good, the additional satisfaction derived from each successive unit tends to decline.",t:"边际效用递减的概念——微观经济学理论的基石——假定当一个人消费更多的商品时，从每个后续单位获得的额外满意度趋于下降。",g:"同位语+宾语从句",v:[{w:"diminishing",p:"adj.",m:"递减的"},{w:"marginal",p:"adj.",m:"边际的"},{w:"utility",p:"n.",m:"效用"},{w:"posits",p:"v.",m:"假定"},{w:"successive",p:"adj.",m:"连续的"},{w:"decline",p:"v.",m:"下降"}],c:"[主语] The concept of diminishing marginal utility\n[同位语] a cornerstone of microeconomic theory\n[谓语] posits\n[宾语从句] that as a person consumes more of a good, the additional satisfaction derived from each successive unit tends to decline\n  └ derived from...为过去分词短语修饰satisfaction"},
+{s:"The Flynn effect, the sustained and substantial increase in intelligence test scores observed across the world over the past century, has prompted vigorous debate about whether it reflects genuine gains in cognitive ability.",t:"弗林效应——过去一个世纪在世界各地观察到的智力测试分数持续大幅提高——引发了关于它是否反映了认知能力真正提高的激烈辩论。",g:"同位语+宾语从句",v:[{w:"sustained",p:"adj.",m:"持续的"},{w:"substantial",p:"adj.",m:"大量的"},{w:"intelligence",p:"n.",m:"智力"},{w:"prompt",p:"v.",m:"引发"},{w:"vigorous",p:"adj.",m:"激烈的"},{w:"genuine",p:"adj.",m:"真正的"}],c:"[主语] The Flynn effect\n[同位语] the sustained and substantial increase in intelligence test scores observed across the world over the past century\n  └ observed...为过去分词短语修饰increase\n[谓语] has prompted\n[宾语] vigorous debate about whether it reflects genuine gains in cognitive ability\n  └ whether引导宾语从句"},
+{s:"Stochastic processes, which model systems that evolve randomly over time, are indispensable tools in fields as diverse as finance, physics, and evolutionary biology.",t:"随机过程——模拟随时间随机演变的系统——是金融、物理学和进化生物学等多个领域不可或缺的工具。",g:"非限制性定语从句",v:[{w:"stochastic",p:"adj.",m:"随机的"},{w:"process",p:"n.",m:"过程"},{w:"evolve",p:"v.",m:"演变"},{w:"randomly",p:"adv.",m:"随机地"},{w:"indispensable",p:"adj.",m:"不可或缺的"},{w:"diverse",p:"adj.",m:"多样的"}],c:"[主语] Stochastic processes\n[非限制性定语从句] which model systems that evolve randomly over time\n  └ that evolve...为定语从句修饰systems\n[谓语] are\n[表语] indispensable tools in fields as diverse as finance, physics, and evolutionary biology"},
+{s:"The principle of maximum entropy, which states that the probability distribution which best represents the current state of knowledge is the one with the largest entropy, has applications spanning statistical mechanics to information theory.",t:"最大熵原理——指出最能代表当前知识状态的概率分布是具有最大熵的分布——在统计力学到信息论等领域都有应用。",g:"非限制性定语从句嵌套",v:[{w:"entropy",p:"n.",m:"熵"},{w:"probability distribution",p:"n.",m:"概率分布"},{w:"represent",p:"v.",m:"代表"},{w:"span",p:"v.",m:"跨越"},{w:"mechanics",p:"n.",m:"力学"}],c:"[主语] The principle of maximum entropy\n[非限制性定语从句] which states that the probability distribution which best represents the current state of knowledge is the one with the largest entropy\n  └ 内嵌 which best represents...定语从句\n[谓语] has\n[宾语] applications spanning statistical mechanics to information theory"},
+{s:"The social contract theory, as articulated by thinkers such as Hobbes, Locke, and Rousseau, posits that individuals consent to surrender certain freedoms to a governing authority in exchange for the protection of their remaining rights.",t:"正如霍布斯、洛克和卢梭等思想家所阐述的社会契约理论假定，个人同意将某些自由让渡给治理机构，以换取对其剩余权利的保护。",g:"主句+插入语+宾语从句",v:[{w:"social contract",p:"n.",m:"社会契约"},{w:"articulate",p:"v.",m:"阐述"},{w:"consent",p:"v.",m:"同意"},{w:"surrender",p:"v.",m:"让渡"},{w:"governing",p:"adj.",m:"治理的"},{w:"in exchange for",p:"prep.",m:"以换取"}],c:"[主语] The social contract theory\n[插入语] as articulated by thinkers such as Hobbes, Locke, and Rousseau\n[谓语] posits\n[宾语从句] that individuals consent to surrender certain freedoms to a governing authority\n[目的状语] in exchange for the protection of their remaining rights"},
+{s:"Bayesian inference, a method of statistical reasoning in which evidence is used to update the probability of a hypothesis, has become increasingly influential in fields ranging from machine learning to medical diagnosis.",t:"贝叶斯推理——一种用证据更新假设概率的统计推理方法——在从机器学习到医学诊断等领域变得越来越有影响力。",g:"同位语+非限制性定语从句",v:[{w:"Bayesian",p:"adj.",m:"贝叶斯的"},{w:"inference",p:"n.",m:"推理"},{w:"statistical",p:"adj.",m:"统计的"},{w:"update",p:"v.",m:"更新"},{w:"hypothesis",p:"n.",m:"假设"},{w:"influential",p:"adj.",m:"有影响力的"}],c:"[主语] Bayesian inference\n[同位语] a method of statistical reasoning in which evidence is used to update the probability of a hypothesis\n  └ in which引导定语从句\n[谓语] has become\n[表语] increasingly influential in fields ranging from machine learning to medical diagnosis"},
+{s:"The second law of thermodynamics, which states that the total entropy of an isolated system can never decrease over time, has profound implications for our understanding of the arrow of time and the ultimate fate of the universe.",t:"热力学第二定律——指出孤立系统的总熵随时间永远不会减少——对我们理解时间箭头和宇宙的终极命运具有深远影响。",g:"非限制性定语从句",v:[{w:"thermodynamics",p:"n.",m:"热力学"},{w:"entropy",p:"n.",m:"熵"},{w:"isolated",p:"adj.",m:"孤立的"},{w:"profound",p:"adj.",m:"深远的"},{w:"implication",p:"n.",m:"影响"},{w:"ultimate",p:"adj.",m:"终极的"}],c:"[主语] The second law of thermodynamics\n[非限制性定语从句] which states that the total entropy of an isolated system can never decrease over time\n  └ that引导宾语从句\n[谓语] has\n[宾语] profound implications for our understanding of the arrow of time and the ultimate fate of the universe"},
+{s:"Game theory, originally developed to analyze competitive situations in economics, has found applications in evolutionary biology, where it helps explain the emergence of cooperative behavior among selfish individuals.",t:"博弈论最初是为分析经济学中的竞争情境而发展的，已应用于进化生物学，帮助解释自私个体之间合作行为的出现。",g:"主句+过去分词+定语从句",v:[{w:"game theory",p:"n.",m:"博弈论"},{w:"originally",p:"adv.",m:"最初"},{w:"analyze",p:"v.",m:"分析"},{w:"competitive",p:"adj.",m:"竞争的"},{w:"emergence",p:"n.",m:"出现"},{w:"cooperative",p:"adj.",m:"合作的"}],c:"[主语] Game theory\n[插入语] originally developed to analyze competitive situations in economics\n[谓语] has found\n[宾语] applications in evolutionary biology\n[非限制性定语从句] where it helps explain the emergence of cooperative behavior among selfish individuals"},
+{s:"The concept of cognitive dissonance, first proposed by Leon Festinger, describes the psychological discomfort experienced when an individual holds two or more contradictory beliefs, values, or attitudes simultaneously.",t:"认知失调的概念——由利昂·费斯廷格首先提出——描述了当个人同时持有两个或更多相互矛盾的信念、价值观或态度时所经历的心理不适。",g:"同位语+时间状语从句",v:[{w:"cognitive dissonance",p:"n.",m:"认知失调"},{w:"propose",p:"v.",m:"提出"},{w:"discomfort",p:"n.",m:"不适"},{w:"contradictory",p:"adj.",m:"矛盾的"},{w:"simultaneously",p:"adv.",m:"同时"}],c:"[主语] The concept of cognitive dissonance\n[插入语] first proposed by Leon Festinger\n[谓语] describes\n[宾语] the psychological discomfort experienced when an individual holds two or more contradictory beliefs, values, or attitudes simultaneously\n  └ experienced为过去分词短语修饰discomfort\n  └ when引导时间状语从句"},
+{s:"The butterfly effect, a concept from chaos theory suggesting that small changes in initial conditions can lead to vastly different outcomes in complex systems, illustrates the fundamental unpredictability of many natural phenomena.",t:"蝴蝶效应——混沌理论中的一个概念，表明初始条件的微小变化可以导致复杂系统中截然不同的结果——说明了许多自然现象的根本不可预测性。",g:"同位语+现在分词",v:[{w:"butterfly",p:"n.",m:"蝴蝶"},{w:"chaos",p:"n.",m:"混沌"},{w:"initial",p:"adj.",m:"初始的"},{w:"vastly",p:"adv.",m:"极大地"},{w:"unpredictability",p:"n.",m:"不可预测性"},{w:"phenomena",p:"n.",m:"现象（复数）"}],c:"[主语] The butterfly effect\n[同位语] a concept from chaos theory suggesting that small changes in initial conditions can lead to vastly different outcomes in complex systems\n  └ suggesting that...为现在分词短语修饰concept\n[谓语] illustrates\n[宾语] the fundamental unpredictability of many natural phenomena"},
+{s:"The dual nature of light, which exhibits properties of both waves and particles depending on the experimental context, was one of the most perplexing puzzles in physics until the development of quantum mechanics.",t:"光的双重性质——根据实验背景表现出波和粒子的双重特性——在量子力学发展之前是物理学中最令人困惑的谜题之一。",g:"非限制性定语从句",v:[{w:"dual",p:"adj.",m:"双重的"},{w:"exhibit",p:"v.",m:"表现出"},{w:"particle",p:"n.",m:"粒子"},{w:"perplexing",p:"adj.",m:"令人困惑的"},{w:"puzzle",p:"n.",m:"谜题"}],c:"[主语] The dual nature of light\n[非限制性定语从句] which exhibits properties of both waves and particles depending on the experimental context\n  └ depending on...为现在分词短语作条件状语\n[谓语] was\n[表语] one of the most perplexing puzzles in physics\n[时间状语] until the development of quantum mechanics"},
+{s:"The principle of Occam's razor, which favors the simplest explanation that accounts for all observed facts, remains a powerful heuristic in scientific reasoning, though it does not guarantee truth.",t:"奥卡姆剃刀原理——倾向于能解释所有观察到的事实的最简单的解释——仍然是科学推理中强有力的启发法，尽管它不能保证真理。",g:"非限制性定语从句+让步状语从句",v:[{w:"Occam's razor",p:"n.",m:"奥卡姆剃刀"},{w:"favor",p:"v.",m:"倾向于"},{w:"account for",p:"v.",m:"解释"},{w:"heuristic",p:"n.",m:"启发法"},{w:"guarantee",p:"v.",m:"保证"}],c:"[主语] The principle of Occam's razor\n[非限制性定语从句] which favors the simplest explanation that accounts for all observed facts\n  └ that accounts for...为定语从句修饰explanation\n[谓语] remains\n[表语] a powerful heuristic in scientific reasoning\n[让步状语从句] though it does not guarantee truth"},
+{s:"The Matthew effect in sociology, whereby those who already possess advantages accumulate further advantages over time while the disadvantaged fall further behind, helps explain the persistence of inequality across generations.",t:"马太效应——已经拥有优势的人随时间积累更多优势而弱势群体进一步落后——有助于解释不平等在代际间的持续存在。",g:"同位语+非限制性定语从句",v:[{w:"Matthew effect",p:"n.",m:"马太效应"},{w:"sociology",p:"n.",m:"社会学"},{w:"possess",p:"v.",m:"拥有"},{w:"accumulate",p:"v.",m:"积累"},{w:"persistence",p:"n.",m:"持续存在"}],c:"[主语] The Matthew effect in sociology\n[非限制性定语从句] whereby those who already possess advantages accumulate further advantages over time while the disadvantaged fall further behind\n  └ who引导定语从句修饰those\n  └ while引导对比状语从句\n[谓语] helps explain\n[宾语] the persistence of inequality across generations"},
+{s:"The Doppler effect, which causes the perceived frequency of a wave to increase as the source approaches an observer and to decrease as it recedes, is routinely exploited in medical imaging, weather radar, and astronomical observation.",t:"多普勒效应——导致波的感知频率在波源接近观察者时增加而在远离时减少——在医学影像、气象雷达和天文观测中被常规利用。",g:"非限制性定语从句",v:[{w:"perceived",p:"adj.",m:"感知的"},{w:"frequency",p:"n.",m:"频率"},{w:"approach",p:"v.",m:"接近"},{w:"recede",p:"v.",m:"远离"},{w:"routinely",p:"adv.",m:"常规地"},{w:"exploit",p:"v.",m:"利用"}],c:"[主语] The Doppler effect\n[非限制性定语从句] which causes the perceived frequency of a wave to increase as the source approaches an observer and to decrease as it recedes\n  └ as引导时间状语从句（两个并列）\n[谓语] is exploited\n[状语] routinely in medical imaging, weather radar, and astronomical observation"},
+{s:"The prisoner's dilemma in game theory demonstrates that rational self-interested individuals may fail to cooperate even when mutual cooperation would produce a superior outcome for both parties.",t:"博弈论中的囚徒困境表明，即使相互合作会为双方产生更优的结果，理性的自利个体也可能无法合作。",g:"宾语从句+让步状语从句",v:[{w:"demonstrate",p:"v.",m:"表明"},{w:"rational",p:"adj.",m:"理性的"},{w:"self-interested",p:"adj.",m:"自利的"},{w:"mutual",p:"adj.",m:"相互的"},{w:"superior",p:"adj.",m:"更优的"}],c:"[主语] The prisoner's dilemma in game theory\n[谓语] demonstrates\n[宾语从句] that rational self-interested individuals may fail to cooperate\n[让步状语从句] even when mutual cooperation would produce a superior outcome for both parties"},
+{s:"The concept of emergent properties, whereby complex systems exhibit behaviors that cannot be predicted from the properties of their individual components alone, challenges reductionist approaches to understanding nature.",t:"涌现性质的概念——复杂系统表现出无法仅从其各个组成部分的性质预测的行为——挑战了理解自然的还原论方法。",g:"非限制性定语从句+定语从句",v:[{w:"emergent",p:"adj.",m:"涌现的"},{w:"exhibit",p:"v.",m:"表现出"},{w:"predict",p:"v.",m:"预测"},{w:"component",p:"n.",m:"组成部分"},{w:"reductionist",p:"adj.",m:"还原论的"}],c:"[主语] The concept of emergent properties\n[非限制性定语从句] whereby complex systems exhibit behaviors that cannot be predicted from the properties of their individual components alone\n  └ that cannot be predicted...为定语从句修饰behaviors\n[谓语] challenges\n[宾语] reductionist approaches to understanding nature"},
+{s:"The Dunning-Kruger effect, a cognitive bias whereby people with limited competence in a domain greatly overestimate their abilities, has been documented across a wide range of tasks and cultural contexts.",t:"达克效应——一种认知偏差，在某一领域能力有限的人大大高估自己的能力——已在广泛的任务和文化背景中得到记录。",g:"同位语+非限制性定语从句",v:[{w:"cognitive bias",p:"n.",m:"认知偏差"},{w:"competence",p:"n.",m:"能力"},{w:"domain",p:"n.",m:"领域"},{w:"overestimate",p:"v.",m:"高估"},{w:"document",p:"v.",m:"记录"}],c:"[主语] The Dunning-Kruger effect\n[同位语] a cognitive bias\n[非限制性定语从句] whereby people with limited competence in a domain greatly overestimate their abilities\n  └ with limited competence为介词短语修饰people\n[谓语] has been documented\n[状语] across a wide range of tasks and cultural contexts"},
+{s:"The Black-Scholes model, which provides a mathematical framework for pricing options contracts, revolutionized financial markets but has been criticized for its assumptions of constant volatility and normal distribution of returns.",t:"布莱克-斯科尔斯模型为期权合约定价提供了数学框架，彻底改变了金融市场，但因其假设恒定波动率和正态分布回报而受到批评。",g:"非限制性定语从句+转折+被动语态",v:[{w:"mathematical",p:"adj.",m:"数学的"},{w:"framework",p:"n.",m:"框架"},{w:"option",p:"n.",m:"期权"},{w:"revolutionize",p:"v.",m:"彻底改变"},{w:"volatility",p:"n.",m:"波动率"},{w:"distribution",p:"n.",m:"分布"}],c:"[主语] The Black-Scholes model\n[非限制性定语从句] which provides a mathematical framework for pricing options contracts\n[谓语1] revolutionized\n[宾语1] financial markets\n[转折] but has been criticized for its assumptions of constant volatility and normal distribution of returns"},
+{s:"The Sapir-Whorf hypothesis, which posits that the structure of a language influences the way its speakers perceive and conceptualize the world, remains a subject of intense debate among linguists and cognitive scientists.",t:"萨丕尔-沃尔夫假说——认为语言的结构影响其使用者感知和概念化世界的方式——仍然是语言学家和认知科学家激烈辩论的主题。",g:"非限制性定语从句+宾语从句",v:[{w:"posit",p:"v.",m:"假定"},{w:"influence",p:"v.",m:"影响"},{w:"perceive",p:"v.",m:"感知"},{w:"conceptualize",p:"v.",m:"概念化"},{w:"intense",p:"adj.",m:"激烈的"}],c:"[主语] The Sapir-Whorf hypothesis\n[非限制性定语从句] which posits that the structure of a language influences the way its speakers perceive and conceptualize the world\n  └ that引导宾语从句\n  └ its speakers perceive...为定语从句修饰way\n[谓语] remains\n[表语] a subject of intense debate among linguists and cognitive scientists"},
+{s:"The Nash equilibrium, a concept in game theory where no player can improve their outcome by unilaterally changing their strategy, has applications in economics, political science, and evolutionary biology.",t:"纳什均衡——博弈论中没有任何参与者能通过单方面改变策略来改善结果的概念——在经济学、政治学和进化生物学中都有应用。",g:"同位语+定语从句",v:[{w:"equilibrium",p:"n.",m:"均衡"},{w:"player",p:"n.",m:"参与者"},{w:"unilaterally",p:"adv.",m:"单方面地"},{w:"strategy",p:"n.",m:"策略"},{w:"application",p:"n.",m:"应用"}],c:"[主语] The Nash equilibrium\n[同位语] a concept in game theory\n[定语从句] where no player can improve their outcome by unilaterally changing their strategy\n[谓语] has\n[宾语] applications in economics, political science, and evolutionary biology"},
+{s:"The bystander effect, first demonstrated in the wake of the 1964 Kitty Genovese murder, reveals that individuals are paradoxically less likely to receive help when more people are present at the scene of an emergency.",t:"旁观者效应——在1964年基蒂·吉诺维斯谋杀案后首次被证实——揭示了一个悖论：在紧急情况现场在场的人越多，个人获得帮助的可能性反而越小。",g:"同位语+宾语从句",v:[{w:"demonstrate",p:"v.",m:"证实"},{w:"in the wake of",p:"prep.",m:"在...之后"},{w:"paradoxically",p:"adv.",m:"矛盾地"},{w:"scene",p:"n.",m:"现场"},{w:"emergency",p:"n.",m:"紧急情况"}],c:"[主语] The bystander effect\n[插入语] first demonstrated in the wake of the 1964 Kitty Genovese murder\n[谓语] reveals\n[宾语从句] that individuals are paradoxically less likely to receive help\n[时间状语从句] when more people are present at the scene of an emergency"},
+{s:"The Turing test, proposed by Alan Turing in 1950 as a measure of machine intelligence, assesses whether a computer can exhibit intelligent behavior indistinguishable from that of a human.",t:"图灵测试——由阿兰·图灵在1950年提出作为机器智能的衡量标准——评估计算机是否能表现出与人类无法区分的智能行为。",g:"同位语+宾语从句",v:[{w:"propose",p:"v.",m:"提出"},{w:"measure",p:"n.",m:"衡量标准"},{w:"intelligence",p:"n.",m:"智能"},{w:"exhibit",p:"v.",m:"表现出"},{w:"indistinguishable",p:"adj.",m:"无法区分的"}],c:"[主语] The Turing test\n[插入语] proposed by Alan Turing in 1950 as a measure of machine intelligence\n[谓语] assesses\n[宾语从句] whether a computer can exhibit intelligent behavior indistinguishable from that of a human\n  └ indistinguishable from...为形容词短语作后置定语"},
+{s:"The concept of diminishing returns, which originated in classical economics but has since been applied to fields ranging from agriculture to software development, states that adding more of one factor of production while holding others constant will eventually yield progressively smaller increases in output.",t:"递减收益的概念起源于古典经济学，但此后已被应用于从农业到软件开发等领域，它指出在保持其他因素不变的情况下增加一种生产要素最终将产生越来越小的产出增长。",g:"非限制性定语从句+宾语从句",v:[{w:"diminishing",p:"adj.",m:"递减的"},{w:"originated",p:"v.",m:"起源于"},{w:"factor",p:"n.",m:"因素"},{w:"production",p:"n.",m:"生产"},{w:"eventually",p:"adv.",m:"最终"},{w:"progressively",p:"adv.",m:"逐渐地"}],c:"[主语] The concept of diminishing returns\n[非限制性定语从句] which originated in classical economics but has since been applied to fields ranging from agriculture to software development\n[谓语] states\n[宾语从句] that adding more of one factor of production while holding others constant will eventually yield progressively smaller increases in output"},
+{s:"The Heisenberg uncertainty principle, a fundamental tenet of quantum mechanics, establishes that there is an inherent limit to the precision with which certain pairs of physical properties of a particle can be simultaneously known.",t:"海森堡不确定性原理——量子力学的基本信条——确立了对粒子某些物理性质对的同时可知精度存在固有极限。",g:"同位语+宾语从句+定语从句",v:[{w:"tenet",p:"n.",m:"信条"},{w:"establish",p:"v.",m:"确立"},{w:"inherent",p:"adj.",m:"固有的"},{w:"precision",p:"n.",m:"精度"},{w:"simultaneously",p:"adv.",m:"同时地"}],c:"[主语] The Heisenberg uncertainty principle\n[同位语] a fundamental tenet of quantum mechanics\n[谓语] establishes\n[宾语从句] that there is an inherent limit to the precision\n[定语从句] with which certain pairs of physical properties of a particle can be simultaneously known"},
+{s:"Pavlovian conditioning, whereby a neutral stimulus becomes associated with a meaningful stimulus through repeated pairing, demonstrates that even basic learning processes involve sophisticated cognitive mechanisms.",t:"巴甫洛夫条件反射——中性刺激通过反复配对与有意义的刺激建立关联——表明即使是基本的学习过程也涉及复杂的认知机制。",g:"同位语+宾语从句",v:[{w:"conditioning",p:"n.",m:"条件反射"},{w:"neutral",p:"adj.",m:"中性的"},{w:"stimulus",p:"n.",m:"刺激"},{w:"pairing",p:"n.",m:"配对"},{w:"sophisticated",p:"adj.",m:"复杂的"},{w:"mechanism",p:"n.",m:"机制"}],c:"[主语] Pavlovian conditioning\n[非限制性定语从句] whereby a neutral stimulus becomes associated with a meaningful stimulus through repeated pairing\n[谓语] demonstrates\n[宾语从句] that even basic learning processes involve sophisticated cognitive mechanisms"},
+{s:"The law of supply and demand, which forms the foundation of market economics, predicts that in a competitive market the unit price of a good will vary until it settles at a point where quantity demanded equals quantity supplied.",t:"供需定律——构成市场经济的基础——预测在竞争市场中商品的单位价格将变动直到稳定在需求量等于供给量的点。",g:"非限制性定语从句+宾语从句+定语从句",v:[{w:"foundation",p:"n.",m:"基础"},{w:"predict",p:"v.",m:"预测"},{w:"competitive",p:"adj.",m:"竞争的"},{w:"vary",p:"v.",m:"变动"},{w:"settle",p:"v.",m:"稳定"},{w:"quantity",p:"n.",m:"数量"}],c:"[主语] The law of supply and demand\n[非限制性定语从句] which forms the foundation of market economics\n[谓语] predicts\n[宾语从句] that in a competitive market the unit price of a good will vary\n[时间状语从句] until it settles at a point where quantity demanded equals quantity supplied\n  └ where引导定语从句修饰point"},
+{s:"The placebo effect, whereby patients experience real improvements in their condition after receiving an inert substance, demonstrates the remarkable power of psychological expectation to influence physiological processes.",t:"安慰剂效应——患者在接受惰性物质后病情得到真正改善——展示了心理期望影响生理过程的非凡力量。",g:"同位语+宾语",v:[{w:"placebo",p:"n.",m:"安慰剂"},{w:"inert",p:"adj.",m:"惰性的"},{w:"substance",p:"n.",m:"物质"},{w:"remarkable",p:"adj.",m:"非凡的"},{w:"expectation",p:"n.",m:"期望"},{w:"physiological",p:"adj.",m:"生理的"}],c:"[主语] The placebo effect\n[非限制性定语从句] whereby patients experience real improvements in their condition after receiving an inert substance\n[谓语] demonstrates\n[宾语] the remarkable power of psychological expectation to influence physiological processes"},
+{s:"The theory of comparative advantage, first articulated by David Ricardo, demonstrates that even if one nation is more efficient at producing all goods, both nations can still benefit from trade by specializing in what they produce most efficiently.",t:"比较优势理论——由大卫·李嘉图首先阐述——表明即使一个国家在生产所有商品方面都更有效率，两国仍然可以通过专注于最有效率生产的产品从贸易中受益。",g:"同位语+宾语从句+让步状语从句",v:[{w:"comparative",p:"adj.",m:"比较的"},{w:"advantage",p:"n.",m:"优势"},{w:"articulate",p:"v.",m:"阐述"},{w:"efficient",p:"adj.",m:"有效率的"},{w:"specialize",p:"v.",m:"专门化"},{w:"benefit",p:"v.",m:"受益"}],c:"[主语] The theory of comparative advantage\n[插入语] first articulated by David Ricardo\n[谓语] demonstrates\n[宾语从句] that both nations can still benefit from trade\n  └ even if one nation is more efficient...为让步状语从句\n  └ by specializing in...为方式状语\n  └ what they produce most efficiently为宾语从句"},
+{s:"The concept of cultural capital, introduced by sociologist Pierre Bourdieu, refers to the non-financial social assets that promote social mobility, such as education, intellect, style of speech, and dress.",t:"文化资本的概念——由社会学家皮埃尔·布迪厄引入——指的是促进社会流动的非金融社会资产，如教育、智力、说话风格和着装。",g:"同位语+定语从句",v:[{w:"cultural capital",p:"n.",m:"文化资本"},{w:"sociologist",p:"n.",m:"社会学家"},{w:"asset",p:"n.",m:"资产"},{w:"promote",p:"v.",m:"促进"},{w:"mobility",p:"n.",m:"流动性"},{w:"intellect",p:"n.",m:"智力"}],c:"[主语] The concept of cultural capital\n[插入语] introduced by sociologist Pierre Bourdieu\n[谓语] refers to\n[宾语] the non-financial social assets that promote social mobility\n  └ that promote...为定语从句修饰assets\n[同位语] such as education, intellect, style of speech, and dress"},
+{s:"The Doppler effect, a phenomenon observed in waves of all kinds, explains why the pitch of an approaching ambulance siren appears higher and that of a departing one appears lower.",t:"多普勒效应——在所有类型的波中观察到的现象——解释了为什么接近的救护车警笛声调听起来更高而离开的听起来更低。",g:"同位语+宾语从句",v:[{w:"phenomenon",p:"n.",m:"现象"},{w:"pitch",p:"n.",m:"音调"},{w:"approach",p:"v.",m:"接近"},{w:"ambulance",p:"n.",m:"救护车"},{w:"siren",p:"n.",m:"警笛"},{w:"depart",p:"v.",m:"离开"}],c:"[主语] The Doppler effect\n[同位语] a phenomenon observed in waves of all kinds\n[谓语] explains\n[宾语从句] why the pitch of an approaching ambulance siren appears higher and that of a departing one appears lower"},
+{s:"The bystander effect, a social psychological phenomenon, demonstrates that the probability of receiving help in an emergency situation decreases as the number of bystanders increases, due to the diffusion of responsibility.",t:"旁观者效应——一种社会心理现象——表明在紧急情况下获得帮助的概率随着旁观者人数的增加而降低，原因是责任的分散。",g:"同位语+宾语从句",v:[{w:"bystander",p:"n.",m:"旁观者"},{w:"probability",p:"n.",m:"概率"},{w:"emergency",p:"n.",m:"紧急情况"},{w:"diffusion",p:"n.",m:"分散"},{w:"responsibility",p:"n.",m:"责任"}],c:"[主语] The bystander effect\n[同位语] a social psychological phenomenon\n[谓语] demonstrates\n[宾语从句] that the probability of receiving help in an emergency situation decreases\n[原因状语从句] as the number of bystanders increases\n[原因状语] due to the diffusion of responsibility"},
+{s:"The Big Bang theory, which posits that the universe began as an infinitely dense point approximately 13.8 billion years ago, is supported by multiple lines of evidence including the cosmic microwave background radiation and the observed redshift of distant galaxies.",t:"大爆炸理论——认为宇宙始于大约138亿年前的一个无限密集的点——得到了多条证据线的支持，包括宇宙微波背景辐射和遥远星系观测到的红移。",g:"非限制性定语从句+被动语态+现在分词",v:[{w:"posit",p:"v.",m:"假定"},{w:"infinitely",p:"adv.",m:"无限地"},{w:"dense",p:"adj.",m:"密集的"},{w:"cosmic",p:"adj.",m:"宇宙的"},{w:"microwave",p:"n.",m:"微波"},{w:"redshift",p:"n.",m:"红移"}],c:"[主语] The Big Bang theory\n[非限制性定语从句] which posits that the universe began as an infinitely dense point approximately 13.8 billion years ago\n  └ that引导宾语从句\n[谓语] is supported by\n[宾语] multiple lines of evidence\n  └ including the cosmic microwave background radiation and the observed redshift of distant galaxies为现在分词短语作后置定语"},
+{s:"The principle of Occam's razor, often paraphrased as 'the simplest explanation is usually the best,' serves as a methodological guideline in scientific inquiry, encouraging researchers to minimize the number of assumptions in their theories.",t:"奥卡姆剃刀原理——常被解释为「最简单的解释通常是最好的」——作为科学探究中的方法论指导原则，鼓励研究人员尽量减少理论中的假设数量。",g:"同位语+现在分词",v:[{w:"paraphrase",p:"v.",m:"解释"},{w:"methodological",p:"adj.",m:"方法论的"},{w:"guideline",p:"n.",m:"指导原则"},{w:"inquiry",p:"n.",m:"探究"},{w:"minimize",p:"v.",m:"最小化"},{w:"assumption",p:"n.",m:"假设"}],c:"[主语] The principle of Occam's razor\n[插入语] often paraphrased as 'the simplest explanation is usually the best'\n[谓语] serves as\n[表语] a methodological guideline in scientific inquiry\n[结果状语] encouraging researchers to minimize the number of assumptions in their theories"},
+];
+
+// ===== DAILY RENDERING =====
+function dayOfYear(d){const start=new Date(d.getFullYear(),0,0);return Math.floor((d-start)/864e5)}
+
+function renderDailySentence(){
+  const now=new Date();const dayIdx=dayOfYear(now);
+  const start=(dayIdx*5)%SENTENCES.length;
+  const today5=[];
+  for(let i=0;i<5;i++)today5.push(SENTENCES[(start+i)%SENTENCES.length]);
+  document.getElementById('sentenceDate').textContent=now.toLocaleDateString('zh-CN')+' · 每日5句';
+  document.getElementById('dailySentence').innerHTML=today5.map((s,i)=>`
+    <div style="${i>0?'margin-top:20px;padding-top:16px;border-top:1px solid #e8eaed':''}">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#3f51b5;color:#fff;font-size:12px;font-weight:600">${i+1}</span>
+        <span class="sentence-tag">${s.g}</span>
+      </div>
+      <div class="sentence-en">${highlightVocab(s.s,s.v)}</div>
+      <div class="sentence-zh">${s.t}</div>
+      <div style="margin:10px 0">
+        <div class="analysis-title" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('show')">考纲词汇</div>
+        <div class="analysis-body">${s.v.map(w=>`<span style="display:inline-block;margin:2px 4px"><b style="color:#1a237e">${w.w}</b> <span style="color:#666;font-size:12px">${w.p}</span> ${w.m}</span>`).join('<span style="color:#ddd;margin:0 2px">|</span>')}</div>
+      </div>
+      <div>
+        <div class="analysis-title" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('show')">句子成分划分</div>
+        <div class="analysis-body">${s.c.replace(/\n/g,'<br>')}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function highlightVocab(sentence,vocab){
+  let result=sentence;
+  vocab.forEach(w=>{
+    const regex=new RegExp('\\b('+w.w+')\\b','gi');
+    result=result.replace(regex,'<b style="color:#1a237e;background:#e8eaf6;padding:0 2px;border-radius:3px">$1</b>');
+  });
+  return result;
+}
+
+// ===== SETUP =====
+document.addEventListener('click',function(e){
+  const opt=e.target.closest('.setup-opt');
+  if(!opt)return;
+  const group=opt.closest('.setup-options');
+  if(!group)return;
+  group.querySelectorAll('.setup-opt').forEach(o=>o.classList.remove('selected'));
+  opt.classList.add('selected');
+});
+
+function finishSetup(){
+  const math=document.querySelector('.setup-options[data-key="math"] .setup-opt.selected');
+  const eng=document.querySelector('.setup-options[data-key="eng"] .setup-opt.selected');
+  if(!math||!eng){showToast('请选择数学和英语科目');return}
+  const config={
+    math:math.dataset.val,
+    eng:eng.dataset.val,
+    major:document.getElementById('setupMajor').value.trim()||'专业课',
+    pol:document.querySelector('.setup-options[data-key="pol"] .setup-opt.selected')?.dataset.val||'yes',
+    school:document.getElementById('setupSchool').value.trim()
+  };
+  const s=getState();
+  s.config=config;
+  s.completed={};
+  s.scheduleVersion=3;
+  s.questions=loadDefaultQuestions(config);
+  save(s);
+  document.getElementById('setupPage').classList.add('hidden');
+  document.getElementById('mainApp').style.display='';
+  initApp();
+  showToast('已加载默认题库，可开始抽题练习');
+}
+
+function openSettings(){
+  const c=getConfig();
+  document.getElementById('setSchool').value=c.school||'';
+  document.getElementById('setMath').value=c.math;
+  document.getElementById('setEng').value=c.eng;
+  document.getElementById('setMajor').value=c.major==='专业课'?'':c.major;
+  document.getElementById('setPol').value=c.pol;
+  document.getElementById('settingsModal').classList.add('show');
+}
+
+function saveSettings(){
+  const config={
+    math:document.getElementById('setMath').value,
+    eng:document.getElementById('setEng').value,
+    major:document.getElementById('setMajor').value.trim()||'专业课',
+    pol:document.getElementById('setPol').value,
+    school:document.getElementById('setSchool').value.trim()
+  };
+  const s=getState();
+  s.config=config;
+  s.completed={};
+  s.questions=loadDefaultQuestions(config);
+  s.quizHistory=[];
+  s.wrongQuestions={};
+  save(s);
+  closeModal('settingsModal');
+  initApp();
+  showToast('设置已保存，题库已更新');
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+
+// ===== SCHEDULE GENERATOR =====
+function generateSchedule(config){
+  const m=config.math,e=config.eng,p=config.pol==='yes',mj=config.major;
+  const items=[
+    {id:'s1',time:'07:00-08:00',title:'起床 & 晨间准备',desc:'洗漱、早餐、碎片时间背单词',subject:'break'},
+    {id:'s2',time:'08:00-10:00',title:m+' · 高等数学',desc:'极限、微积分、级数等核心考点',subject:'math'},
+    {id:'s3',time:'10:00-10:15',title:'休息',desc:'喝水、活动身体',subject:'break'},
+    {id:'s4',time:'10:15-12:00',title:m+' · 概率论与线代',desc:'随机变量、矩阵、特征值等',subject:'math'},
+    {id:'s5',time:'12:00-13:30',title:'午餐 & 午休',desc:'好好吃饭，午睡30-40分钟',subject:'break'},
+    {id:'s6',time:'13:30-14:00',title:e+' · 热身',desc:'单词复习、调整状态',subject:'eng'},
+    {id:'s7',time:'14:00-15:30',title:e+' · 阅读 & 完形',desc:'真题阅读精读、完形填空',subject:'eng'},
+    {id:'s8',time:'15:30-15:45',title:'休息',desc:'活动放松',subject:'break'},
+    {id:'s9',time:'15:45-17:15',title:e+' · 翻译 & 作文',desc:'翻译技巧、作文模板积累',subject:'eng'},
+    {id:'s10',time:'17:15-18:15',title:mj,desc:'专业课核心知识梳理与练习',subject:'major'},
+    {id:'s11',time:'18:15-19:00',title:'晚餐 & 休息',desc:'散步、放松',subject:'break'},
+  ];
+  let id=12;
+  if(p){
+    items.push({id:'s'+id,time:'19:00-20:30',title:'政治',desc:'马原/毛中特/史纲/思修/时政',subject:'pol'});id++;
+  }
+  items.push({id:'s'+id,time:p?'20:30-20:45':'19:00-19:15',title:'休息',desc:'活动',subject:'break'});id++;
+  items.push({id:'s'+id,time:p?'20:45-21:45':'19:15-20:15',title:'查漏补缺',desc:'薄弱科目强化或刷真题',subject:'flex'});id++;
+  items.push({id:'s'+id,time:p?'21:45-22:30':'20:15-21:00',title:'当日复盘 & 就寝',desc:'回顾知识点，整理错题本，早点休息',subject:'break'});
+  return items;
+}
+
+// ===== SUBJECT LABELS =====
+function subjectLabels(c){
+  return{math:c.math,eng:c.eng,pol:'政治',major:c.major,flex:'查漏补缺',break:'休息'}
+}
+
+// ===== NAV (顶部+底部同步) =====
+function switchTab(tabName){
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.bottom-nav-item').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelector(`.nav-tab[data-tab="${tabName}"]`)?.classList.add('active');
+  document.querySelector(`.bottom-nav-item[data-tab="${tabName}"]`)?.classList.add('active');
+  document.getElementById(tabName).classList.add('active');
+  if(tabName==='stats')setTimeout(()=>renderChart(),50);
+}
+document.querySelectorAll('.nav-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>switchTab(tab.dataset.tab));
+});
+document.querySelectorAll('.bottom-nav-item').forEach(item=>{
+  item.addEventListener('click',()=>switchTab(item.dataset.tab));
+});
+
+// ===== RENDER =====
+function renderSchedule(){
+  const state=getState();const c=getConfig();const today=todayStr();
+  if(!state.completed[today])state.completed[today]={};
+  const completed=state.completed[today];const schedule=generateSchedule(c);
+  const labels=subjectLabels(c);
+  const list=document.getElementById('scheduleList');
+  const total=schedule.filter(s=>s.subject!=='break').length;
+  const done=schedule.filter(s=>s.subject!=='break'&&completed[s.id]).length;
+  const pct=total>0?Math.round(done/total*100):0;
+  document.getElementById('progressBar').style.width=pct+'%';
+  document.getElementById('progressPercent').textContent=pct+'%';
+  document.getElementById('progressText').textContent=`完成 ${done} / ${total} 个学习任务`;
+  list.innerHTML=schedule.map(item=>{
+    const isDone=completed[item.id];
+    return`<div class="schedule-item ${isDone?'completed':''}">
+      <div class="schedule-time">${item.time}</div>
+      <div class="schedule-info">
+        <div class="schedule-title">${item.title}<span class="schedule-subject sub-${item.subject}">${labels[item.subject]||item.subject}</span></div>
+        <div class="schedule-desc">${item.desc}</div>
+      </div>
+      <button class="check-btn ${isDone?'checked':''}" onclick="toggleTask('${item.id}')">${isDone?'✓':''}</button>
+    </div>`
+  }).join('');
+  updateStreak(state,schedule);
+  document.getElementById('streakBadge').textContent=`连续打卡 ${state.streak} 天`;
+}
+
+function toggleTask(id){
+  const state=getState();const today=todayStr();
+  if(!state.completed[today])state.completed[today]={};
+  if(state.completed[today][id]){delete state.completed[today][id];state.totalTasksCompleted=Math.max(0,state.totalTasksCompleted-1)}
+  else{state.completed[today][id]=true;state.totalTasksCompleted++;if(!state.firstUse)state.firstUse=today}
+  save(state);renderSchedule();renderStats();
+}
+
+function updateStreak(state,schedule){
+  const today=todayStr();const lt=schedule.filter(s=>s.subject!=='break');
+  const tc=state.completed[today]||{};
+  const hasToday=lt.some(t=>tc[t.id]);
+  if(!hasToday){
+    const y=new Date();y.setDate(y.getDate()-1);
+    const ys=y.toISOString().slice(0,10);const yc=state.completed[ys]||{};
+    if(lt.filter(t=>yc[t.id]).length<Math.ceil(lt.length*.6))state.streak=0;
+  }else{
+    let streak=0,d=new Date();
+    while(true){const ds=d.toISOString().slice(0,10);const dc=state.completed[ds]||{};
+      if(lt.filter(t=>dc[t.id]).length>=Math.ceil(lt.length*.6)){streak++;d.setDate(d.getDate()-1)}else break}
+    state.streak=streak;
+  }
+  save(state);
+}
+
+// ===== MATERIALS =====
+const uploadZone=document.getElementById('uploadZone'),fileInput=document.getElementById('fileInput');
+uploadZone.addEventListener('click',()=>fileInput.click());
+uploadZone.addEventListener('dragover',e=>{e.preventDefault();uploadZone.classList.add('dragover')});
+uploadZone.addEventListener('dragleave',()=>uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop',e=>{e.preventDefault();uploadZone.classList.remove('dragover');handleFiles(e.dataTransfer.files)});
+fileInput.addEventListener('change',e=>handleFiles(e.target.files));
+
+function handleFiles(files){
+  Array.from(files).forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=()=>{
+      const state=getState();
+      state.materials.push({id:'m'+Date.now()+Math.random().toString(36).slice(2,6),name:file.name,size:file.size,type:file.type||file.name.split('.').pop(),content:reader.result,date:todayStr()});
+      save(state);renderMaterials();showToast(`已上传: ${file.name}`);
+    };
+    if(file.type.startsWith('image/')||file.type==='application/pdf')reader.readAsDataURL(file);
+    else reader.readAsText(file);
+  });
+}
+
+function renderMaterials(){
+  const state=getState();const list=document.getElementById('materialList');
+  document.getElementById('materialCount').textContent=state.materials.length+' 份';
+  if(!state.materials.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">📚</div><div class="empty-text">还没有上传任何资料</div></div>';return}
+  list.innerHTML=state.materials.map(m=>{
+    const icon=m.name.endsWith('.pdf')?'📄':m.name.match(/\.(png|jpg|jpeg)/)?'🖼️':'📝';
+    const sz=m.size>1024*1024?(m.size/1024/1024).toFixed(1)+'MB':(m.size/1024).toFixed(1)+'KB';
+    return`<div class="material-item"><div class="material-icon">${icon}</div><div class="material-info"><div class="material-name">${m.name}</div><div class="material-meta">${sz} · ${m.date}</div></div><div class="material-actions"><button class="btn-icon" onclick="viewMaterial('${m.id}')">👁️</button><button class="btn-icon danger" onclick="deleteMaterial('${m.id}')">🗑️</button></div></div>`
+  }).join('');
+}
+
+function viewMaterial(id){
+  const m=getState().materials.find(x=>x.id===id);if(!m)return;
+  if(m.content.startsWith('data:')){
+    const w=window.open('');
+    if(m.content.startsWith('data:image'))w.document.write(`<img src="${m.content}" style="max-width:100%">`);
+    else w.document.write(`<iframe src="${m.content}" style="width:100%;height:100vh;border:none"></iframe>`);
+  }else{const w=window.open('');w.document.write(`<pre style="white-space:pre-wrap;font-family:inherit;padding:20px;font-size:14px;line-height:1.6">${m.content.replace(/</g,'&lt;')}</pre>`)}
+}
+
+function deleteMaterial(id){
+  if(!confirm('确定删除此资料？'))return;
+  const state=getState();state.materials=state.materials.filter(m=>m.id!==id);save(state);renderMaterials();showToast('已删除');
+}
+
+// 移动端：启用相机拍照上传
+if(/Mobi|Android/i.test(navigator.userAgent)){
+  fileInput.setAttribute('accept','image/*,.txt,.md,.pdf');
+  // 双击上传区域调用相机拍照
+  uploadZone.addEventListener('dblclick',()=>{
+    const camInput=document.createElement('input');
+    camInput.type='file';camInput.accept='image/*';camInput.capture='environment';
+    camInput.addEventListener('change',e=>handleFiles(e.target.files));
+    camInput.click();
+  });
+}
+
+// ===== QUESTION BANK =====
+function openAddQuestionModal(){
+  const c=getConfig();const sel=document.getElementById('qSubject');
+  sel.innerHTML=getSubjectOptions(c);
+  document.getElementById('qContent').value='';document.getElementById('qOptions').value='';
+  document.getElementById('qAnswer').value='';document.getElementById('qHint').value='';
+  document.getElementById('addQuestionModal').classList.add('show');
+}
+
+function getSubjectOptions(c){
+  return`<option value="${c.math}">${c.math}</option><option value="${c.eng}">${c.eng}</option>${c.pol==='yes'?'<option value="政治">政治</option>':''}<option value="${c.major}">${c.major}</option>`
+}
+
+document.getElementById('qType').addEventListener('change',function(){
+  document.getElementById('optionsGroup').style.display=this.value==='choice'?'block':'none';
+});
+
+function saveQuestion(){
+  const content=document.getElementById('qContent').value.trim();
+  const answer=document.getElementById('qAnswer').value.trim();
+  if(!content||!answer){showToast('请填写题目和答案');return}
+  const state=getState();
+  state.questions.push({id:'q'+Date.now(),subject:document.getElementById('qSubject').value,type:document.getElementById('qType').value,content,options:document.getElementById('qOptions').value.trim().split('\n').filter(Boolean),answer,hint:document.getElementById('qHint').value.trim()});
+  save(state);closeModal('addQuestionModal');renderQuestionBank();showToast('题目已添加');
+}
+
+function renderQuestionBank(){
+  const state=getState();const list=document.getElementById('questionBankList');
+  if(!state.questions.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">题库为空，点击上方"添加题目"</div></div>';return}
+  const grouped={};state.questions.forEach(q=>{if(!grouped[q.subject])grouped[q.subject]=[];grouped[q.subject].push(q)});
+  list.innerHTML=Object.entries(grouped).map(([sub,qs])=>`<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:6px">${sub} (${qs.length}题)</div>${qs.map(q=>`<div class="material-item"><div class="material-info"><div class="material-name" style="font-size:13px">${q.content.slice(0,60)}${q.content.length>60?'...':''}</div><div class="material-meta">${q.type==='choice'?'选择题':q.type==='fill'?'填空题':'简答题'}</div></div><button class="btn-icon danger" onclick="deleteQuestion('${q.id}')">🗑️</button></div>`).join('')}</div>`).join('');
+}
+
+function deleteQuestion(id){const state=getState();state.questions=state.questions.filter(q=>q.id!==id);save(state);renderQuestionBank()}
+
+// ===== QUIZ =====
+let currentQuiz=null;
+
+function populateQuizFilter(){
+  const c=getConfig();const sel=document.getElementById('quizSubjectFilter');
+  sel.innerHTML=`<option value="all">全部科目</option><option value="${c.math}">${c.math}</option><option value="${c.eng}">${c.eng}</option>${c.pol==='yes'?'<option value="政治">政治</option>':''}<option value="${c.major}">${c.major}</option>`;
+}
+
+function buildAILinks(q){
+  const c=getConfig();
+  let prompt=`我正在准备考研，考${c.math}+${c.eng}+${c.major}，遇到了一道不会的${q.subject}题目，请帮我详细解答并给出解题思路：\n\n【${q.subject}】${q.content}`;
+  if(q.options&&q.options.length)prompt+='\n'+q.options.join('\n');
+  prompt+='\n\n请给出：1)答案 2)详细解题步骤 3)涉及的知识点总结';
+  const enc=encodeURIComponent(prompt);
+  return{doubao:`https://www.doubao.com/chat/?q=${enc}`,deepseek:`https://chat.deepseek.com/?q=${enc}`};
+}
+
+function showAILinks(){
+  if(!currentQuiz)return;
+  const links=buildAILinks(currentQuiz);
+  document.getElementById('doubaoLink').href=links.doubao;
+  document.getElementById('deepseekLink').href=links.deepseek;
+  document.getElementById('aiLinks').classList.add('show');
+}
+
+function startQuiz(){
+  const state=getState();const filter=document.getElementById('quizSubjectFilter').value;
+  let pool=state.questions;if(filter!=='all')pool=pool.filter(q=>q.subject===filter);
+  if(!pool.length){showToast('题库为空，请先添加题目');return}
+  const wrongIds=Object.keys(state.wrongQuestions);
+  let picked;
+  if(wrongIds.length&&Math.random()<.4){const wp=pool.filter(q=>wrongIds.includes(q.id));picked=wp.length?wp[Math.floor(Math.random()*wp.length)]:pool[Math.floor(Math.random()*pool.length)]}
+  else picked=pool[Math.floor(Math.random()*pool.length)];
+  currentQuiz={...picked,startTime:Date.now()};renderQuizQuestion(picked);
+}
+
+function renderQuizQuestion(q){
+  const area=document.getElementById('quizArea');
+  let html=`<div class="quiz-question"><strong>[${q.subject}]</strong> ${q.content.replace(/\n/g,'<br>')}</div>`;
+  if(q.type==='choice'&&q.options.length)html+=`<div class="quiz-options" id="quizOptions">${q.options.map((opt,i)=>`<div class="quiz-option" data-idx="${i}" onclick="selectOption(this)">${opt}</div>`).join('')}</div>`;
+  else html+=`<div class="quiz-answer-area"><textarea class="quiz-answer-input" id="quizAnswerInput" placeholder="请输入你的答案..."></textarea></div>`;
+  html+=`<div class="btn-group"><button class="btn btn-primary" onclick="submitQuiz()">提交答案</button><button class="btn btn-warning" onclick="showHint()">我不会</button></div><div class="hint-box" id="hintBox"><div class="hint-title">💡 提示</div><div id="hintContent"></div></div><div class="answer-reveal" id="answerReveal"><div class="answer-reveal-title">✅ 正确答案</div><div id="revealContent"></div></div><div class="ai-links" id="aiLinks"><div class="ai-links-title">🤖 去 AI 助手提问这道题</div><a class="ai-link-btn ai-doubao" id="doubaoLink" href="#" target="_blank" rel="noopener">豆包</a><a class="ai-link-btn ai-deepseek" id="deepseekLink" href="#" target="_blank" rel="noopener">DeepSeek</a></div>`;
+  area.innerHTML=html;
+}
+
+function selectOption(el){document.querySelectorAll('.quiz-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected')}
+
+function submitQuiz(){
+  if(!currentQuiz)return;const state=getState();let userAnswer='';
+  if(currentQuiz.type==='choice'){
+    const sel=document.querySelector('.quiz-option.selected');if(!sel){showToast('请选择一个选项');return}
+    userAnswer=sel.textContent.trim();
+    const isCorrect=userAnswer===currentQuiz.answer.trim()||sel.dataset.idx==getCorrectIdx(currentQuiz);
+    sel.classList.add(isCorrect?'correct':'wrong');
+    if(!isCorrect)document.querySelectorAll('.quiz-option').forEach(o=>{if(o.textContent.trim()===currentQuiz.answer.trim())o.classList.add('correct')});
+    recordQuiz(state,isCorrect,userAnswer);
+  }else{
+    userAnswer=document.getElementById('quizAnswerInput').value.trim();if(!userAnswer){showToast('请输入答案');return}
+    document.getElementById('revealContent').innerHTML=currentQuiz.answer.replace(/\n/g,'<br>');
+    document.getElementById('answerReveal').classList.add('show');
+    if(currentQuiz.type==='fill'){recordQuiz(state,userAnswer.replace(/\s/g,'')===currentQuiz.answer.replace(/\s/g,''),userAnswer)}
+    else{showToast('请对照参考答案自行判断');recordQuiz(state,null,userAnswer)}
+  }
+  document.querySelectorAll('#quizArea .btn').forEach(b=>b.disabled=true);
+  const bg=document.querySelector('#quizArea .btn-group');if(bg)bg.innerHTML='<button class="btn btn-primary" onclick="startQuiz()">下一题</button>';
+  save(state);renderWrongBook();renderQuizHistory();renderStats();showAILinks();
+}
+
+function getCorrectIdx(q){const m=q.answer.match(/^([A-D])/i);if(m)return m[1].charCodeAt(0)-65;const i=q.options.findIndex(o=>o.trim()===q.answer.trim());return i>=0?i:-1}
+
+function recordQuiz(state,isCorrect,userAnswer){
+  state.quizHistory.unshift({id:'qh'+Date.now(),qId:currentQuiz.id,question:currentQuiz.content.slice(0,50),userAnswer:userAnswer.slice(0,50),correct:isCorrect,date:todayStr()});
+  if(isCorrect===false)state.wrongQuestions[currentQuiz.id]=(state.wrongQuestions[currentQuiz.id]||0)+1;
+  else if(isCorrect===true&&state.wrongQuestions[currentQuiz.id])delete state.wrongQuestions[currentQuiz.id];
+}
+
+function showHint(){
+  if(!currentQuiz)return;
+  document.getElementById('hintContent').textContent=currentQuiz.hint||'暂无提示。试试回忆相关知识点，或从基本定义出发思考。';
+  document.getElementById('hintBox').classList.add('show');
+  document.getElementById('revealContent').innerHTML=currentQuiz.answer.replace(/\n/g,'<br>');
+  document.getElementById('answerReveal').classList.add('show');
+  const state=getState();recordQuiz(state,false,'（看了提示）');
+  state.wrongQuestions[currentQuiz.id]=(state.wrongQuestions[currentQuiz.id]||0)+1;
+  save(state);renderWrongBook();renderQuizHistory();renderStats();
+  document.querySelectorAll('#quizArea .btn').forEach(b=>b.disabled=true);
+  const bg=document.querySelector('#quizArea .btn-group');if(bg)bg.innerHTML='<button class="btn btn-primary" onclick="startQuiz()">下一题</button>';
+  showAILinks();
+}
+
+function renderWrongBook(){
+  const state=getState();const list=document.getElementById('wrongBook');const ids=Object.keys(state.wrongQuestions);
+  if(!ids.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">🎉</div><div class="empty-text">暂无错题，继续保持！</div></div>';return}
+  const wrongCount=ids.reduce((s,id)=>s+(state.wrongQuestions[id]||0),0);
+  let banner='';
+  if(wrongCount>=10){
+    banner='<div class="mock-banner" onclick="generateMockExam()"><div class="mock-banner-title">错题已达'+wrongCount+'道，点击生成模拟卷</div><div>基于你的高频错题，自动生成一套专属模拟卷</div></div>';
+  }
+  list.innerHTML=banner+ids.map(qId=>{
+    const q=state.questions.find(x=>x.id===qId);if(!q)return'';
+    const imgs=state.wrongImages[qId]||[];
+    let ph='<div class="wrong-photos">';
+    imgs.forEach((img,i)=>{ph+='<span style="position:relative;display:inline-block"><img class="wrong-photo" src="'+img+'" onclick="viewWrongPhoto(\''+qId+'\','+i+')"><button class="btn-icon danger" style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;font-size:10px;background:var(--card);border-radius:50%;border:1px solid var(--border)" onclick="event.stopPropagation();deleteWrongPhoto(\''+qId+'\','+i+')">✕</button></span>'});
+    ph+='<div class="wrong-photo-add" onclick="addWrongPhoto(\''+qId+'\')">+</div></div>';
+    return'<div class="wrong-item"><div class="wrong-item-header"><div><div class="wrong-q">'+q.content.slice(0,80)+(q.content.length>80?'...':'')+'</div><div class="wrong-a">答案: '+q.answer.slice(0,60)+'</div><div class="wrong-count">错误 '+state.wrongQuestions[qId]+' 次</div></div></div>'+ph+'</div>'
+  }).join('');
+}
+
+function addWrongPhoto(qId){
+  const inp=document.createElement('input');inp.type='file';inp.accept='image/*';
+  if(/Mobi|Android/i.test(navigator.userAgent))inp.setAttribute('capture','environment');
+  inp.addEventListener('change',function(){
+    const f=this.files[0];if(!f)return;
+    const reader=new FileReader();
+    reader.onload=function(){
+      const state=getState();
+      if(!state.wrongImages[qId])state.wrongImages[qId]=[];
+      state.wrongImages[qId].push(reader.result);
+      save(state);renderWrongBook();showToast('图片已保存');
+    };
+    reader.readAsDataURL(f);
+  });
+  inp.click();
+}
+
+function deleteWrongPhoto(qId,idx){
+  if(!confirm('删除这张图片？'))return;
+  const state=getState();
+  if(state.wrongImages[qId]){state.wrongImages[qId].splice(idx,1);if(!state.wrongImages[qId].length)delete state.wrongImages[qId]}
+  save(state);renderWrongBook();showToast('图片已删除');
+}
+
+function viewWrongPhoto(qId,idx){
+  const state=getState();const imgs=state.wrongImages[qId];
+  if(!imgs||!imgs[idx])return;
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:700;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:16px';
+  ov.innerHTML='<img src="'+imgs[idx]+'" style="max-width:90vw;max-height:90vh;border-radius:8px;object-fit:contain">';
+  ov.addEventListener('click',function(){ov.remove()});
+  document.body.appendChild(ov);
+}
+
+function renderQuizHistory(){
+  const state=getState();const list=document.getElementById('quizHistory');
+  if(!state.quizHistory.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-text">暂无答题记录</div></div>';return}
+  list.innerHTML=state.quizHistory.slice(0,20).map(h=>{
+    let r='';if(h.correct===true)r='<span class="history-result result-correct">✓ 正确</span>';else if(h.correct===false)r='<span class="history-result result-wrong">✗ 错误</span>';else r='<span class="history-result" style="background:#f1f3f4">自评</span>';
+    return`<div class="history-item"><div class="history-q">${h.question} ${r}</div><div class="history-a">${h.date} · 你的答案: ${h.userAnswer}</div></div>`
+  }).join('');
+}
+
+// ===== STATS =====
+function renderStats(){
+  const state=getState();const c=getConfig();const today=todayStr();
+  const totalDays=state.firstUse?Math.max(1,Math.ceil((new Date(today)-new Date(state.firstUse))/864e5)+1):0;
+  const tq=state.quizHistory.length,cq=state.quizHistory.filter(h=>h.correct===true).length;
+  const acc=tq>0?Math.round(cq/tq*100):0;
+  document.getElementById('statTotalDays').textContent=totalDays;
+  document.getElementById('statStreak').textContent=state.streak;
+  document.getElementById('statTasks').textContent=state.totalTasksCompleted;
+  document.getElementById('statQuizzes').textContent=tq;
+  document.getElementById('statAccuracy').textContent=acc+'%';
+  document.getElementById('statWrong').textContent=Object.keys(state.wrongQuestions).length;
+  renderCalendar(state);renderSubjectDist(state,c);renderPracticeLog();renderChart('line');
+}
+
+function renderCalendar(state){
+  const cal=document.getElementById('checkinCalendar');const now=new Date();const y=now.getFullYear(),m=now.getMonth();
+  const dim=new Date(y,m+1,0).getDate();const fd=new Date(y,m,1).getDay();
+  let h=`<div style="text-align:center;font-weight:600;margin-bottom:12px">${y}年${m+1}月</div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;font-size:12px">`;
+  ['日','一','二','三','四','五','六'].forEach(d=>h+=`<div style="color:var(--text2);padding:4px">${d}</div>`);
+  for(let i=0;i<fd;i++)h+='<div></div>';
+  for(let d=1;d<=dim;d++){
+    const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const comp=state.completed[ds]||{};const schedule=generateSchedule(getConfig());
+    const lt=schedule.filter(s=>s.subject!=='break');const dn=lt.filter(t=>comp[t.id]).length;
+    const isT=ds===todayStr();
+    const bg=dn>0?(dn>=lt.length*.6?'var(--success)':'var(--warning)'):'transparent';
+    const col=dn>0?'#fff':(isT?'var(--primary)':'var(--text)');
+    h+=`<div style="padding:6px;border-radius:8px;background:${bg};color:${col};border:${isT?'2px solid var(--primary)':'none'};font-weight:${isT?600:400}">${d}</div>`;
+  }
+  cal.innerHTML=h+'</div>';
+}
+
+function renderSubjectDist(state,c){
+  const dist=document.getElementById('subjectDistribution');const schedule=generateSchedule(c);
+  const subs={};const colors={math:'#ea4335',eng:'#4285f4',pol:'#fbbc04',major:'#34a853',flex:'#9c27b0'};
+  schedule.forEach(item=>{
+    if(item.subject==='break')return;
+    if(!subs[item.subject])subs[item.subject]=0;
+    const[s,]=item.time.split('-');const[e,]=item.time.split('-').slice(1);
+    const[sh,sm]=s.split(':').map(Number);const[eh,em]=e.split(':').map(Number);
+    subs[item.subject]+=(eh*60+em-sh*60-sm);
+  });
+  const labels=subjectLabels(c);const total=Object.values(subs).reduce((a,b)=>a+b,0);
+  let html='';
+  Object.entries(subs).forEach(([k,mins])=>{
+    const pct=total>0?Math.round(mins/total*100):0;const hrs=(mins/60).toFixed(1);
+    html+=`<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>${labels[k]||k}</span><span>${hrs}小时 (${pct}%)</span></div><div style="background:#e8eaed;border-radius:4px;height:8px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${colors[k]||'#999'};border-radius:4px;transition:width .5s"></div></div></div>`;
+  });
+  dist.innerHTML=html;
+}
+
+// ===== PRACTICE LOG =====
+function addLogEntry(){
+  const subject=document.getElementById('logSubject').value;
+  const total=parseInt(document.getElementById('logTotal').value)||0;
+  const correct=parseInt(document.getElementById('logCorrect').value)||0;
+  let date=document.getElementById('logDate').value;
+  if(!date)date=todayStr();
+  if(!total||correct>total){showToast('请填写有效的做题数和正确数');return}
+  const state=getState();
+  state.practiceLog.push({id:'pl'+Date.now(),subject,total,correct,date});
+  save(state);
+  document.getElementById('logTotal').value='';document.getElementById('logCorrect').value='';
+  document.getElementById('logDate').value='';
+  renderPracticeLog();renderChart();
+  showToast('记录已添加');
+}
+
+function deleteLogEntry(id){
+  if(!confirm('删除这条记录？'))return;
+  const state=getState();
+  state.practiceLog=state.practiceLog.filter(e=>e.id!==id);
+  save(state);renderPracticeLog();renderChart();showToast('已删除');
+}
+
+function renderPracticeLog(){
+  const state=getState();const tbody=document.getElementById('logTbody');
+  if(!state.practiceLog.length){
+    tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--text2);padding:16px">暂无记录，请添加练习数据</td></tr>';
+    const c1=getConfig();
+    const subs1=[c1.math,c1.eng,c1.major];
+    if(c1.pol==='yes')subs1.splice(2,0,'政治');
+    document.getElementById('logSubject').innerHTML=subs1.map(s=>'<option>'+s+'</option>').join('');
+    return;
+  }
+  const sorted=[...state.practiceLog].reverse();
+  const c=getConfig();
+  const availSubs=[c.math,c.eng,c.major];
+  if(c.pol==='yes')availSubs.splice(2,0,'政治');
+  const sel=document.getElementById('logSubject');
+  if(sel)sel.innerHTML=availSubs.map(s=>'<option>'+s+'</option>').join('');
+  tbody.innerHTML=sorted.slice(0,30).map(e=>{
+    const rate=Math.round(e.correct/e.total*100);
+    const c=rate>=80?'var(--success)':rate>=60?'var(--warning)':'var(--danger)';
+    return'<tr><td>'+e.date+'</td><td>'+e.subject+'</td><td>'+e.total+'</td><td>'+e.correct+'</td><td style="color:'+c+';font-weight:600">'+rate+'%</td><td><button class="log-btn log-btn-del" onclick="deleteLogEntry(\''+e.id+'\')">删</button></td></tr>';
+  }).join('');
+}
+
+let currentChartType='line';
+function renderChart(type){
+  if(type)currentChartType=type;
+  document.querySelectorAll('.chart-tab').forEach(t=>t.classList.remove('active'));
+  const tab=document.querySelector('.chart-tab[onclick*="'+currentChartType+'"]');
+  if(tab)tab.classList.add('active');
+
+  const state=getState();const canvas=document.getElementById('chartCanvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.parentElement.clientWidth||300;
+  const H=canvas.parentElement.clientHeight||200;
+  canvas.width=W*devicePixelRatio;canvas.height=H*devicePixelRatio;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+
+  const pad={t:20,r:20,b:40,l:50};
+  const pw=W-pad.l-pad.r,ph=H-pad.t-pad.b;
+
+  ctx.clearRect(0,0,W,H);
+
+  if(!state.practiceLog.length){
+    ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--text2')||'#5f6368';
+    ctx.font='14px sans-serif';ctx.textAlign='center';
+    ctx.fillText('暂无数据，请先添加练习记录',W/2,H/2);
+    return;
+  }
+
+  if(currentChartType==='line'){
+    drawLineChart(ctx,state,pad,pw,ph,W,H);
+  }else{
+    drawBarChart(ctx,state,pad,pw,ph,W,H);
+  }
+}
+
+function drawLineChart(ctx,state,pad,pw,ph,W,H){
+  const sorted=[...state.practiceLog].sort((a,b)=>a.date.localeCompare(b.date));
+  const rates=sorted.map(e=>Math.round(e.correct/e.total*100));
+  const allRates=rates.length?rates:[0,100];
+  const minY=Math.max(0,Math.min(...allRates)-10);
+  const maxY=Math.min(100,Math.max(...allRates)+10);
+  const rangeY=maxY-minY||1;
+  const stepX=pw/Math.max(rates.length-1,1);
+
+  // Axes
+  ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue('--border')||'#dadce0';
+  ctx.lineWidth=1;ctx.beginPath();
+  ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+ph);
+  ctx.lineTo(pad.l+pw,pad.t+ph);
+  ctx.stroke();
+
+  // Y labels
+  ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--text2')||'#5f6368';
+  ctx.font='10px sans-serif';ctx.textAlign='right';
+  for(let i=0;i<=4;i++){
+    const y=pad.t+ph-ph/4*i;
+    const v=Math.round(minY+rangeY/4*i);
+    ctx.fillText(v+'%',pad.l-6,y+3);
+    ctx.strokeStyle='#e8eaed';ctx.beginPath();
+    ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+pw,y);ctx.stroke();
+  }
+
+  // Data line
+  if(rates.length>1){
+    ctx.strokeStyle='#1a73e8';ctx.lineWidth=2.5;ctx.lineJoin='round';
+    ctx.beginPath();
+    rates.forEach((r,i)=>{
+      const x=pad.l+stepX*i;
+      const y=pad.t+ph-(r-minY)/rangeY*ph;
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+  }
+
+  // Dots
+  rates.forEach((r,i)=>{
+    const x=pad.l+stepX*i;
+    const y=pad.t+ph-(r-minY)/rangeY*ph;
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#1a73e8';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.stroke();
+  });
+
+  // X labels
+  ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--text2')||'#5f6368';
+  ctx.font='10px sans-serif';ctx.textAlign='center';
+  const showXLabels=rates.length<=15?1:Math.ceil(rates.length/8);
+  sorted.forEach((e,i)=>{
+    if(i%showXLabels!==0&&i!==rates.length-1)return;
+    const x=pad.l+stepX*i;
+    ctx.fillText(e.date.slice(5),x,pad.t+ph+16);
+  });
+}
+
+function drawBarChart(ctx,state,pad,pw,ph,W,H){
+  const groups={};state.practiceLog.forEach(e=>{
+    if(!groups[e.subject])groups[e.subject]={total:0,correct:0};
+    groups[e.subject].total+=e.total;groups[e.subject].correct+=e.correct;
+  });
+  const entries=Object.entries(groups);
+  const barColors={数学:'#ea4335',英语:'#4285f4',政治:'#fbbc04','专业课':'#34a853'};
+
+  // Axes
+  ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue('--border')||'#dadce0';
+  ctx.lineWidth=1;ctx.beginPath();
+  ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+ph);
+  ctx.lineTo(pad.l+pw,pad.t+ph);
+  ctx.stroke();
+
+  // Y labels
+  ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--text2')||'#5f6368';
+  ctx.font='10px sans-serif';ctx.textAlign='right';
+  for(let i=0;i<=4;i++){
+    const y=pad.t+ph-ph/4*i;
+    ctx.fillText(i*25+'%',pad.l-6,y+3);
+    ctx.strokeStyle='#e8eaed';ctx.beginPath();
+    ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+pw,y);ctx.stroke();
+  }
+
+  if(!entries.length)return;
+  const barW=Math.min(60,(pw/entries.length)*.6);
+  const gap=pw/entries.length;
+  entries.forEach(([sub,data],i)=>{
+    const rate=Math.min(100,Math.round(data.correct/data.total*100));
+    const barH=rate/100*ph;
+    const x=pad.l+gap*i+(gap-barW)/2;
+    const y=pad.t+ph-barH;
+    ctx.fillStyle=barColors[sub]||'#999';
+    ctx.fillRect(x,y,barW,barH);
+    ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--text')||'#202124';
+    ctx.font='12px sans-serif';ctx.textAlign='center';
+    ctx.fillText(rate+'%',x+barW/2,y-4);
+    ctx.fillText(sub,x+barW/2,pad.t+ph+14);
+  });
+}
+
+// ===== MOCK EXAM =====
+let mockExamState=null;
+
+function generateMockExam(){
+  const state=getState();const wrongIds=Object.keys(state.wrongQuestions);
+  if(wrongIds.length<3){showToast('错题数量不足（至少需要3道不同错题）');return}
+  const pool=state.questions.filter(q=>wrongIds.includes(q.id));
+  if(!pool.length){showToast('题库中找不到对应错题');return}
+  const n=Math.min(10,pool.length);
+  const shuffled=[...pool].sort(()=>Math.random()-.5).slice(0,n);
+  mockExamState={questions:shuffled,answers:[],startTime:Date.now(),currentIdx:0};
+  renderMockExam();
+  document.getElementById('mockExamModal').classList.add('show');
+}
+
+function renderMockExam(){
+  if(!mockExamState)return;
+  const q=mockExamState.questions[mockExamState.currentIdx];
+  const total=mockExamState.questions.length;
+  const idx=mockExamState.currentIdx;
+  const body=document.getElementById('mockExamBody');
+  const footer=document.getElementById('mockExamFooter');
+  body.innerHTML='<div style="margin-bottom:12px;font-size:13px;color:var(--text2)">第 '+(idx+1)+'/'+total+' 题 · ['+q.subject+']</div>'
+    +'<div class="quiz-question">'+q.content.replace(/\n/g,'<br>')+'</div>'
+    +(q.type==='choice'&&q.options.length?'<div class="quiz-options">'+q.options.map((opt,i)=>'<div class="quiz-option" data-idx="'+i+'" onclick="selectMockOption(this)">'+opt+'</div>').join('')+'</div>':'<textarea class="quiz-answer-input" id="mockAnswerInput" placeholder="请输入你的答案..." style="min-height:60px"></textarea>');
+  footer.innerHTML='<button class="btn btn-outline" onclick="closeModal(\'mockExamModal\');mockExamState=null">退出</button>'
+    +(idx>0?'<button class="btn btn-outline" onclick="mockPrevQuestion()">上一题</button>':'')
+    +'<button class="btn btn-primary" onclick="mockNextOrSubmit()">'+(idx<total-1?'下一题':'提交试卷')+'</button>';
+}
+
+function selectMockOption(el){
+  document.querySelectorAll('#mockExamBody .quiz-option').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function mockPrevQuestion(){
+  if(!mockExamState||mockExamState.currentIdx<=0)return;
+  mockExamState.currentIdx--;
+  renderMockExam();
+}
+
+function mockNextOrSubmit(){
+  if(!mockExamState)return;
+  const q=mockExamState.questions[mockExamState.currentIdx];
+  let ans='';
+  if(q.type==='choice'){
+    const sel=document.querySelector('#mockExamBody .quiz-option.selected');
+    if(!sel){showToast('请选择一个选项');return}
+    ans=sel.textContent.trim();
+  }else{
+    ans=document.getElementById('mockAnswerInput')?.value.trim()||'';
+    if(!ans){showToast('请输入答案');return}
+  }
+  mockExamState.answers[mockExamState.currentIdx]=ans;
+  if(mockExamState.currentIdx<mockExamState.questions.length-1){
+    mockExamState.currentIdx++;
+    renderMockExam();
+  }else{
+    submitMockExam();
+  }
+}
+
+function submitMockExam(){
+  if(!mockExamState)return;
+  const questions=mockExamState.questions;
+  const userAnswers=mockExamState.answers;
+  let score=0;
+  const details=[];
+  questions.forEach((q,i)=>{
+    const ua=(userAnswers[i]||'').trim();
+    const ca=q.answer.trim();
+    let isCorrect;
+    if(q.type==='choice'){
+      isCorrect=ua===ca||(q.options[parseInt(ua)]||ua)===ca;
+    }else{
+      isCorrect=ua.replace(/\s/g,'')===ca.replace(/\s/g,'');
+    }
+    if(isCorrect)score++;
+    details.push({question:q,userAnswer:ua,correct:isCorrect});
+  });
+  mockExamState.score=score;
+  mockExamState.details=details;
+  mockExamState=null;
+  renderExamResult(score,questions.length,details);
+}
+
+function renderExamResult(score,total,details){
+  const body=document.getElementById('mockExamBody');
+  const footer=document.getElementById('mockExamFooter');
+  const pct=Math.round(score/total*100);
+  const grade=pct>=90?'优秀':pct>=70?'良好':pct>=60?'及格':'需加强';
+  body.innerHTML='<div class="mock-exam-result"><div class="mock-score">'+pct+'分</div><div class="mock-score-label">'+score+'/'+total+' 正确 · '+grade+'</div></div>'
+    +'<div class="mock-wrong-list">'+details.map((d,i)=>{
+      const icon=d.correct?'✓':'✗';
+      const bg=d.correct?'var(--success-light)':'#fce8e6';
+      const color=d.correct?'var(--success)':'var(--danger)';
+      return'<div class="mock-exam-card" style="border-left:3px solid '+color+'"><div style="font-size:13px;font-weight:500;margin-bottom:4px">'+icon+' 第'+(i+1)+'题 ['+d.question.subject+'] '+d.question.content.slice(0,50)+'</div><div style="font-size:12px;color:var(--text2)">你的答案: '+d.userAnswer+'</div>'+(!d.correct?'<div style="font-size:12px;color:var(--success);margin-top:2px">正确答案: '+d.question.answer+'</div>':'')+'</div>';
+    }).join('')+'</div>';
+  footer.innerHTML='<button class="btn btn-outline" onclick="closeModal(\'mockExamModal\')">关闭</button>';
+}
+
+// ===== INIT =====
+// ===== 每日新闻（天行数据 API，官方支持 CORS，免费额度 100次/天） =====
+const NEWS_API_KEY='d6212d7ef9b959990b85b1ff02973cd0';
+const NEWS_DAILY_LIMIT=90; // 安全阈值，留 10 次余量防止超额
+
+function getApiQuota(){
+  const today=todayStr();
+  try{
+    const q=JSON.parse(localStorage.getItem('newsApiQuota')||'{}');
+    return q.date===today?q:{date:today,count:0};
+  }catch{return{date:today,count:0}}
+}
+
+function addApiQuota(n){
+  const q=getApiQuota();
+  q.count+=n;
+  try{localStorage.setItem('newsApiQuota',JSON.stringify(q))}catch{}
+}
+
+function isQuotaExceeded(){
+  const q=getApiQuota();
+  return q.count>=NEWS_DAILY_LIMIT;
+}
+
+function fetchDailyNews(){
+  const today=todayStr();
+  try{
+    const cached=JSON.parse(localStorage.getItem('newsCache')||'{}');
+    if(cached.date===today&&cached.items)return Promise.resolve(cached.items);
+  }catch{}
+
+  // 超出额度直接返回，不发起请求
+  if(isQuotaExceeded()){
+    window._newsQuotaExceeded=true;
+    return Promise.resolve(null);
+  }
+
+  // 并发请求三个分类（3次调用），合并去重
+  const categories=[
+    {url:'https://api.tianapi.com/guonei/index?key='+NEWS_API_KEY+'&num=6',tag:'国内',source:'天行数据 · 国内'},
+    {url:'https://api.tianapi.com/world/index?key='+NEWS_API_KEY+'&num=4',tag:'国际',source:'天行数据 · 国际'},
+    {url:'https://api.tianapi.com/keji/index?key='+NEWS_API_KEY+'&num=2',tag:'科技',source:'天行数据 · 科技'},
+  ];
+
+  addApiQuota(3); // 预扣本次请求额度
+
+  return Promise.allSettled(
+    categories.map(cat=>fetch(cat.url).then(r=>r.json()).then(d=>{
+      if(d.code===200&&d.newslist)return d.newslist.map(n=>({t:n.title,s:n.description||'',source:cat.source,tag:cat.tag}));
+      return [];
+    }).catch(()=>[]))
+  ).then(results=>{
+    const seen=new Set();
+    const all=[];
+    results.forEach(r=>{
+      if(r.status==='fulfilled')r.value.forEach(item=>{
+        const key=item.t.slice(0,20);
+        if(!seen.has(key)){seen.add(key);all.push(item);}
+      });
+    });
+    if(all.length){
+      try{localStorage.setItem('newsCache',JSON.stringify({date:today,items:all.slice(0,10)}))}catch{}
+      return all.slice(0,10);
+    }
+    return null;
+  });
+}
+
+function getStudyTips(dayIdx){
+  // 确定事实的考研备考贴士，每日轮换
+  const header=window._newsQuotaExceeded?['今日API调用次数已用完（90/100次），明天自动恢复。以下为备考贴士：']:[];
+  window._newsQuotaExceeded=false;
+  const tips=[
+    '考研初试时间一般在每年12月倒数第二个周末，2027考研预计为2026年12月26-27日。',
+    '政治科目中"时事政治"占分约16分（单选2道+多选2道+材料分析10分），建议每天关注权威新闻。',
+    '英语阅读理解Part A共4篇文章20道题40分，占总分40%，是拉开差距的关键。',
+    '数学科目中高等数学约占56%、线性代数约22%、概率论与数理统计约22%。',
+    '考研报名时间一般为每年10月中上旬，逾期不可补报。',
+    '英语单词记忆建议使用艾宾浩斯遗忘曲线：学习后20分钟、1小时、1天、2天、6天、31天复习。',
+    '数学复习切忌只看不练，每看完一节必须独立完成10道以上习题。',
+    '政治主观题得分关键在于：原理定位准确+结合材料分析+时政语言规范。',
+    '专业课复习建议先通读教材建立框架，再精读重点章节，最后刷历年真题。',
+    '每天保证7-8小时睡眠，高效学习6-8小时远胜低效12小时。',
+    '数学真题至少做两遍：第一遍按年份，第二遍按知识点分类。',
+    '英语真题阅读理解要逐篇精读：查清每个生词、分析每个长难句、总结每道题出题逻辑。',
+    '政治多选题是失分重灾区（17题34分），排除法+关键词定位是最实用的解题方法。',
+    '建议使用"番茄工作法"：25分钟专注+5分钟休息，每4个番茄钟休息15-30分钟。',
+    '考研大纲一般每年9月发布，政治大纲变化需重点关注。',
+    '专业课历年真题是最高价值复习资料，建议搜集至少近5-10年真题。',
+    '英语作文小作文10分（应用文）、大作文20分（图画/图表作文），模板+字迹=高分。',
+    '数学公式不要死记硬背，理解推导过程才能在考场上灵活运用。',
+    '每周至少安排半天休息，持续高压容易导致倦怠期。',
+    '政治选择题要在45分钟内完成，为分析题留足75分钟。',
+    '英语完形填空20题10分，性价比最低，建议最后做。',
+    '数学答题规范很重要：步骤分占总分的30%以上，不要跳步。',
+    '考前一天不要学新内容，复习错题本+整理心态比什么都重要。',
+    '专业课名词解释类题目要做到：定义+特征+举例+意义，踩点得分。',
+    '保持良好的社交关系，孤独备考容易产生焦虑和抑郁情绪。',
+    '每周末做一次周总结：本周完成了什么、下周计划是什么、薄弱点在哪里。',
+    '政治分析题答题模板：①原理阐述 ②结合材料 ③联系实际 ④总结升华。',
+    '数学遇到不会的题先跳过，做完会做的再回头攻难题，策略比实力更重要。',
+    '英语翻译（英译汉）10分，注意"信达雅"：准确+通顺+符合中文表达习惯。',
+  ];
+  const count=7;
+  const total=tips.length;
+  const items=[];
+  for(let i=0;i<count;i++){
+    items.push({t:tips[(dayIdx*count+i)%total],source:'tip'});
+  }
+  return header.map(t=>({t,source:'tip'})).concat(items);
+}
+
+function renderDailyNews(){
+  const container=document.getElementById('dailyNews');
+  const today=todayStr();
+  const dayIdx=dayOfYear(new Date());
+  document.getElementById('newsDate').textContent=new Date().toLocaleDateString('zh-CN');
+
+  // 额度已用完，直接展示贴士
+  if(isQuotaExceeded()){
+    window._newsQuotaExceeded=true;
+    renderNewsItems(container,getStudyTips(dayIdx));
+    return;
+  }
+
+  container.innerHTML='<div class="news-loading">正在获取今日新闻...</div>';
+
+  // 先检查缓存
+  try{
+    const cached=JSON.parse(localStorage.getItem('newsCache')||'{}');
+    if(cached.date===today&&cached.items){
+      renderNewsItems(container,cached.items);
+      return;
+    }
+  }catch{}
+
+  // 异步获取
+  fetchDailyNews().then(items=>{
+    if(items&&items.length){
+      renderNewsItems(container,items);
+    }else{
+      // 所有 API 均失败，展示考研备考贴士
+      const tips=getStudyTips(dayIdx);
+      renderNewsItems(container,tips);
+    }
+  });
+}
+
+function renderNewsItems(container,items){
+  const isTip=items[0]&&items[0].source==='tip';
+  let source;
+  if(isTip){
+    source='考研备考贴士 · 每日轮换';
+  }else{
+    const tags=new Set(items.map(i=>i.tag).filter(Boolean));
+    source='天行数据 · '+(tags.size?[...tags].join('+'):'综合新闻');
+  }
+  const icon=isTip?'💡':'📰';
+  container.innerHTML=items.map((item,i)=>`<div class="news-item">
+    <div class="news-index">${i+1}</div>
+    <div class="news-content">
+      <div class="news-title">${icon} ${item.t}</div>
+      ${item.s?`<div class="news-summary">${item.s}</div>`:''}
+    </div>
+  </div>`).join('')+`<div class="news-source">来源：${source}</div>`;
+}
+
+function initApp(){
+  const state=getState();const c=getConfig();
+  // Header
+  document.getElementById('appTitle').textContent='考研备考助手';
+  document.getElementById('appSubtitle').textContent=c.school?`${c.school} · ${c.math}+${c.eng}+${c.major}`:`${c.math} + ${c.eng} + ${c.major}`;
+  // Load default questions if empty
+  if(!state.questions||!state.questions.length){
+    state.questions=loadDefaultQuestions(c);
+    save(state);
+  }
+  // Populate filters
+  populateQuizFilter();
+  // First use
+  if(!state.firstUse){state.firstUse=todayStr();save(state)}
+  renderSchedule();renderMaterials();renderWrongBook();renderQuizHistory();renderStats();renderDailySentence();renderDailyNews();
+}
+
+// ===== PWA & MOBILE =====
+// 注册 Service Worker
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+
+// 安装横幅 (仅 standalone 模式下隐藏)
+let deferredPrompt=null;
+const installBanner=document.getElementById('installBanner');
+if(window.matchMedia('(display-mode: standalone)').matches){
+  installBanner.classList.remove('show');
+}
+
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  installBanner.classList.add('show');
+  installBanner.querySelector('.close-banner').onclick=()=>installBanner.classList.remove('show');
+  installBanner.querySelector('span').addEventListener('click',async ()=>{
+    if(!deferredPrompt)return;
+    deferredPrompt.prompt();
+    const {outcome}=await deferredPrompt.userChoice;
+    deferredPrompt=null;
+    installBanner.classList.remove('show');
+  });
+});
+
+window.addEventListener('appinstalled',()=>{
+  deferredPrompt=null;
+  installBanner.classList.remove('show');
+});
+
+// ===== BOOT =====
+(function(){
+  const state=getState();
+  if(!state.config){
+    // Show setup
+    document.getElementById('setupPage').classList.remove('hidden');
+    document.getElementById('mainApp').style.display='none';
+  }else{
+    document.getElementById('setupPage').classList.add('hidden');
+    document.getElementById('mainApp').style.display='';
+    initApp();
+  }
+})();
+</script>
+</body>
+</html>
