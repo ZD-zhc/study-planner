@@ -525,6 +525,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",s
 [data-theme="purple"] .heatmap-cell.l3{background:#4a8a3a}
 [data-theme="purple"] .heatmap-cell.l4{background:#5aaa4a}
 
+/* ===== 自定义背景 ===== */
+body.custom-bg{background-size:cover;background-position:center;background-attachment:fixed;background-repeat:no-repeat}
+body.custom-bg::before{content:'';position:fixed;inset:0;background:rgba(255,255,255,.82);z-index:-1;pointer-events:none}
+body.custom-bg .header{backdrop-filter:blur(8px)}
+body.custom-bg .card,body.custom-bg .modal{background:rgba(255,255,255,.9);backdrop-filter:blur(4px)}
+body.custom-bg .countdown-banner{backdrop-filter:blur(6px)}
+@media(prefers-color-scheme:dark){
+  body.custom-bg::before{background:rgba(26,26,46,.85)}
+  body.custom-bg .card,body.custom-bg .modal{background:rgba(22,33,62,.9)}
+}
+[data-theme="purple"] body.custom-bg::before{background:rgba(26,26,46,.85)}
+[data-theme="purple"] body.custom-bg .card,[data-theme="purple"] body.custom-bg .modal{background:rgba(22,33,62,.9)}
+.bg-upload-zone{border:2px dashed var(--border);border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;margin-top:8px;font-size:13px;color:var(--text2)}
+.bg-upload-zone:hover{border-color:var(--primary);background:var(--primary-light)}
+.bg-preview{width:100%;max-height:120px;object-fit:cover;border-radius:8px;margin-top:8px;display:none}
+.bg-preview.show{display:block}
+.bg-actions{display:flex;gap:8px;margin-top:8px}
+
+/* ===== 新闻增强 ===== */
+.news-item{padding:12px 0;border-bottom:1px solid #f1f3f4;display:flex;gap:10px;align-items:flex-start}
+.news-time{font-size:11px;color:var(--text2);margin-top:4px}
+.news-link{display:inline-block;font-size:11px;color:var(--primary);margin-top:4px;text-decoration:none}
+.news-link:hover{text-decoration:underline}
+
 /* ===== 效率分析 ===== */
 .efficiency-item{margin-bottom:14px}
 .efficiency-header{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}
@@ -834,6 +858,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",s
           <input type="color" id="setCustomColor" value="#1a73e8" onchange="applyCustomColor(this.value)">
         </div>
       </div>
+      <div class="form-group">
+        <label class="form-label">背景图片</label>
+        <div class="bg-upload-zone" id="bgUploadZone" onclick="document.getElementById('bgFileInput').click()">📷 点击上传背景图片</div>
+        <input type="file" id="bgFileInput" accept="image/*" style="display:none" onchange="handleBgUpload(this.files)">
+        <img class="bg-preview" id="bgPreview">
+        <div class="bg-actions">
+          <button class="btn btn-outline" style="font-size:12px;padding:4px 12px" onclick="clearBgImage()">清除背景</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">倒计时横幅颜色</label>
+        <div class="theme-grid" id="countdownColorGrid">
+          <div class="theme-swatch active" data-countdown="auto" style="background:linear-gradient(135deg,#1a73e8,#4285f4)" onclick="selectCountdownColor('auto')"><span>自动</span></div>
+          <div class="theme-swatch" data-countdown="red" style="background:linear-gradient(135deg,#ea4335,#ff6d00)" onclick="selectCountdownColor('red')"><span>烈焰</span></div>
+          <div class="theme-swatch" data-countdown="green" style="background:linear-gradient(135deg,#34a853,#009688)" onclick="selectCountdownColor('green')"><span>生机</span></div>
+          <div class="theme-swatch" data-countdown="purple" style="background:linear-gradient(135deg,#7c4dff,#b388ff)" onclick="selectCountdownColor('purple')"><span>星空</span></div>
+          <div class="theme-swatch" data-countdown="pink" style="background:linear-gradient(135deg,#e91e63,#f48fb1)" onclick="selectCountdownColor('pink')"><span>浪漫</span></div>
+        </div>
+        <div class="theme-custom">
+          <label>自定义渐变色</label>
+          <input type="color" id="setCountdownColor1" value="#1a73e8" onchange="applyCustomCountdownColor()">
+          <input type="color" id="setCountdownColor2" value="#4285f4" onchange="applyCustomCountdownColor()">
+        </div>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal('settingsModal')">取消</button>
@@ -856,7 +904,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",s
 <script>
 // ===== STATE =====
 function getState(){
-  const def={completed:{},streak:0,totalTasksCompleted:0,materials:[],questions:[],quizHistory:[],wrongQuestions:{},wrongImages:{},practiceLog:[],firstUse:null,config:null,scheduleVersion:3,customSchedule:{},pomodoroSettings:{focus:25,shortBreak:5,longBreak:15},pomodoroHistory:[],examDate:'2026-12-26',theme:'default',customColor:null};
+  const def={completed:{},streak:0,totalTasksCompleted:0,materials:[],questions:[],quizHistory:[],wrongQuestions:{},wrongImages:{},practiceLog:[],firstUse:null,config:null,scheduleVersion:3,customSchedule:{},pomodoroSettings:{focus:25,shortBreak:5,longBreak:15},pomodoroHistory:[],examDate:'2026-12-26',theme:'default',customColor:null,bgImage:null,countdownColor:'auto',countdownColorCustom:null};
   try{const s=JSON.parse(localStorage.getItem('studyPlannerState')||'{}');return{...def,...s}}catch{return def}
 }
 function save(s){localStorage.setItem('studyPlannerState',JSON.stringify(s))}
@@ -1274,8 +1322,18 @@ function openSettings(){
   document.getElementById('setExamDate').value=s.examDate||'2026-12-26';
   // Theme
   const theme=s.theme||'default';
-  document.querySelectorAll('.theme-swatch').forEach(sw=>sw.classList.toggle('active',sw.dataset.theme===theme));
+  document.querySelectorAll('#themeGrid .theme-swatch').forEach(sw=>sw.classList.toggle('active',sw.dataset.theme===theme));
   document.getElementById('setCustomColor').value=s.customColor||'#1a73e8';
+  // Background
+  const preview=document.getElementById('bgPreview');
+  if(s.bgImage){preview.src=s.bgImage;preview.classList.add('show')}else{preview.src='';preview.classList.remove('show')}
+  // Countdown color
+  const cc=s.countdownColor||'auto';
+  document.querySelectorAll('#countdownColorGrid .theme-swatch').forEach(sw=>sw.classList.toggle('active',sw.dataset.countdown===cc));
+  if(s.countdownColorCustom){
+    document.getElementById('setCountdownColor1').value=s.countdownColorCustom[0];
+    document.getElementById('setCountdownColor2').value=s.countdownColorCustom[1];
+  }
   document.getElementById('settingsModal').classList.add('show');
 }
 
@@ -2111,6 +2169,82 @@ function applyCustomColor(hex){
   document.querySelector('.theme-swatch[data-theme="default"]')?.classList.add('active');
 }
 
+// ===== BACKGROUND IMAGE =====
+function handleBgUpload(files){
+  const f=files[0];if(!f)return;
+  if(f.size>5*1024*1024){showToast('图片过大，请选择5MB以内的图片');return}
+  const reader=new FileReader();
+  reader.onload=function(){
+    const state=getState();
+    state.bgImage=reader.result;
+    save(state);
+    applyBgImage(reader.result);
+    document.getElementById('bgPreview').src=reader.result;
+    document.getElementById('bgPreview').classList.add('show');
+    showToast('背景图片已设置');
+  };
+  reader.readAsDataURL(f);
+}
+
+function clearBgImage(){
+  const state=getState();
+  state.bgImage=null;
+  save(state);
+  document.body.classList.remove('custom-bg');
+  document.body.style.backgroundImage='';
+  document.getElementById('bgPreview').classList.remove('show');
+  document.getElementById('bgPreview').src='';
+  showToast('背景已清除');
+}
+
+function applyBgImage(dataUrl){
+  if(!dataUrl){document.body.classList.remove('custom-bg');document.body.style.backgroundImage='';return}
+  document.body.classList.add('custom-bg');
+  document.body.style.backgroundImage='url('+dataUrl+')';
+}
+
+// ===== COUNTDOWN COLOR =====
+const COUNTDOWN_COLORS={
+  auto:null,
+  red:['#ea4335','#ff6d00'],
+  green:['#34a853','#009688'],
+  purple:['#7c4dff','#b388ff'],
+  pink:['#e91e63','#f48fb1']
+};
+
+function selectCountdownColor(name){
+  const state=getState();
+  state.countdownColor=name;
+  state.countdownColorCustom=null;
+  save(state);
+  applyCountdownColor(name);
+  document.querySelectorAll('#countdownColorGrid .theme-swatch').forEach(s=>s.classList.toggle('active',s.dataset.countdown===name));
+}
+
+function applyCustomCountdownColor(){
+  const c1=document.getElementById('setCountdownColor1').value;
+  const c2=document.getElementById('setCountdownColor2').value;
+  const state=getState();
+  state.countdownColor='custom';
+  state.countdownColorCustom=[c1,c2];
+  save(state);
+  applyCountdownColor('custom');
+  document.querySelectorAll('#countdownColorGrid .theme-swatch').forEach(s=>s.classList.remove('active'));
+}
+
+function applyCountdownColor(name){
+  const banner=document.getElementById('countdownBanner');
+  if(!banner)return;
+  if(name==='auto'){
+    banner.style.background='';
+    return;
+  }
+  const colors=COUNTDOWN_COLORS[name]||(getState().countdownColorCustom);
+  if(colors){
+    banner.style.background='linear-gradient(135deg,'+colors[0]+','+colors[1]+')';
+  }
+}
+
 // ===== EXAM COUNTDOWN =====
 function renderCountdown(){
   const state=getState();
@@ -2125,11 +2259,20 @@ function renderCountdown(){
   daysEl.textContent=diff>0?diff:'0';
   const weekdays=['日','一','二','三','四','五','六'];
   detailEl.textContent=examDate.replace(/-/g,'年')+'日 · 周'+weekdays[exam.getDay()];
+  // Only apply auto colors if no custom color is set
+  const cc=state.countdownColor||'auto';
   banner.className='countdown-banner';
-  if(diff<=0)banner.classList.add('countdown-urgent');
-  else if(diff<=30)banner.classList.add('countdown-urgent');
-  else if(diff<=100)banner.classList.add('countdown-warning');
-  else banner.classList.add('countdown-safe');
+  if(cc!=='auto'&&cc!=='custom'){
+    applyCountdownColor(cc);
+  }else if(cc==='custom'&&state.countdownColorCustom){
+    applyCountdownColor('custom');
+  }else{
+    // Auto mode: color based on days remaining
+    if(diff<=0)banner.classList.add('countdown-urgent');
+    else if(diff<=30)banner.classList.add('countdown-urgent');
+    else if(diff<=100)banner.classList.add('countdown-warning');
+    else banner.classList.add('countdown-safe');
+  }
 }
 
 // ===== POMODORO TIMER =====
@@ -2607,7 +2750,7 @@ function fetchDailyNews(){
 
   return Promise.allSettled(
     categories.map(cat=>fetch(cat.url).then(r=>r.json()).then(d=>{
-      if(d.code===200&&d.newslist)return d.newslist.map(n=>({t:n.title,s:n.description||'',source:cat.source,tag:cat.tag}));
+      if(d.code===200&&d.newslist)return d.newslist.map(n=>({t:n.title,s:n.description||'',source:cat.source,tag:cat.tag,time:n.ctime||'',url:n.url||''}));
       return [];
     }).catch(()=>[]))
   ).then(results=>{
@@ -2717,13 +2860,19 @@ function renderNewsItems(container,items){
     source='天行数据 · '+(tags.size?[...tags].join('+'):'综合新闻');
   }
   const icon=isTip?'💡':'📰';
-  container.innerHTML=items.map((item,i)=>`<div class="news-item">
-    <div class="news-index">${i+1}</div>
-    <div class="news-content">
-      <div class="news-title">${icon} ${item.t}</div>
-      ${item.s?`<div class="news-summary">${item.s}</div>`:''}
-    </div>
-  </div>`).join('')+`<div class="news-source">来源：${source}</div>`;
+  container.innerHTML=items.map((item,i)=>{
+    let meta='';
+    if(item.time)meta+=`<span class="news-time">🕐 ${item.time}</span>`;
+    if(item.url)meta+=` <a class="news-link" href="${item.url}" target="_blank" rel="noopener">查看原文 ↗</a>`;
+    return`<div class="news-item">
+      <div class="news-index">${i+1}</div>
+      <div class="news-content">
+        <div class="news-title">${icon} ${item.t}</div>
+        ${item.s?`<div class="news-summary">${item.s}</div>`:''}
+        ${meta}
+      </div>
+    </div>`;
+  }).join('')+`<div class="news-source">来源：${source} · 数据仅供参考</div>`;
 }
 
 function initApp(){
@@ -2743,6 +2892,10 @@ function initApp(){
   // Apply theme
   const fullState=getState();
   applyTheme(fullState.theme,fullState.customColor);
+  // Apply background image
+  if(fullState.bgImage)applyBgImage(fullState.bgImage);
+  // Apply countdown color
+  if(fullState.countdownColor&&fullState.countdownColor!=='auto')applyCountdownColor(fullState.countdownColor);
   // Pomodoro init
   const pomoSettings=fullState.pomodoroSettings||{focus:25,shortBreak:5,longBreak:15};
   document.getElementById('setFocusMin').value=pomoSettings.focus;
