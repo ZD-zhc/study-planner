@@ -72,6 +72,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",s
 .check-btn{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;background:#fff;flex-shrink:0;margin-left:12px;font-size:16px;color:transparent}
 .check-btn:hover{border-color:var(--success)}
 .check-btn.checked{background:var(--success);border-color:var(--success);color:#fff}
+.btn-edit-schedule{width:28px;height:28px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;background:transparent;color:var(--text2);font-size:14px;flex-shrink:0;margin-left:8px;transition:all .2s}
+.btn-edit-schedule:hover{background:#e8eaf6;color:var(--primary)}
+.schedule-edit-row{display:flex;flex-wrap:wrap;gap:8px;width:100%;align-items:center}
+.edit-time{width:110px;padding:6px 8px;border:1px solid var(--primary);border-radius:6px;font-size:13px;font-family:monospace}
+.edit-title{flex:1;min-width:120px;padding:6px 8px;border:1px solid var(--primary);border-radius:6px;font-size:13px}
+.edit-desc{width:100%;padding:6px 8px;border:1px solid var(--primary);border-radius:6px;font-size:12px}
+.edit-actions{display:flex;gap:6px;flex-shrink:0}
+.btn-mini{width:30px;height:30px;border-radius:50%;border:none;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center}
+.btn-mini.save{background:var(--success);color:#fff}
+.btn-mini.cancel{background:#dc3545;color:#fff}
+.btn-mini.reset{width:auto;height:auto;border-radius:14px;padding:4px 12px;background:transparent;border:1px solid var(--border);color:var(--text2);font-size:12px}
+.btn-mini.reset:hover{background:#f1f3f4}
 /* ===== DAILY CARDS ===== */
 .daily-sentence{padding:16px}
 .sentence-en{font-size:16px;line-height:1.7;font-style:italic;color:#1a237e;margin-bottom:12px;padding:12px;background:#e8eaf6;border-radius:8px;border-left:4px solid #3f51b5}
@@ -220,6 +232,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",s
   .schedule-title{font-size:13px}
   .schedule-desc{font-size:11px}
   .check-btn{width:36px;height:36px;min-width:36px;margin-left:8px}
+  .btn-edit-schedule{width:36px;height:36px;min-width:36px}
+  .edit-time{width:90px;font-size:12px}
+  .edit-title{font-size:12px}
+  .edit-desc{font-size:11px}
 
   /* ----- 统计网格 2列 ----- */
   .stats-grid{grid-template-columns:repeat(2,1fr);gap:8px}
@@ -374,6 +390,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",s
   .analysis-body{background:#1a2744}
   .daily-q-card{border-color:#2d3748}
   .schedule-item{border-color:#2d3748}
+  .edit-time,.edit-title,.edit-desc{background:#1a1a2e;color:var(--text);border-color:var(--primary)}
+  .btn-edit-schedule:hover{background:#1a2744}
+  .btn-mini.reset{background:#1a1a2e;border-color:#2d3748}
+  .btn-mini.reset:hover{background:#1a2744}
   .history-item{border-color:#2d3748}
   .btn-icon:hover{background:#1a2744}
   .btn-icon.danger:hover{background:#3d1a1a}
@@ -681,7 +701,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",s
 <script>
 // ===== STATE =====
 function getState(){
-  const def={completed:{},streak:0,totalTasksCompleted:0,materials:[],questions:[],quizHistory:[],wrongQuestions:{},wrongImages:{},practiceLog:[],firstUse:null,config:null,scheduleVersion:3};
+  const def={completed:{},streak:0,totalTasksCompleted:0,materials:[],questions:[],quizHistory:[],wrongQuestions:{},wrongImages:{},practiceLog:[],firstUse:null,config:null,scheduleVersion:3,customSchedule:{}};
   try{const s=JSON.parse(localStorage.getItem('studyPlannerState')||'{}');return{...def,...s}}catch{return def}
 }
 function save(s){localStorage.setItem('studyPlannerState',JSON.stringify(s))}
@@ -1079,6 +1099,7 @@ function finishSetup(){
   const s=getState();
   s.config=config;
   s.completed={};
+  s.customSchedule={};
   s.scheduleVersion=3;
   s.questions=loadDefaultQuestions(config);
   save(s);
@@ -1109,6 +1130,7 @@ function saveSettings(){
   const s=getState();
   s.config=config;
   s.completed={};
+  s.customSchedule={};
   s.questions=loadDefaultQuestions(config);
   s.quizHistory=[];
   s.wrongQuestions={};
@@ -1123,16 +1145,40 @@ function closeModal(id){document.getElementById(id).classList.remove('show')}
 // ===== SCHEDULE GENERATOR =====
 function generateSchedule(config){
   const m=config.math,e=config.eng,p=config.pol==='yes',mj=config.major;
+
+  // Math-specific content
+  let mf1,mf2,md1,md2;
+  if(m==='数学一'){
+    mf1='高等数学';md1='极限、微积分、级数、多元函数等核心考点';
+    mf2='线性代数 & 概率论';md2='矩阵特征值、随机变量、数理统计等';
+  }else if(m==='数学二'){
+    mf1='高等数学';md1='极限、微积分、微分方程等核心考点';
+    mf2='线性代数';md2='矩阵、特征值、二次型等';
+  }else{
+    mf1='微积分';md1='极限、导数、积分、级数等经管考点';
+    mf2='线性代数 & 概率论';md2='矩阵、随机变量、大数定律等';
+  }
+
+  // English-specific content
+  let ed1,ed2;
+  if(e==='英语一'){
+    ed1='学术型阅读精读、长难句分析';
+    ed2='图画作文模板、学术翻译';
+  }else{
+    ed1='应用型阅读精读、信息匹配';
+    ed2='图表作文模板、实用翻译';
+  }
+
   const items=[
     {id:'s1',time:'07:00-08:00',title:'起床 & 晨间准备',desc:'洗漱、早餐、碎片时间背单词',subject:'break'},
-    {id:'s2',time:'08:00-10:00',title:m+' · 高等数学',desc:'极限、微积分、级数等核心考点',subject:'math'},
+    {id:'s2',time:'08:00-10:00',title:m+' · '+mf1,desc:md1,subject:'math'},
     {id:'s3',time:'10:00-10:15',title:'休息',desc:'喝水、活动身体',subject:'break'},
-    {id:'s4',time:'10:15-12:00',title:m+' · 概率论与线代',desc:'随机变量、矩阵、特征值等',subject:'math'},
+    {id:'s4',time:'10:15-12:00',title:m+' · '+mf2,desc:md2,subject:'math'},
     {id:'s5',time:'12:00-13:30',title:'午餐 & 午休',desc:'好好吃饭，午睡30-40分钟',subject:'break'},
     {id:'s6',time:'13:30-14:00',title:e+' · 热身',desc:'单词复习、调整状态',subject:'eng'},
-    {id:'s7',time:'14:00-15:30',title:e+' · 阅读 & 完形',desc:'真题阅读精读、完形填空',subject:'eng'},
+    {id:'s7',time:'14:00-15:30',title:e+' · 阅读',desc:ed1,subject:'eng'},
     {id:'s8',time:'15:30-15:45',title:'休息',desc:'活动放松',subject:'break'},
-    {id:'s9',time:'15:45-17:15',title:e+' · 翻译 & 作文',desc:'翻译技巧、作文模板积累',subject:'eng'},
+    {id:'s9',time:'15:45-17:15',title:e+' · 翻译 & 作文',desc:ed2,subject:'eng'},
     {id:'s10',time:'17:15-18:15',title:mj,desc:'专业课核心知识梳理与练习',subject:'major'},
     {id:'s11',time:'18:15-19:00',title:'晚餐 & 休息',desc:'散步、放松',subject:'break'},
   ];
@@ -1172,7 +1218,11 @@ document.querySelectorAll('.bottom-nav-item').forEach(item=>{
 function renderSchedule(){
   const state=getState();const c=getConfig();const today=todayStr();
   if(!state.completed[today])state.completed[today]={};
-  const completed=state.completed[today];const schedule=generateSchedule(c);
+  const completed=state.completed[today];
+  const schedule=generateSchedule(c).map(item=>{
+    const over=state.customSchedule[item.id];
+    return over?{...item,...over}:item;
+  });
   const labels=subjectLabels(c);
   const list=document.getElementById('scheduleList');
   const total=schedule.filter(s=>s.subject!=='break').length;
@@ -1181,14 +1231,32 @@ function renderSchedule(){
   document.getElementById('progressBar').style.width=pct+'%';
   document.getElementById('progressPercent').textContent=pct+'%';
   document.getElementById('progressText').textContent=`完成 ${done} / ${total} 个学习任务`;
-  list.innerHTML=schedule.map(item=>{
+  const hasCustom=Object.keys(state.customSchedule).length>0;
+  list.innerHTML=
+    (hasCustom?`<div style="display:flex;justify-content:flex-end;padding:0 4px 8px"><button class="btn-mini reset" onclick="resetSchedule()">恢复默认日程</button></div>`:'')+
+    schedule.map(item=>{
     const isDone=completed[item.id];
+    const editing=state._editing===item.id;
+    if(editing){
+      return`<div class="schedule-item editing">
+        <div class="schedule-edit-row">
+          <input class="edit-time" id="editTime_${item.id}" value="${item.time.replace(/"/g,'&quot;')}">
+          <input class="edit-title" id="editTitle_${item.id}" value="${item.title.replace(/"/g,'&quot;')}">
+          <input class="edit-desc" id="editDesc_${item.id}" value="${item.desc.replace(/"/g,'&quot;')}">
+          <div class="edit-actions">
+            <button class="btn-mini save" onclick="saveScheduleEdit('${item.id}')">✓</button>
+            <button class="btn-mini cancel" onclick="cancelScheduleEdit()">✕</button>
+          </div>
+        </div>
+      </div>`
+    }
     return`<div class="schedule-item ${isDone?'completed':''}">
       <div class="schedule-time">${item.time}</div>
       <div class="schedule-info">
         <div class="schedule-title">${item.title}<span class="schedule-subject sub-${item.subject}">${labels[item.subject]||item.subject}</span></div>
         <div class="schedule-desc">${item.desc}</div>
       </div>
+      <button class="btn-edit-schedule" onclick="editScheduleItem(event,'${item.id}')" title="编辑">✎</button>
       <button class="check-btn ${isDone?'checked':''}" onclick="toggleTask('${item.id}')">${isDone?'✓':''}</button>
     </div>`
   }).join('');
@@ -1219,6 +1287,46 @@ function updateStreak(state,schedule){
     state.streak=streak;
   }
   save(state);
+}
+
+// ===== SCHEDULE EDIT =====
+function editScheduleItem(e,id){
+  e.stopPropagation();
+  const state=getState();
+  state._editing=id;
+  save(state);
+  renderSchedule();
+}
+
+function cancelScheduleEdit(){
+  const state=getState();
+  delete state._editing;
+  save(state);
+  renderSchedule();
+}
+
+function saveScheduleEdit(id){
+  const state=getState();
+  const time=document.getElementById('editTime_'+id).value.trim();
+  const title=document.getElementById('editTitle_'+id).value.trim();
+  const desc=document.getElementById('editDesc_'+id).value.trim();
+  if(!time||!title){showToast('时间和标题不能为空');return;}
+  if(!/^\d{2}:\d{2}-\d{2}:\d{2}$/.test(time)){showToast('时间格式应为 HH:MM-HH:MM');return;}
+  state.customSchedule[id]={time,title,desc};
+  delete state._editing;
+  save(state);
+  renderSchedule();
+  showToast('日程已更新');
+}
+
+function resetSchedule(){
+  if(!confirm('确定恢复默认日程安排？你的自定义修改将丢失。'))return;
+  const state=getState();
+  state.customSchedule={};
+  delete state._editing;
+  save(state);
+  renderSchedule();
+  showToast('已恢复默认日程');
 }
 
 // ===== MATERIALS =====
