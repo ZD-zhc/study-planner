@@ -474,20 +474,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",s
     </div>
 
     <div class="setup-group">
-      <label class="setup-label">数学科目</label>
-      <div class="setup-options" data-key="math">
-        <div class="setup-opt" data-val="数学一">数学一</div>
-        <div class="setup-opt" data-val="数学二">数学二</div>
-        <div class="setup-opt" data-val="数学三">数学三</div>
-      </div>
+      <label class="setup-label">科目一</label>
+      <input class="setup-input" id="setupMath" list="mathList" placeholder="如：数学一、法学、数学分析">
+      <datalist id="mathList">
+        <option value="数学一"><option value="数学二"><option value="数学三">
+        <option value="法学"><option value="数学分析"><option value="计算机综合">
+        <option value="408计算机统考"><option value="311教育学"><option value="306临床医学">
+      </datalist>
     </div>
 
     <div class="setup-group">
-      <label class="setup-label">英语科目</label>
-      <div class="setup-options" data-key="eng">
-        <div class="setup-opt" data-val="英语一">英语一</div>
-        <div class="setup-opt" data-val="英语二">英语二</div>
-      </div>
+      <label class="setup-label">科目二</label>
+      <input class="setup-input" id="setupEng" list="engList" placeholder="如：英语一、日语、俄语">
+      <datalist id="engList">
+        <option value="英语一"><option value="英语二">
+        <option value="日语"><option value="俄语"><option value="德语">
+        <option value="法语">
+      </datalist>
     </div>
 
     <div class="setup-group">
@@ -675,8 +678,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",s
     <div class="modal-header">考试设置 <button class="modal-close" onclick="closeModal('settingsModal')">&times;</button></div>
     <div class="modal-body">
       <div class="form-group"><label class="form-label">目标院校/专业</label><input class="setup-input" id="setSchool"></div>
-      <div class="form-group"><label class="form-label">数学科目</label><select class="form-select" id="setMath"><option>数学一</option><option>数学二</option><option>数学三</option></select></div>
-      <div class="form-group"><label class="form-label">英语科目</label><select class="form-select" id="setEng"><option>英语一</option><option>英语二</option></select></div>
+      <div class="form-group"><label class="form-label">科目一</label><input class="setup-input" id="setMath" list="mathList2" placeholder="如：数学一、法学"><datalist id="mathList2"><option value="数学一"><option value="数学二"><option value="数学三"><option value="法学"><option value="数学分析"><option value="计算机综合"></datalist></div>
+      <div class="form-group"><label class="form-label">科目二</label><input class="setup-input" id="setEng" list="engList2" placeholder="如：英语一、日语"><datalist id="engList2"><option value="英语一"><option value="英语二"><option value="日语"><option value="俄语"><option value="德语"><option value="法语"></datalist></div>
       <div class="form-group"><label class="form-label">专业课名称</label><input class="setup-input" id="setMajor"></div>
       <div class="form-group"><label class="form-label">是否考政治</label><select class="form-select" id="setPol"><option value="yes">考</option><option value="no">不考</option></select></div>
     </div>
@@ -720,8 +723,8 @@ function getConfig(){
 function loadDefaultQuestions(c){
   const q=[];
 
-  // ===== 数学三 =====
-  q.push(
+  // Math questions only for recognized math subjects
+  if(/^数学/.test(c.math)) q.push(
     {id:'dq1',subject:c.math,type:'choice',content:'函数f(x)在点x₀处可导是f(x)在点x₀处连续的（）条件。',options:['A. 充分非必要','B. 必要非充分','C. 充要','D. 既非充分也非必要'],answer:'A. 充分非必要',hint:'可导一定连续，但连续不一定可导。'},
     {id:'dq2',subject:c.math,type:'choice',content:'设f(x)在[a,b]上连续，在(a,b)内可导，且f(a)=f(b)，则至少存在一点ξ∈(a,b)，使得（）。',options:['A. f\'(ξ)=0','B. f\'(ξ)=1','C. f(ξ)=0','D. f(ξ)=f(a)'],answer:'A. f\'(ξ)=0',hint:'这是罗尔定理的结论。'},
     {id:'dq3',subject:c.math,type:'choice',content:'不定积分∫eˣsinx dx的结果是（）。',options:['A. eˣ(sinx-cosx)/2+C','B. eˣ(sinx+cosx)/2+C','C. eˣcosx+C','D. eˣsinx+C'],answer:'A. eˣ(sinx-cosx)/2+C',hint:'用分部积分法，设I=∫eˣsinx dx，两次分部积分后解方程。'},
@@ -734,8 +737,8 @@ function loadDefaultQuestions(c){
     {id:'dq10',subject:c.math,type:'choice',content:'二重积分∬_D f(x,y)dσ中，D为x²+y²≤1，则∬_D (x²+y²)dσ=（）。',options:['A. π/2','B. π','C. 2π','D. π/4'],answer:'A. π/2',hint:'用极坐标变换：x=rcosθ, y=rsinθ, dσ=rdrdθ，积分变为∫₀²πdθ∫₀¹r³dr。'},
   );
 
-  // ===== 英语一 =====
-  q.push(
+  // English questions only for recognized English subjects
+  if(/^英语/.test(c.eng)) q.push(
     {id:'de1',subject:c.eng,type:'choice',content:'The professor\'s lecture was so _____ that many students fell asleep.',options:['A. monotonous','B. ambitious','C. generous','D. harmonious'],answer:'A. monotonous',hint:'monotonous意为"单调乏味的"，与学生睡着的语境一致。'},
     {id:'de2',subject:c.eng,type:'choice',content:'The word "elaborate" in "She declined to elaborate on her plan" most likely means _____.',options:['A. simplify','B. explain in detail','C. abandon','D. criticize'],answer:'B. explain in detail',hint:'elaborate作动词意为"详细阐述"。'},
     {id:'de3',subject:c.eng,type:'fill',content:'He was accused of _____ (neglect) his duty as a manager.',options:[],answer:'neglecting',hint:'accuse sb of doing sth，介词of后接动名词。'},
@@ -1086,12 +1089,12 @@ document.addEventListener('click',function(e){
 });
 
 function finishSetup(){
-  const math=document.querySelector('.setup-options[data-key="math"] .setup-opt.selected');
-  const eng=document.querySelector('.setup-options[data-key="eng"] .setup-opt.selected');
-  if(!math||!eng){showToast('请选择数学和英语科目');return}
+  const math=document.getElementById('setupMath').value.trim();
+  const eng=document.getElementById('setupEng').value.trim();
+  if(!math||!eng){showToast('请填写科目一和科目二');return}
   const config={
-    math:math.dataset.val,
-    eng:eng.dataset.val,
+    math:math,
+    eng:eng,
     major:document.getElementById('setupMajor').value.trim()||'专业课',
     pol:document.querySelector('.setup-options[data-key="pol"] .setup-opt.selected')?.dataset.val||'yes',
     school:document.getElementById('setupSchool').value.trim()
