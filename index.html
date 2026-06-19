@@ -873,6 +873,11 @@ body.custom-bg .countdown-banner{backdrop-filter:blur(6px)}
         </div>
       </div>
       <div class="form-group">
+        <label class="form-label">新闻代理地址（可选，用于抓取原文摘要）</label>
+        <input class="setup-input" id="setProxyUrl" placeholder="如：https://xxx.vercel.app/api/proxy?url=">
+        <div style="font-size:11px;color:var(--text2);margin-top:4px">留空使用默认代理。部署自己的 Vercel 代理可获得更稳定的服务。</div>
+      </div>
+      <div class="form-group">
         <label class="form-label">倒计时横幅颜色</label>
         <div class="theme-grid" id="countdownColorGrid">
           <div class="theme-swatch active" data-countdown="auto" style="background:linear-gradient(135deg,#1a73e8,#4285f4)" onclick="selectCountdownColor('auto')"><span>自动</span></div>
@@ -909,7 +914,7 @@ body.custom-bg .countdown-banner{backdrop-filter:blur(6px)}
 <script>
 // ===== STATE =====
 function getState(){
-  const def={completed:{},streak:0,totalTasksCompleted:0,materials:[],questions:[],quizHistory:[],wrongQuestions:{},wrongImages:{},practiceLog:[],firstUse:null,config:null,scheduleVersion:3,customSchedule:{},pomodoroSettings:{focus:25,shortBreak:5,longBreak:15},pomodoroHistory:[],examDate:'2026-12-26',theme:'default',customColor:null,bgImage:null,countdownColor:'auto',countdownColorCustom:null};
+  const def={completed:{},streak:0,totalTasksCompleted:0,materials:[],questions:[],quizHistory:[],wrongQuestions:{},wrongImages:{},practiceLog:[],firstUse:null,config:null,scheduleVersion:3,customSchedule:{},pomodoroSettings:{focus:25,shortBreak:5,longBreak:15},pomodoroHistory:[],examDate:'2026-12-26',theme:'default',customColor:null,bgImage:null,countdownColor:'auto',countdownColorCustom:null,proxyUrl:''};
   try{const s=JSON.parse(localStorage.getItem('studyPlannerState')||'{}');return{...def,...s}}catch{return def}
 }
 function save(s){localStorage.setItem('studyPlannerState',JSON.stringify(s))}
@@ -1339,6 +1344,8 @@ function openSettings(){
     document.getElementById('setCountdownColor1').value=s.countdownColorCustom[0];
     document.getElementById('setCountdownColor2').value=s.countdownColorCustom[1];
   }
+  // Proxy URL
+  document.getElementById('setProxyUrl').value=s.proxyUrl||'';
   document.getElementById('settingsModal').classList.add('show');
 }
 
@@ -1359,6 +1366,7 @@ function saveSettings(){
   s.wrongQuestions={};
   // New fields
   s.examDate=document.getElementById('setExamDate').value||'2026-12-26';
+  s.proxyUrl=document.getElementById('setProxyUrl').value.trim();
   save(s);
   closeModal('settingsModal');
   initApp();
@@ -2892,19 +2900,27 @@ function renderNewsItems(container,items){
 }
 
 // ===== 抓取原文生成摘要 =====
+const FALLBACK_PROXY='https://api.allorigins.win/raw?url=';
+
+function getProxyUrl(){
+  const state=getState();
+  // 优先用户自建代理，降级用第三方
+  return state.proxyUrl||'';
+}
+
 function fetchArticleSummary(url,idx){
   const el=document.getElementById('newsSummary'+idx);
   if(!el)return;
   el.innerHTML='<span style="color:var(--text2);font-size:12px">⏳ 正在抓取原文...</span>';
 
-  // 使用 CORS 代理获取原文
-  const proxyUrl='https://api.allorigins.win/raw?url='+encodeURIComponent(url);
+  const userProxy=getProxyUrl();
 
-  fetch(proxyUrl,{signal:AbortSignal.timeout(10000)})
-    .then(r=>{
-      if(!r.ok)throw new Error('HTTP '+r.status);
-      return r.text();
-    })
+  // 尝试顺序：用户自建代理 → 第三方代理
+  const attempts=[];
+  if(userProxy)attempts.push(userProxy+encodeURIComponent(url));
+  attempts.push(FALLBACK_PROXY+encodeURIComponent(url));
+
+  tryFetchWithFallback(attempts,0)
     .then(html=>{
       const summary=extractArticleText(html);
       if(summary){
@@ -2914,8 +2930,18 @@ function fetchArticleSummary(url,idx){
       }
     })
     .catch(err=>{
-      el.innerHTML='<span style="color:var(--danger);font-size:12px">抓取失败（'+err.message+'），请直接阅读原文</span>';
+      el.innerHTML='<span style="color:var(--danger);font-size:12px">抓取失败，请直接阅读原文</span>';
     });
+}
+
+function tryFetchWithFallback(urls,index){
+  if(index>=urls.length)return Promise.reject(new Error('所有代理均失败'));
+  return fetch(urls[index],{signal:AbortSignal.timeout(10000)})
+    .then(r=>{
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      return r.text();
+    })
+    .catch(()=>tryFetchWithFallback(urls,index+1));
 }
 
 function extractArticleText(html){
