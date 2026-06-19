@@ -452,6 +452,91 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",s
   .chart-tab{background:#1a1a2e;border-color:#2d3748}
   .wrong-photo-add{background:#1a1a2e}
 }
+
+/* ===== 主题皮肤 ===== */
+[data-theme="pink"]{--primary:#e91e63;--primary-light:#fce4ec;--success:#66bb6a;--success-light:#e8f5e9;--warning:#ffa726;--danger:#ef5350}
+[data-theme="green"]{--primary:#009688;--primary-light:#e0f2f1;--success:#43a047;--success-light:#e8f5e9;--warning:#ffb300;--danger:#e53935}
+[data-theme="purple"]{--primary:#7c4dff;--primary-light:#ede7f6;--success:#66bb6a;--success-light:#e8f5e9;--warning:#ffa726;--danger:#ef5350;--bg:#1a1a2e;--card:#16213e;--text:#e8eaed;--text2:#9aa0a6;--border:#2d3748;--shadow:0 1px 3px rgba(0,0,0,.4);--primary-light:#2a1a4a}
+[data-theme="orange"]{--primary:#ff5722;--primary-light:#fbe9e7;--success:#66bb6a;--success-light:#e8f5e9;--warning:#ffca28;--danger:#e53935}
+.theme-grid{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.theme-swatch{width:56px;height:56px;border-radius:12px;cursor:pointer;display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px;font-size:10px;color:#fff;font-weight:600;text-shadow:0 1px 2px rgba(0,0,0,.4);border:3px solid transparent;transition:all .2s;position:relative}
+.theme-swatch:hover{transform:scale(1.1)}
+.theme-swatch.active{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-light)}
+.theme-custom{display:flex;align-items:center;gap:8px;margin-top:4px}
+.theme-custom label{font-size:13px;color:var(--text2)}
+.theme-custom input[type=color]{width:40px;height:32px;border:1px solid var(--border);border-radius:6px;cursor:pointer;padding:0}
+
+/* ===== 考试倒计时 ===== */
+.countdown-banner{background:linear-gradient(135deg,var(--primary),#4285f4);color:#fff;padding:12px 16px;text-align:center;margin-bottom:12px;border-radius:var(--radius);box-shadow:var(--shadow)}
+.countdown-label{font-size:13px;opacity:.9;margin-bottom:2px}
+.countdown-days{font-size:36px;font-weight:800;letter-spacing:2px}
+.countdown-days span{font-size:48px}
+.countdown-detail{font-size:12px;opacity:.8;margin-top:2px}
+.countdown-urgent{background:linear-gradient(135deg,#ea4335,#ff6d00)}
+.countdown-warning{background:linear-gradient(135deg,#fbbc04,#ff9800)}
+.countdown-safe{background:linear-gradient(135deg,#34a853,#009688)}
+
+/* ===== 番茄钟 ===== */
+.pomodoro-container{display:flex;flex-direction:column;align-items:center;padding:20px}
+.pomodoro-ring{position:relative;width:220px;height:220px;margin-bottom:20px}
+.pomodoro-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:var(--border);stroke-width:8}
+.ring-progress{fill:none;stroke:var(--primary);stroke-width:8;stroke-linecap:round;stroke-dasharray:565.48;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear}
+.pomodoro-time{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--text)}
+.pomodoro-label{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);font-size:13px;color:var(--text2)}
+.pomodoro-modes{display:flex;gap:8px;margin-bottom:16px}
+.pomodoro-mode{padding:8px 18px;border-radius:20px;border:2px solid var(--border);background:var(--card);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
+.pomodoro-mode:hover{border-color:var(--primary)}
+.pomodoro-mode.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.pomodoro-controls{display:flex;gap:12px;margin-bottom:16px}
+.pomodoro-btn{width:52px;height:52px;border-radius:50%;border:none;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.pomodoro-btn-start{background:var(--primary);color:#fff;font-size:24px}
+.pomodoro-btn-start:hover{transform:scale(1.1)}
+.pomodoro-btn-reset{background:var(--card);color:var(--text2);border:1px solid var(--border)}
+.pomodoro-btn-reset:hover{background:#f1f3f4}
+.pomodoro-stats-row{display:flex;gap:16px;margin-top:8px}
+.pomodoro-stat{text-align:center}
+.pomodoro-stat-val{font-size:24px;font-weight:700;color:var(--primary)}
+.pomodoro-stat-label{font-size:12px;color:var(--text2)}
+.pomodoro-settings-row{display:flex;gap:12px;align-items:center;margin-top:12px;flex-wrap:wrap;justify-content:center}
+.pomodoro-settings-row label{font-size:12px;color:var(--text2)}
+.pomodoro-settings-row input{width:50px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-size:13px;text-align:center}
+.pomodoro-history-bar{display:flex;gap:3px;margin-top:12px;justify-content:center}
+.pomodoro-dot{width:10px;height:10px;border-radius:50%;background:var(--border)}
+.pomodoro-dot.done{background:var(--primary)}
+.pomodoro-dot.current{background:var(--success);box-shadow:0 0 4px var(--success)}
+
+/* ===== 学习热力图 ===== */
+.heatmap-grid{display:grid;grid-template-columns:repeat(13,1fr);gap:3px;font-size:10px}
+.heatmap-cell{aspect-ratio:1;border-radius:3px;background:var(--border);min-width:14px}
+.heatmap-cell.l1{background:#c6e480}
+.heatmap-cell.l2{background:#7bc96f}
+.heatmap-cell.l3{background:#239a3b}
+.heatmap-cell.l4{background:#196127}
+.heatmap-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-top:4px;padding:0 2px}
+@media(prefers-color-scheme:dark){
+  .heatmap-cell.l1{background:#2a4a1a}
+  .heatmap-cell.l2{background:#3a6a2a}
+  .heatmap-cell.l3{background:#4a8a3a}
+  .heatmap-cell.l4{background:#5aaa4a}
+}
+[data-theme="purple"] .heatmap-cell.l1{background:#2a4a1a}
+[data-theme="purple"] .heatmap-cell.l2{background:#3a6a2a}
+[data-theme="purple"] .heatmap-cell.l3{background:#4a8a3a}
+[data-theme="purple"] .heatmap-cell.l4{background:#5aaa4a}
+
+/* ===== 效率分析 ===== */
+.efficiency-item{margin-bottom:14px}
+.efficiency-header{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}
+.efficiency-bar{background:var(--border);border-radius:4px;height:8px;overflow:hidden}
+.efficiency-fill{height:100%;border-radius:4px;transition:width .5s}
+.efficiency-highlight{font-size:12px;color:var(--text2);margin-top:4px}
+
+/* ===== 底部导航5项 ===== */
+@media(max-width:768px){
+  .bottom-nav-item{font-size:9px;padding:2px}
+  .bottom-nav-icon{font-size:18px}
+}
 </style>
 </head>
 <body>
@@ -525,8 +610,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",s
     </div>
   </div>
 
+  <div class="container" style="padding-bottom:0">
+    <div class="countdown-banner" id="countdownBanner">
+      <div class="countdown-label">距离考研初试还有</div>
+      <div class="countdown-days"><span id="countdownDays">---</span> 天</div>
+      <div class="countdown-detail" id="countdownDetail"></div>
+    </div>
+  </div>
+
   <div class="nav-tabs">
     <button class="nav-tab active" data-tab="schedule">日程</button>
+    <button class="nav-tab" data-tab="focus">专注</button>
     <button class="nav-tab" data-tab="materials">资料</button>
     <button class="nav-tab" data-tab="quiz">抽题</button>
     <button class="nav-tab" data-tab="stats">统计</button>
@@ -557,6 +651,42 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",s
           <span style="font-size:12px;color:var(--text2)" id="newsDate"></span>
         </div>
         <div class="card-body" id="dailyNews" style="padding:12px"></div>
+      </div>
+    </div>
+
+    <div class="section" id="focus">
+      <div class="card">
+        <div class="card-header">番茄钟 · 专注学习</div>
+        <div class="card-body pomodoro-container">
+          <div class="pomodoro-modes">
+            <button class="pomodoro-mode active" data-mode="focus" onclick="switchPomodoroMode('focus')">专注</button>
+            <button class="pomodoro-mode" data-mode="short" onclick="switchPomodoroMode('short')">短休</button>
+            <button class="pomodoro-mode" data-mode="long" onclick="switchPomodoroMode('long')">长休</button>
+          </div>
+          <div class="pomodoro-ring">
+            <svg viewBox="0 0 200 200">
+              <circle class="ring-bg" cx="100" cy="100" r="90"/>
+              <circle class="ring-progress" id="pomodoroRing" cx="100" cy="100" r="90"/>
+            </svg>
+            <div class="pomodoro-time" id="pomodoroTime">25:00</div>
+            <div class="pomodoro-label" id="pomodoroLabel">专注时间</div>
+          </div>
+          <div class="pomodoro-history-bar" id="pomodoroDots"></div>
+          <div class="pomodoro-controls">
+            <button class="pomodoro-btn pomodoro-btn-reset" onclick="resetPomodoro()" title="重置">↺</button>
+            <button class="pomodoro-btn pomodoro-btn-start" id="pomodoroStartBtn" onclick="togglePomodoro()" title="开始">▶</button>
+            <button class="pomodoro-btn pomodoro-btn-reset" onclick="skipPomodoro()" title="跳过">⏭</button>
+          </div>
+          <div class="pomodoro-stats-row">
+            <div class="pomodoro-stat"><div class="pomodoro-stat-val" id="pomodoroCount">0</div><div class="pomodoro-stat-label">今日番茄</div></div>
+            <div class="pomodoro-stat"><div class="pomodoro-stat-val" id="pomodoroMinutes">0</div><div class="pomodoro-stat-label">专注分钟</div></div>
+          </div>
+          <div class="pomodoro-settings-row">
+            <label>专注</label><input type="number" id="setFocusMin" value="25" min="1" max="120" onchange="updatePomodoroSettings()">
+            <label>短休</label><input type="number" id="setShortMin" value="5" min="1" max="30" onchange="updatePomodoroSettings()">
+            <label>长休</label><input type="number" id="setLongMin" value="15" min="1" max="60" onchange="updatePomodoroSettings()">
+          </div>
+        </div>
       </div>
     </div>
 
@@ -608,7 +738,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",s
         <div class="stat-card"><div class="stat-value" id="statWrong">0</div><div class="stat-label">错题数</div></div>
       </div>
       <div class="card"><div class="card-header">每日打卡记录</div><div id="checkinCalendar" style="padding:16px"></div></div>
+      <div class="card"><div class="card-header">学习热力图（近90天）</div><div id="heatmapCalendar" style="padding:16px;overflow-x:auto"></div></div>
       <div class="card"><div class="card-header">科目学习时间分布</div><div id="subjectDistribution" style="padding:16px"></div></div>
+      <div class="card"><div class="card-header">各科正确率概览</div><div class="card-body"><div class="chart-container"><canvas id="radarChart"></canvas></div></div></div>
+      <div class="card"><div class="card-header">专注时长趋势</div><div class="card-body"><div class="chart-container"><canvas id="pomodoroChart"></canvas></div></div></div>
+      <div class="card"><div class="card-header">学习效率分析</div><div class="card-body" id="efficiencyAnalysis"></div></div>
       <div class="card"><div class="card-header">练习记录</div><div class="card-body"><div class="log-form"><div class="log-form-row"><select class="log-select" id="logSubject"><option>数学</option><option>英语</option><option>政治</option><option>专业课</option></select><input class="log-input" id="logTotal" type="number" min="1" placeholder="做题总数"><input class="log-input" id="logCorrect" type="number" min="0" placeholder="正确数"><input class="log-input" id="logDate" type="date"><button class="log-btn log-btn-add" onclick="addLogEntry()">+ 添加记录</button></div></div><table class="log-table" id="logTable"><thead><tr><th>日期</th><th>科目</th><th>做题数</th><th>正确数</th><th>正确率</th><th></th></tr></thead><tbody id="logTbody"></tbody></table></div></div>
       <div class="card"><div class="card-header">练习趋势</div><div class="card-body"><div class="chart-tabs"><button class="chart-tab active" onclick="renderChart('line')">正确率趋势</button><button class="chart-tab" onclick="renderChart('bar')">科目对比</button></div><div class="chart-container"><canvas id="chartCanvas"></canvas></div></div></div>
     </div>
@@ -619,6 +753,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",s
     <button class="bottom-nav-item active" data-tab="schedule">
       <span class="bottom-nav-icon">📅</span>
       <span>日程</span>
+    </button>
+    <button class="bottom-nav-item" data-tab="focus">
+      <span class="bottom-nav-icon">⏱️</span>
+      <span>专注</span>
     </button>
     <button class="bottom-nav-item" data-tab="materials">
       <span class="bottom-nav-icon">📁</span>
@@ -682,6 +820,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",s
       <div class="form-group"><label class="form-label">科目二</label><input class="setup-input" id="setEng" list="engList2" placeholder="如：英语一、日语"><datalist id="engList2"><option value="英语一"><option value="英语二"><option value="日语"><option value="俄语"><option value="德语"><option value="法语"></datalist></div>
       <div class="form-group"><label class="form-label">专业课名称</label><input class="setup-input" id="setMajor"></div>
       <div class="form-group"><label class="form-label">是否考政治</label><select class="form-select" id="setPol"><option value="yes">考</option><option value="no">不考</option></select></div>
+      <div class="form-group"><label class="form-label">考试日期</label><input class="setup-input" id="setExamDate" type="date"></div>
+      <div class="form-group"><label class="form-label">主题皮肤</label>
+        <div class="theme-grid" id="themeGrid">
+          <div class="theme-swatch active" data-theme="default" style="background:linear-gradient(135deg,#1a73e8,#4285f4)" onclick="selectTheme('default')"><span>默认</span></div>
+          <div class="theme-swatch" data-theme="pink" style="background:linear-gradient(135deg,#e91e63,#f48fb1)" onclick="selectTheme('pink')"><span>樱花</span></div>
+          <div class="theme-swatch" data-theme="green" style="background:linear-gradient(135deg,#009688,#4db6ac)" onclick="selectTheme('green')"><span>薄荷</span></div>
+          <div class="theme-swatch" data-theme="purple" style="background:linear-gradient(135deg,#7c4dff,#b388ff)" onclick="selectTheme('purple')"><span>暗紫</span></div>
+          <div class="theme-swatch" data-theme="orange" style="background:linear-gradient(135deg,#ff5722,#ff8a65)" onclick="selectTheme('orange')"><span>日落</span></div>
+        </div>
+        <div class="theme-custom">
+          <label>自定义主色</label>
+          <input type="color" id="setCustomColor" value="#1a73e8" onchange="applyCustomColor(this.value)">
+        </div>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal('settingsModal')">取消</button>
@@ -704,7 +856,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",s
 <script>
 // ===== STATE =====
 function getState(){
-  const def={completed:{},streak:0,totalTasksCompleted:0,materials:[],questions:[],quizHistory:[],wrongQuestions:{},wrongImages:{},practiceLog:[],firstUse:null,config:null,scheduleVersion:3,customSchedule:{}};
+  const def={completed:{},streak:0,totalTasksCompleted:0,materials:[],questions:[],quizHistory:[],wrongQuestions:{},wrongImages:{},practiceLog:[],firstUse:null,config:null,scheduleVersion:3,customSchedule:{},pomodoroSettings:{focus:25,shortBreak:5,longBreak:15},pomodoroHistory:[],examDate:'2026-12-26',theme:'default',customColor:null};
   try{const s=JSON.parse(localStorage.getItem('studyPlannerState')||'{}');return{...def,...s}}catch{return def}
 }
 function save(s){localStorage.setItem('studyPlannerState',JSON.stringify(s))}
@@ -1113,12 +1265,17 @@ function finishSetup(){
 }
 
 function openSettings(){
-  const c=getConfig();
+  const c=getConfig();const s=getState();
   document.getElementById('setSchool').value=c.school||'';
   document.getElementById('setMath').value=c.math;
   document.getElementById('setEng').value=c.eng;
   document.getElementById('setMajor').value=c.major==='专业课'?'':c.major;
   document.getElementById('setPol').value=c.pol;
+  document.getElementById('setExamDate').value=s.examDate||'2026-12-26';
+  // Theme
+  const theme=s.theme||'default';
+  document.querySelectorAll('.theme-swatch').forEach(sw=>sw.classList.toggle('active',sw.dataset.theme===theme));
+  document.getElementById('setCustomColor').value=s.customColor||'#1a73e8';
   document.getElementById('settingsModal').classList.add('show');
 }
 
@@ -1137,6 +1294,8 @@ function saveSettings(){
   s.questions=loadDefaultQuestions(config);
   s.quizHistory=[];
   s.wrongQuestions={};
+  // New fields
+  s.examDate=document.getElementById('setExamDate').value||'2026-12-26';
   save(s);
   closeModal('settingsModal');
   initApp();
@@ -1589,6 +1748,8 @@ function renderStats(){
   document.getElementById('statAccuracy').textContent=acc+'%';
   document.getElementById('statWrong').textContent=Object.keys(state.wrongQuestions).length;
   renderCalendar(state);renderSubjectDist(state,c);renderPracticeLog();renderChart('line');
+  // New stats
+  renderHeatmap(state);renderRadarChart();renderPomodoroTrendChart();renderEfficiencyAnalysis();
 }
 
 function renderCalendar(state){
@@ -1912,6 +2073,493 @@ function renderExamResult(score,total,details){
 }
 
 // ===== INIT =====
+// ===== THEME SYSTEM =====
+function applyTheme(theme,customColor){
+  const root=document.documentElement;
+  root.removeAttribute('data-theme');
+  if(theme&&theme!=='default')root.setAttribute('data-theme',theme);
+  if(customColor){
+    root.style.setProperty('--primary',customColor);
+    // Generate lighter variant
+    const r=parseInt(customColor.slice(1,3),16),g=parseInt(customColor.slice(3,5),16),b=parseInt(customColor.slice(5,7),16);
+    root.style.setProperty('--primary-light','rgba('+r+','+g+','+b+',0.1)');
+  }else{
+    root.style.removeProperty('--primary');
+    root.style.removeProperty('--primary-light');
+  }
+}
+
+function selectTheme(name){
+  const state=getState();
+  state.theme=name;
+  state.customColor=null;
+  save(state);
+  applyTheme(name,null);
+  // Update UI
+  document.querySelectorAll('.theme-swatch').forEach(s=>s.classList.remove('active'));
+  document.querySelector('.theme-swatch[data-theme="'+name+'"]')?.classList.add('active');
+  document.getElementById('setCustomColor').value='#1a73e8';
+}
+
+function applyCustomColor(hex){
+  const state=getState();
+  state.theme='default';
+  state.customColor=hex;
+  save(state);
+  applyTheme('default',hex);
+  document.querySelectorAll('.theme-swatch').forEach(s=>s.classList.remove('active'));
+  document.querySelector('.theme-swatch[data-theme="default"]')?.classList.add('active');
+}
+
+// ===== EXAM COUNTDOWN =====
+function renderCountdown(){
+  const state=getState();
+  const examDate=state.examDate||'2026-12-26';
+  const now=new Date();
+  const exam=new Date(examDate+'T00:00:00');
+  const diff=Math.ceil((exam-now)/864e5);
+  const daysEl=document.getElementById('countdownDays');
+  const detailEl=document.getElementById('countdownDetail');
+  const banner=document.getElementById('countdownBanner');
+  if(!daysEl)return;
+  daysEl.textContent=diff>0?diff:'0';
+  const weekdays=['日','一','二','三','四','五','六'];
+  detailEl.textContent=examDate.replace(/-/g,'年')+'日 · 周'+weekdays[exam.getDay()];
+  banner.className='countdown-banner';
+  if(diff<=0)banner.classList.add('countdown-urgent');
+  else if(diff<=30)banner.classList.add('countdown-urgent');
+  else if(diff<=100)banner.classList.add('countdown-warning');
+  else banner.classList.add('countdown-safe');
+}
+
+// ===== POMODORO TIMER =====
+let pomodoroState={mode:'focus',running:false,remaining:0,interval:null,sessionCount:0};
+
+function getPomodoroToday(){
+  const state=getState();
+  const today=todayStr();
+  const rec=state.pomodoroHistory.find(h=>h.date===today);
+  return rec||{date:today,count:0,totalMinutes:0};
+}
+
+function switchPomodoroMode(mode){
+  if(pomodoroState.running)stopPomodoroTimer();
+  pomodoroState.mode=mode;
+  pomodoroState.remaining=getPomodoroDuration(mode)*60;
+  document.querySelectorAll('.pomodoro-mode').forEach(m=>m.classList.toggle('active',m.dataset.mode===mode));
+  updatePomodoroDisplay();
+  updatePomodoroLabel();
+}
+
+function getPomodoroDuration(mode){
+  const state=getState();
+  const s=state.pomodoroSettings||{focus:25,shortBreak:5,longBreak:15};
+  if(mode==='focus')return s.focus;
+  if(mode==='short')return s.shortBreak;
+  return s.longBreak;
+}
+
+function togglePomodoro(){
+  if(pomodoroState.running){
+    stopPomodoroTimer();
+  }else{
+    if(pomodoroState.remaining<=0)pomodoroState.remaining=getPomodoroDuration(pomodoroState.mode)*60;
+    pomodoroState.running=true;
+    document.getElementById('pomodoroStartBtn').textContent='⏸';
+    pomodoroState.interval=setInterval(()=>{
+      pomodoroState.remaining--;
+      if(pomodoroState.remaining<=0){
+        pomodoroState.remaining=0;
+        pomodoroComplete();
+      }
+      updatePomodoroDisplay();
+    },1000);
+  }
+}
+
+function stopPomodoroTimer(){
+  pomodoroState.running=false;
+  if(pomodoroState.interval){clearInterval(pomodoroState.interval);pomodoroState.interval=null}
+  document.getElementById('pomodoroStartBtn').textContent='▶';
+}
+
+function resetPomodoro(){
+  stopPomodoroTimer();
+  pomodoroState.remaining=getPomodoroDuration(pomodoroState.mode)*60;
+  updatePomodoroDisplay();
+}
+
+function skipPomodoro(){
+  stopPomodoroTimer();
+  pomodoroComplete();
+}
+
+function pomodoroComplete(){
+  stopPomodoroTimer();
+  playPomodoroSound();
+  const mode=pomodoroState.mode;
+  if(mode==='focus'){
+    // Record completed pomodoro
+    const state=getState();
+    const today=todayStr();
+    let rec=state.pomodoroHistory.find(h=>h.date===today);
+    if(!rec){rec={date:today,count:0,totalMinutes:0};state.pomodoroHistory.push(rec)}
+    rec.count++;
+    rec.totalMinutes+=getPomodoroDuration('focus');
+    pomodoroState.sessionCount++;
+    save(state);
+    updatePomodoroStats();
+    updatePomodoroDots();
+    showToast('🍅 番茄完成！休息一下吧');
+    // Auto switch to break
+    const nextMode=pomodoroState.sessionCount%4===0?'long':'short';
+    switchPomodoroMode(nextMode);
+  }else{
+    showToast('☕ 休息结束，开始专注！');
+    switchPomodoroMode('focus');
+  }
+}
+
+function updatePomodoroDisplay(){
+  const mins=Math.floor(pomodoroState.remaining/60);
+  const secs=pomodoroState.remaining%60;
+  document.getElementById('pomodoroTime').textContent=String(mins).padStart(2,'0')+':'+String(secs).padStart(2,'0');
+  // Update ring
+  const total=getPomodoroDuration(pomodoroState.mode)*60;
+  const pct=total>0?(total-pomodoroState.remaining)/total:0;
+  const circumference=2*Math.PI*90; // r=90
+  const offset=circumference*(1-pct);
+  document.getElementById('pomodoroRing').style.strokeDashoffset=offset;
+}
+
+function updatePomodoroLabel(){
+  const labels={focus:'专注时间',short:'短休时间',long:'长休时间'};
+  document.getElementById('pomodoroLabel').textContent=labels[pomodoroState.mode]||'';
+}
+
+function updatePomodoroStats(){
+  const rec=getPomodoroToday();
+  document.getElementById('pomodoroCount').textContent=rec.count;
+  document.getElementById('pomodoroMinutes').textContent=rec.totalMinutes;
+}
+
+function updatePomodoroDots(){
+  const rec=getPomodoroToday();
+  const container=document.getElementById('pomodoroDots');
+  if(!container)return;
+  const total=Math.max(rec.count+1,8);
+  let html='';
+  for(let i=0;i<total;i++){
+    if(i<rec.count)html+='<div class="pomodoro-dot done"></div>';
+    else if(i===rec.count&&pomodoroState.running&&pomodoroState.mode==='focus')html+='<div class="pomodoro-dot current"></div>';
+    else html+='<div class="pomodoro-dot"></div>';
+  }
+  container.innerHTML=html;
+}
+
+function updatePomodoroSettings(){
+  const state=getState();
+  state.pomodoroSettings={
+    focus:Math.max(1,parseInt(document.getElementById('setFocusMin').value)||25),
+    shortBreak:Math.max(1,parseInt(document.getElementById('setShortMin').value)||5),
+    longBreak:Math.max(1,parseInt(document.getElementById('setLongMin').value)||15)
+  };
+  save(state);
+  // If not running, update display
+  if(!pomodoroState.running){
+    pomodoroState.remaining=getPomodoroDuration(pomodoroState.mode)*60;
+    updatePomodoroDisplay();
+  }
+}
+
+function playPomodoroSound(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const notes=[523.25,659.25,783.99,1046.50]; // C5, E5, G5, C6
+    notes.forEach((freq,i)=>{
+      const osc=ctx.createOscillator();
+      const gain=ctx.createGain();
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.frequency.value=freq;
+      osc.type='sine';
+      gain.gain.setValueAtTime(0.3,ctx.currentTime+i*0.15);
+      gain.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+i*0.15+0.4);
+      osc.start(ctx.currentTime+i*0.15);
+      osc.stop(ctx.currentTime+i*0.15+0.5);
+    });
+  }catch{}
+}
+
+// ===== ENHANCED STATS =====
+function renderHeatmap(state){
+  const container=document.getElementById('heatmapCalendar');
+  if(!container)return;
+  const now=new Date();
+  const days=[];
+  // Go back 90 days
+  for(let i=89;i>=0;i--){
+    const d=new Date(now);
+    d.setDate(d.getDate()-i);
+    const ds=d.toISOString().slice(0,10);
+    const comp=state.completed[ds]||{};
+    const schedule=generateSchedule(getConfig());
+    const lt=schedule.filter(s=>s.subject!=='break');
+    const done=lt.filter(t=>comp[t.id]).length;
+    const total=lt.length;
+    const ratio=total>0?done/total:0;
+    let level=0;
+    if(ratio>0)level=1;
+    if(ratio>=0.4)level=2;
+    if(ratio>=0.7)level=3;
+    if(ratio>=0.9)level=4;
+    days.push({date:ds,day:d.getDay(),level,done,total});
+  }
+  // Build grid: 7 rows (Sun-Sat) × N columns
+  const weeks=[];
+  let currentWeek=[];
+  // Pad first week
+  const firstDay=days[0].day;
+  for(let i=0;i<firstDay;i++)currentWeek.push(null);
+  days.forEach(d=>{
+    currentWeek.push(d);
+    if(currentWeek.length===7){weeks.push(currentWeek);currentWeek=[]}
+  });
+  if(currentWeek.length)weeks.push(currentWeek);
+  // Render
+  const monthLabels=['日','一','二','三','四','五','六'];
+  let html='<div style="display:flex;gap:4px">';
+  html+='<div style="display:flex;flex-direction:column;gap:3px;margin-right:4px">';
+  monthLabels.forEach(l=>html+='<div style="height:14px;font-size:10px;color:var(--text2);display:flex;align-items:center">'+l+'</div>');
+  html+='</div>';
+  html+='<div style="display:flex;gap:3px">';
+  weeks.forEach(week=>{
+    html+='<div style="display:flex;flex-direction:column;gap:3px">';
+    week.forEach(d=>{
+      if(!d){html+='<div class="heatmap-cell" style="visibility:hidden"></div>';return}
+      const bg=d.level===0?'var(--border)':d.level===1?'#c6e480':d.level===2?'#7bc96f':d.level===3?'#239a3b':'#196127';
+      html+='<div class="heatmap-cell" style="background:'+bg+'" title="'+d.date+': '+d.done+'/'+d.total+'"></div>';
+    });
+    html+='</div>';
+  });
+  html+='</div></div>';
+  // Legend
+  html+='<div style="display:flex;align-items:center;gap:4px;margin-top:8px;font-size:10px;color:var(--text2)">';
+  html+='<span>少</span>';
+  [0,1,2,3,4].forEach(l=>{
+    const bg=l===0?'var(--border)':l===1?'#c6e480':l===2?'#7bc96f':l===3?'#239a3b':'#196127';
+    html+='<div style="width:12px;height:12px;border-radius:2px;background:'+bg+'"></div>';
+  });
+  html+='<span>多</span></div>';
+  container.innerHTML=html;
+}
+
+function renderRadarChart(){
+  const canvas=document.getElementById('radarChart');
+  if(!canvas)return;
+  const state=getState();const c=getConfig();
+  const ctx=canvas.getContext('2d');
+  const W=canvas.parentElement.clientWidth||300;
+  const H=canvas.parentElement.clientHeight||200;
+  canvas.width=W*devicePixelRatio;canvas.height=H*devicePixelRatio;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  ctx.clearRect(0,0,W,H);
+
+  // Calculate accuracy per subject
+  const subjects=[];
+  const labels=[c.math,c.eng];
+  if(c.pol==='yes')labels.push('政治');
+  labels.push(c.major);
+  labels.forEach(sub=>{
+    const qs=state.quizHistory.filter(h=>{
+      const q=state.questions.find(x=>x.id===h.qId);
+      return q&&q.subject===sub;
+    });
+    const total=qs.length;
+    const correct=qs.filter(h=>h.correct===true).length;
+    subjects.push({name:sub,rate:total>0?correct/total:0,total});
+  });
+
+  if(!subjects.some(s=>s.total>0)){
+    ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--text2')||'#5f6368';
+    ctx.font='14px sans-serif';ctx.textAlign='center';
+    ctx.fillText('暂无答题数据',W/2,H/2);
+    return;
+  }
+
+  const cx=W/2,cy=H/2+10,radius=Math.min(W,H)/2-40;
+  const n=subjects.length;
+  const angleStep=2*Math.PI/n;
+
+  // Draw grid
+  [0.2,0.4,0.6,0.8,1].forEach(scale=>{
+    ctx.beginPath();
+    for(let i=0;i<=n;i++){
+      const angle=i*angleStep-Math.PI/2;
+      const x=cx+Math.cos(angle)*radius*scale;
+      const y=cy+Math.sin(angle)*radius*scale;
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue('--border')||'#dadce0';
+    ctx.lineWidth=1;ctx.stroke();
+  });
+
+  // Draw axes
+  for(let i=0;i<n;i++){
+    const angle=i*angleStep-Math.PI/2;
+    ctx.beginPath();ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+Math.cos(angle)*radius,cy+Math.sin(angle)*radius);
+    ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue('--border')||'#dadce0';
+    ctx.stroke();
+  }
+
+  // Draw data
+  ctx.beginPath();
+  subjects.forEach((s,i)=>{
+    const angle=i*angleStep-Math.PI/2;
+    const x=cx+Math.cos(angle)*radius*s.rate;
+    const y=cy+Math.sin(angle)*radius*s.rate;
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.closePath();
+  ctx.fillStyle='rgba(26,115,232,0.2)';ctx.fill();
+  ctx.strokeStyle='#1a73e8';ctx.lineWidth=2;ctx.stroke();
+
+  // Draw dots and labels
+  subjects.forEach((s,i)=>{
+    const angle=i*angleStep-Math.PI/2;
+    const x=cx+Math.cos(angle)*radius*s.rate;
+    const y=cy+Math.sin(angle)*radius*s.rate;
+    ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);
+    ctx.fillStyle='#1a73e8';ctx.fill();
+    // Label
+    const lx=cx+Math.cos(angle)*(radius+20);
+    const ly=cy+Math.sin(angle)*(radius+20);
+    ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--text')||'#202124';
+    ctx.font='11px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(s.name,lx,ly);
+    ctx.fillText(Math.round(s.rate*100)+'%',lx,ly+14);
+  });
+}
+
+function renderPomodoroTrendChart(){
+  const canvas=document.getElementById('pomodoroChart');
+  if(!canvas)return;
+  const state=getState();const ctx=canvas.getContext('2d');
+  const W=canvas.parentElement.clientWidth||300;
+  const H=canvas.parentElement.clientHeight||200;
+  canvas.width=W*devicePixelRatio;canvas.height=H*devicePixelRatio;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  ctx.clearRect(0,0,W,H);
+
+  // Get last 14 days
+  const data=[];
+  for(let i=13;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const ds=d.toISOString().slice(0,10);
+    const rec=(state.pomodoroHistory||[]).find(h=>h.date===ds);
+    data.push({date:ds.slice(5),count:rec?rec.count:0,mins:rec?rec.totalMinutes:0});
+  }
+
+  if(!data.some(d=>d.count>0)){
+    ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--text2')||'#5f6368';
+    ctx.font='14px sans-serif';ctx.textAlign='center';
+    ctx.fillText('暂无番茄数据，请先使用番茄钟',W/2,H/2);
+    return;
+  }
+
+  const pad={t:20,r:20,b:40,l:40};
+  const pw=W-pad.l-pad.r,ph=H-pad.t-pad.b;
+  const maxVal=Math.max(...data.map(d=>d.count),1);
+  const barW=Math.min(30,(pw/data.length)*0.6);
+  const gap=pw/data.length;
+
+  // Axes
+  ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue('--border')||'#dadce0';
+  ctx.lineWidth=1;ctx.beginPath();
+  ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+ph);ctx.lineTo(pad.l+pw,pad.t+ph);
+  ctx.stroke();
+
+  // Y labels
+  ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--text2')||'#5f6368';
+  ctx.font='10px sans-serif';ctx.textAlign='right';
+  for(let i=0;i<=4;i++){
+    const y=pad.t+ph-ph/4*i;
+    const v=Math.round(maxVal/4*i);
+    ctx.fillText(v+'个',pad.l-6,y+3);
+  }
+
+  // Bars
+  data.forEach((d,i)=>{
+    const barH=d.count/maxVal*ph;
+    const x=pad.l+gap*i+(gap-barW)/2;
+    const y=pad.t+ph-barH;
+    ctx.fillStyle=d.count>0?'#1a73e8':'var(--border)';
+    ctx.fillRect(x,y,barW,barH);
+    // Label
+    ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--text2')||'#5f6368';
+    ctx.font='9px sans-serif';ctx.textAlign='center';
+    ctx.fillText(d.date,x+barW/2,pad.t+ph+14);
+    if(d.count>0){
+      ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--text')||'#202124';
+      ctx.font='10px sans-serif';
+      ctx.fillText(d.count,x+barW/2,y-4);
+    }
+  });
+}
+
+function renderEfficiencyAnalysis(){
+  const container=document.getElementById('efficiencyAnalysis');
+  if(!container)return;
+  const state=getState();const c=getConfig();
+
+  // 1. Total study days
+  const totalDays=state.firstUse?Math.max(1,Math.ceil((new Date()-new Date(state.firstUse))/864e5)+1):0;
+
+  // 2. Average daily tasks
+  const avgTasks=totalDays>0?(state.totalTasksCompleted/totalDays).toFixed(1):'0';
+
+  // 3. Quiz accuracy
+  const tq=state.quizHistory.length,cq=state.quizHistory.filter(h=>h.correct===true).length;
+  const acc=tq>0?Math.round(cq/tq*100):0;
+
+  // 4. Total pomodoro
+  const totalPomo=(state.pomodoroHistory||[]).reduce((s,h)=>s+h.count,0);
+  const totalMins=(state.pomodoroHistory||[]).reduce((s,h)=>s+h.totalMinutes,0);
+
+  // 5. Streak
+  const streak=state.streak||0;
+
+  // 6. Best subject
+  const subjects=[{name:c.math},{name:c.eng}];
+  if(c.pol==='yes')subjects.push({name:'政治'});
+  subjects.push({name:c.major});
+  let bestSub={name:'-',rate:0};
+  subjects.forEach(sub=>{
+    const qs=state.quizHistory.filter(h=>{const q=state.questions.find(x=>x.id===h.qId);return q&&q.subject===sub.name});
+    const total=qs.length,correct=qs.filter(h=>h.correct===true).length;
+    const rate=total>0?correct/total:0;
+    if(rate>bestSub.rate)bestSub={name:sub.name,rate:Math.round(rate*100)};
+  });
+
+  const items=[
+    {label:'平均每日完成任务',value:avgTasks+' 个',pct:Math.min(100,avgTasks/10*100),color:'var(--primary)'},
+    {label:'答题正确率',value:acc+'%',pct:acc,color:acc>=80?'var(--success)':acc>=60?'var(--warning)':'var(--danger)'},
+    {label:'累计专注番茄',value:totalPomo+' 个',pct:Math.min(100,totalPomo/50*100),color:'var(--primary)'},
+    {label:'累计专注时长',value:totalMins>=60?Math.floor(totalMins/60)+'h'+totalMins%60+'m':totalMins+'分钟',pct:Math.min(100,totalMins/600*100),color:'var(--success)'},
+    {label:'连续打卡',value:streak+' 天',pct:Math.min(100,streak/30*100),color:'var(--warning)'},
+    {label:'最强科目',value:bestSub.name+' ('+bestSub.rate+'%)',pct:bestSub.rate,color:'var(--success)'},
+  ];
+
+  container.innerHTML=items.map(item=>`
+    <div class="efficiency-item">
+      <div class="efficiency-header"><span>${item.label}</span><strong>${item.value}</strong></div>
+      <div class="efficiency-bar"><div class="efficiency-fill" style="width:${item.pct}%;background:${item.color}"></div></div>
+    </div>
+  `).join('');
+}
+
 // ===== 每日新闻（天行数据 API，官方支持 CORS，免费额度 100次/天） =====
 const NEWS_API_KEY='d6212d7ef9b959990b85b1ff02973cd0';
 const NEWS_DAILY_LIMIT=90; // 安全阈值，留 10 次余量防止超额
@@ -2092,7 +2740,18 @@ function initApp(){
   populateQuizFilter();
   // First use
   if(!state.firstUse){state.firstUse=todayStr();save(state)}
-  renderSchedule();renderMaterials();renderWrongBook();renderQuizHistory();renderStats();renderDailySentence();renderDailyNews();
+  // Apply theme
+  const fullState=getState();
+  applyTheme(fullState.theme,fullState.customColor);
+  // Pomodoro init
+  const pomoSettings=fullState.pomodoroSettings||{focus:25,shortBreak:5,longBreak:15};
+  document.getElementById('setFocusMin').value=pomoSettings.focus;
+  document.getElementById('setShortMin').value=pomoSettings.shortBreak;
+  document.getElementById('setLongMin').value=pomoSettings.longBreak;
+  pomodoroState.remaining=pomoSettings.focus*60;
+  updatePomodoroDisplay();updatePomodoroStats();updatePomodoroDots();updatePomodoroLabel();
+  // Render all
+  renderCountdown();renderSchedule();renderMaterials();renderWrongBook();renderQuizHistory();renderStats();renderDailySentence();renderDailyNews();
 }
 
 // ===== PWA & MOBILE =====
