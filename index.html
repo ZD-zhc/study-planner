@@ -548,7 +548,7 @@ body.custom-bg .countdown-banner{backdrop-filter:blur(6px)}
 .news-time{font-size:11px;color:var(--text2)}
 .news-link{display:inline-block;font-size:12px;color:var(--primary);margin-top:6px;text-decoration:none;font-weight:500;padding:4px 10px;background:var(--primary-light);border-radius:6px;transition:all .15s}
 .news-link:hover{background:var(--primary);color:#fff;text-decoration:none}
-.news-summary{font-size:13px;line-height:1.7;color:var(--text);margin-top:6px;padding:10px 12px;background:#f8f9fa;border-radius:8px;border-left:3px solid var(--primary)}
+.news-summary{font-size:13px;line-height:1.8;color:var(--text);margin-top:6px;padding:10px 12px;background:#f8f9fa;border-radius:8px;border-left:3px solid var(--primary);max-height:200px;overflow-y:auto}
 @media(prefers-color-scheme:dark){
   .news-summary{background:#1a2744}
 }
@@ -2869,12 +2869,12 @@ function renderNewsItems(container,items){
     let meta='';
     if(item.source&&item.source!=='tip')meta+=`<span class="news-time">📰 ${item.source}</span>`;
     if(item.time)meta+=(meta?' · ':'')+`<span class="news-time">🕐 ${item.time}</span>`;
-    // 摘要内容：有则完整展示，无则引导阅读原文
+    // 摘要内容：有则完整展示，无则提供抓取按钮
     let summary='';
     if(item.s&&item.s.trim()){
       summary=`<div class="news-summary">${item.s}</div>`;
     }else if(!isTip&&item.url){
-      summary=`<div class="news-summary" style="color:var(--primary);font-style:italic">暂无摘要，点击查看完整报道 →</div>`;
+      summary=`<div id="newsSummary${i}" class="news-summary" style="text-align:center"><button class="btn btn-outline" style="font-size:12px;padding:6px 16px" onclick="fetchArticleSummary('${item.url}',${i})">📖 获取全文摘要</button></div>`;
     }
     // 原文链接
     let link='';
@@ -2889,6 +2889,99 @@ function renderNewsItems(container,items){
       </div>
     </div>`;
   }).join('')+`<div class="news-source">数据来源：${source} · 内容仅供参考，以官方发布为准</div>`;
+}
+
+// ===== 抓取原文生成摘要 =====
+function fetchArticleSummary(url,idx){
+  const el=document.getElementById('newsSummary'+idx);
+  if(!el)return;
+  el.innerHTML='<span style="color:var(--text2);font-size:12px">⏳ 正在抓取原文...</span>';
+
+  // 使用 CORS 代理获取原文
+  const proxyUrl='https://api.allorigins.win/raw?url='+encodeURIComponent(url);
+
+  fetch(proxyUrl,{signal:AbortSignal.timeout(10000)})
+    .then(r=>{
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      return r.text();
+    })
+    .then(html=>{
+      const summary=extractArticleText(html);
+      if(summary){
+        el.innerHTML='<div style="font-size:13px;line-height:1.8;color:var(--text)">'+summary+'</div>';
+      }else{
+        el.innerHTML='<span style="color:var(--text2);font-size:12px">未能提取正文，请点击下方链接阅读原文</span>';
+      }
+    })
+    .catch(err=>{
+      el.innerHTML='<span style="color:var(--danger);font-size:12px">抓取失败（'+err.message+'），请直接阅读原文</span>';
+    });
+}
+
+function extractArticleText(html){
+  try{
+    const parser=new DOMParser();
+    const doc=parser.parseFromString(html,'text/html');
+
+    // 移除无关标签
+    doc.querySelectorAll('script,style,nav,header,footer,aside,.ad,.comment,.sidebar,.recommend').forEach(el=>el.remove());
+
+    // 尝试多种选择器提取正文
+    const selectors=[
+      'article','[class*=article]','[class*=content]','[class*=detail]',
+      '[class*=body]','[class*=text]','[id*=article]','[id*=content]',
+      '.post-content','.entry-content','main','[role=main]'
+    ];
+    let articleEl=null;
+    for(const sel of selectors){
+      articleEl=doc.querySelector(sel);
+      if(articleEl&&articleEl.textContent.trim().length>100)break;
+      articleEl=null;
+    }
+
+    // 兜底：取 body 中最长的文本块
+    if(!articleEl){
+      const allP=doc.querySelectorAll('p');
+      let bestP=null,bestLen=0;
+      allP.forEach(p=>{
+        const t=p.textContent.trim();
+        if(t.length>bestLen){bestLen=t.length;bestP=p}
+      });
+      if(bestP&&bestP.parentElement)articleEl=bestP.parentElement;
+    }
+
+    if(!articleEl)return null;
+
+    // 提取所有段落文本
+    const paragraphs=[];
+    articleEl.querySelectorAll('p').forEach(p=>{
+      const t=p.textContent.trim();
+      // 过滤掉太短的、广告、版权信息等
+      if(t.length>15&&!/广告|版权声明|责任编辑|来源：|编辑：|返回搜狐/.test(t)){
+        paragraphs.push(t);
+      }
+    });
+
+    if(paragraphs.length===0){
+      // 如果没有 p 标签，直接取文本
+      const text=articleEl.textContent.trim().replace(/\s+/g,' ');
+      if(text.length>50){
+        return text.slice(0,300)+(text.length>300?'...':'');
+      }
+      return null;
+    }
+
+    // 取前3-5段，总字数控制在300字以内
+    let result='';
+    for(const p of paragraphs){
+      if(result.length>=300)break;
+      result+=(result?'<br><br>':'')+p;
+    }
+    if(result.length>400)result=result.slice(0,400)+'...';
+    return result;
+  }catch(e){
+    return null;
+  }
 }
 
 function initApp(){
